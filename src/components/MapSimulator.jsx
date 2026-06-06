@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Layers, Navigation } from 'lucide-react';
 
-
 export default function MapSimulator({
   score,
   nodes,
@@ -25,22 +24,21 @@ export default function MapSimulator({
   const height = 500;
 
   // Propagation polygon dynamically changes size/vertices based on score
-  // We can interpolate vertices or size. Let's make it look like a growing threat.
   const getPropagationPolygon = () => {
     if (score < 0.3) return null; // No propagation polygon for low risk
     
     // Scale polygon coordinates based on risk score
-    const scale = (score - 0.2) * 2.2; // 0 to 1.76
-    const baseCenterX = 450;
-    const baseCenterY = 250;
+    const scale = (score - 0.2) * 2.2; 
+    const baseCenterX = 480;
+    const baseCenterY = 240;
     
-    // 5 vertices for a organic-looking fire polygon
+    // 5 vertices for an organic-looking fire polygon centered around Node 3
     const points = [
-      [baseCenterX - 20 * scale, baseCenterY - 40 * scale],
-      [baseCenterX + 60 * scale, baseCenterY - 10 * scale],
-      [baseCenterX + 80 * scale, baseCenterY + 40 * scale],
-      [baseCenterX - 10 * scale, baseCenterY + 70 * scale],
-      [baseCenterX - 70 * scale, baseCenterY + 10 * scale],
+      [baseCenterX - 25 * scale, baseCenterY - 45 * scale],
+      [baseCenterX + 65 * scale, baseCenterY - 15 * scale],
+      [baseCenterX + 85 * scale, baseCenterY + 45 * scale],
+      [baseCenterX - 10 * scale, baseCenterY + 75 * scale],
+      [baseCenterX - 75 * scale, baseCenterY + 15 * scale],
     ];
     
     return points.map(p => p.join(',')).join(' ');
@@ -49,89 +47,97 @@ export default function MapSimulator({
   const polyPoints = getPropagationPolygon();
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden flex flex-col h-full relative group">
-      {/* Map Control Bar Overlay */}
-      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2 pointer-events-auto bg-gray-950/80 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-800">
-        <div className="flex items-center gap-1.5 pr-2 mr-2 border-r border-gray-800 text-xs font-mono font-bold text-gray-300">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col h-full relative group shadow-xs">
+      {/* Map Control Bar Overlay (Light Glassmorphism style) */}
+      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2 pointer-events-auto bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-200 shadow-sm text-slate-700">
+        <div className="flex items-center gap-1.5 pr-2 mr-2 border-r border-gray-200 text-xs font-mono font-bold text-slate-700">
           <Layers className="h-3.5 w-3.5 text-blue-500" />
           <span>CAPAS MAPA:</span>
         </div>
-        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-gray-400 hover:text-white">
+        
+        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-slate-600 hover:text-slate-900 font-medium">
           <input
             type="checkbox"
             checked={showNodes}
             onChange={(e) => setShowNodes(e.target.checked)}
-            className="rounded bg-gray-850 border-gray-700 text-blue-500 focus:ring-0 focus:ring-offset-0"
+            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500/25 h-3.5 w-3.5"
           />
-          <span>Nodos IoT ({nodes.length})</span>
+          <span>Nodos IoT</span>
         </label>
-        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-gray-400 hover:text-white ml-2">
+        
+        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-slate-600 hover:text-slate-900 font-medium ml-2">
           <input
             type="checkbox"
             checked={showHotspots}
             onChange={(e) => setShowHotspots(e.target.checked)}
-            className="rounded bg-gray-850 border-gray-700 text-orange-500 focus:ring-0 focus:ring-offset-0"
+            className="rounded border-gray-300 text-red-500 focus:ring-red-500/25 h-3.5 w-3.5"
           />
           <span>FIRMS Satélite</span>
         </label>
-        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-gray-400 hover:text-white ml-2">
+        
+        <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-slate-600 hover:text-slate-900 font-medium ml-2">
           <input
             type="checkbox"
             checked={showPolygon}
             onChange={(e) => setShowPolygon(e.target.checked)}
-            className="rounded bg-gray-850 border-gray-700 text-red-500 focus:ring-0 focus:ring-offset-0"
+            className="rounded border-gray-300 text-orange-500 focus:ring-orange-500/25 h-3.5 w-3.5"
           />
-          <span>Sim. Propagación</span>
+          <span>Perímetro Fuego</span>
         </label>
+        
         {evacRoutesActive && (
-          <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-gray-400 hover:text-white ml-2">
+          <label className="flex items-center gap-1.5 text-xs font-mono cursor-pointer select-none text-slate-700 hover:text-slate-900 font-bold ml-2">
             <input
               type="checkbox"
               checked={showEvacuation}
               onChange={(e) => setShowEvacuation(e.target.checked)}
-              className="rounded bg-gray-850 border-gray-700 text-green-500 focus:ring-0 focus:ring-offset-0"
+              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500/25 h-3.5 w-3.5"
             />
-            <span className="text-green-400 font-bold">Rutas Evac.</span>
+            <span className="text-emerald-600">Rutas Evac.</span>
           </label>
         )}
       </div>
 
       {/* Map Legend Overlay */}
-      <div className="absolute bottom-4 left-4 z-20 hidden sm:flex flex-col gap-1 bg-gray-950/85 backdrop-blur-md px-3 py-2.5 rounded-lg border border-gray-800 text-[10px] font-mono text-gray-400">
-        <div className="font-bold text-gray-300 mb-1 border-b border-gray-800 pb-0.5">LEYENDA TÉCNICA</div>
+      <div className="absolute bottom-4 left-4 z-20 hidden sm:flex flex-col gap-1.5 bg-white/90 backdrop-blur-md px-3.5 py-3 rounded-lg border border-gray-200 text-[10px] font-mono text-slate-600 shadow-sm">
+        <div className="font-bold text-slate-800 mb-1 border-b border-gray-100 pb-1">LEYENDA TÉCNICA</div>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+          <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block border border-white shadow-2xs"></span>
           <span>Nodo IoT Seleccionado</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
-          <span>Nodo IoT Operativo</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block border border-white shadow-2xs"></span>
+          <span>Nodo IoT Activo (Estable)</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse inline-block"></span>
-          <span>Hotspot Satelital FIRMS</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block border border-white shadow-2xs"></span>
+          <span>Nodo IoT Advertencia</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-3.5 h-2 bg-purple-600/30 border border-purple-500/50 inline-block rounded"></span>
-          <span>Frente del Fuego Estimado</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block border border-white shadow-2xs"></span>
+          <span>Nodo IoT Alarma Crítica</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3.5 h-2 bg-red-400/20 border border-red-400/50 inline-block rounded"></span>
+          <span>Frente de Fuego Estimado</span>
         </div>
       </div>
 
       {/* Map Coordinates overlay */}
-      <div className="absolute top-4 right-4 z-20 bg-gray-950/80 backdrop-blur-md px-2.5 py-1 rounded border border-gray-800 font-mono text-[9px] text-gray-400">
+      <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded border border-gray-200 font-mono text-[9px] text-slate-500 shadow-xs">
         REF: COL-MTN-ZONE-C4
       </div>
 
-      {/* Interactive Map Visual (SVG Canvas) */}
-      <div className="flex-1 min-h-[350px] relative tech-grid bg-slate-950 flex items-center justify-center">
-        {/* Radar Scanning Line Animation (to simulate technical sweep) */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
+      {/* Interactive Map Visual (SVG Canvas with soft beige terrain background) */}
+      <div className="flex-1 min-h-[350px] relative tech-grid bg-[#F4F3EF] flex items-center justify-center">
+        {/* Radar Scanning Line Animation (highly subtle light sweep) */}
+        <div className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden">
           <svg className="w-full h-full">
-            <circle cx={width / 2} cy={height / 2} r="350" fill="none" stroke="#1e293b" strokeWidth="1" strokeDasharray="5, 5" />
-            <circle cx={width / 2} cy={height / 2} r="200" fill="none" stroke="#1e293b" strokeWidth="1" />
-            <circle cx={width / 2} cy={height / 2} r="80" fill="none" stroke="#1e293b" strokeWidth="1" />
+            <circle cx={width / 2} cy={height / 2} r="350" fill="none" stroke="#DCDAD1" strokeWidth="1" strokeDasharray="4, 4" />
+            <circle cx={width / 2} cy={height / 2} r="200" fill="none" stroke="#E5E4DE" strokeWidth="1" />
+            <circle cx={width / 2} cy={height / 2} r="80" fill="none" stroke="#E5E4DE" strokeWidth="1" />
             {/* Radar sweep lines */}
-            <line x1={width / 2} y1={height / 2} x2={width / 2 + 350} y2={height / 2} stroke="#3b82f6" strokeWidth="1" className="radar-sweep" />
+            <line x1={width / 2} y1={height / 2} x2={width / 2 + 350} y2={height / 2} stroke="#3b82f6" strokeWidth="1" strokeOpacity="0.25" className="radar-sweep" />
           </svg>
         </div>
 
@@ -140,78 +146,81 @@ export default function MapSimulator({
           className="w-full h-full select-none cursor-crosshair"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Simulated Topographic / Contour Lines */}
-          <path d="M 0 100 Q 150 80, 250 140 T 500 120 T 800 200" fill="none" stroke="#1e293b" strokeWidth="1.5" />
-          <path d="M 0 160 Q 200 130, 350 220 T 600 170 T 800 280" fill="none" stroke="#1e293b" strokeWidth="1" />
-          <path d="M 0 240 Q 180 200, 300 310 T 650 250 T 800 360" fill="none" stroke="#1e293b" strokeWidth="1.5" />
-          <path d="M 0 350 Q 220 300, 420 390 T 700 320 T 800 440" fill="none" stroke="#1e293b" strokeWidth="1" />
+          {/* Subtle elevation contour lines (soft beige/gray terrain lines) */}
+          <path d="M 0 100 Q 150 80, 250 140 T 500 120 T 800 200" fill="none" stroke="#E4E2DC" strokeWidth="1.5" />
+          <path d="M 0 160 Q 200 130, 350 220 T 600 170 T 800 280" fill="none" stroke="#E4E2DC" strokeWidth="1" />
+          <path d="M 0 240 Q 180 200, 300 310 T 650 250 T 800 360" fill="none" stroke="#E4E2DC" strokeWidth="1.5" />
+          <path d="M 0 350 Q 220 300, 420 390 T 700 320 T 800 440" fill="none" stroke="#E4E2DC" strokeWidth="1" />
 
           {/* Evacuation Routes (simulated path from nodes to safe zones) */}
           {evacRoutesActive && showEvacuation && (
-            <g className="animate-pulse">
+            <g>
               {/* Route 1 */}
               <path
                 d="M 120 180 Q 200 280, 320 380 T 600 450"
                 fill="none"
                 stroke="#10b981"
-                strokeWidth="3.5"
-                strokeDasharray="8, 6"
+                strokeWidth="3"
+                strokeDasharray="6, 5"
+                className="animate-pulse"
               />
               {/* Route 2 */}
               <path
-                d="M 450 130 Q 550 220, 680 320"
+                d="M 480 240 Q 550 220, 680 320"
                 fill="none"
                 stroke="#10b981"
-                strokeWidth="3.5"
-                strokeDasharray="8, 6"
+                strokeWidth="3"
+                strokeDasharray="6, 5"
+                className="animate-pulse"
               />
               {/* Safe zone indicators */}
               <g transform="translate(600, 450)">
-                <circle r="14" fill="#065f46" opacity="0.6" />
-                <circle r="8" fill="#10b981" />
-                <text y="-18" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="bold" fontFamily="monospace">ZONA SEGURA A</text>
+                <circle r="12" fill="#10b981" fillOpacity="0.2" className="pulse-ring" />
+                <circle r="7" fill="#10b981" stroke="#fff" strokeWidth="1.5" />
+                <text y="-14" textAnchor="middle" fill="#047857" fontSize="9" fontWeight="bold" fontFamily="monospace">PUNTO SEGURO A</text>
               </g>
               <g transform="translate(680, 320)">
-                <circle r="14" fill="#065f46" opacity="0.6" />
-                <circle r="8" fill="#10b981" />
-                <text y="-18" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="bold" fontFamily="monospace">ZONA SEGURA B</text>
+                <circle r="12" fill="#10b981" fillOpacity="0.2" className="pulse-ring" />
+                <circle r="7" fill="#10b981" stroke="#fff" strokeWidth="1.5" />
+                <text y="-14" textAnchor="middle" fill="#047857" fontSize="9" fontWeight="bold" fontFamily="monospace">PUNTO SEGURO B</text>
               </g>
             </g>
           )}
 
-          {/* Translucent Propagation Polygon */}
+          {/* Fire Perimeter ("Frente de Fuego") smooth overlay */}
           {showPolygon && polyPoints && (
             <g>
-              {/* Pulse backing */}
+              {/* Smooth soft red/orange semi-transparent overlay */}
               <polygon
                 points={polyPoints}
                 fill="url(#fireGradient)"
-                fillOpacity={0.25 + score * 0.25}
-                stroke={score >= 0.8 ? '#a855f7' : '#ef4444'}
-                strokeWidth="2.5"
-                strokeDasharray={score >= 0.8 ? '5,3' : '0'}
+                fillOpacity={0.2 + score * 0.25}
+                stroke={score >= 0.8 ? '#DC2626' : '#EA580C'}
+                strokeWidth="2"
+                strokeLinejoin="round"
                 className="transition-all duration-500 ease-out"
               />
-              {/* Internal warning overlay */}
+              {/* Internal subtle border accent */}
               <polygon
                 points={polyPoints}
                 fill="none"
-                stroke="#f97316"
+                stroke="#FB923C"
                 strokeWidth="1"
-                opacity="0.6"
+                strokeOpacity="0.5"
+                strokeLinejoin="round"
               />
-              {/* Labels for fire front */}
+              {/* Label inside the overlay */}
               <text
-                x="450"
-                y="220"
-                fill="#f87171"
-                fontSize="10"
-                fontWeight="extrabold"
+                x="480"
+                y="200"
+                fill="#DC2626"
+                fontSize="9"
+                fontWeight="bold"
                 fontFamily="monospace"
                 textAnchor="middle"
-                className="animate-pulse"
+                className="animate-pulse shadow-sm"
               >
-                FRENTE DE PROPAGACIÓN {score >= 0.8 ? '(CRÍTICO)' : ''}
+                FRENTE DE FUEGO {score >= 0.8 ? '(CRÍTICO)' : ''}
               </text>
             </g>
           )}
@@ -219,31 +228,43 @@ export default function MapSimulator({
           {/* NASA FIRMS Hotspots */}
           {showHotspots && hotspots.map((spot, idx) => (
             <g key={spot.id} transform={`translate(${spot.x}, ${spot.y})`}>
-              <circle r="16" fill="#f97316" opacity="0.15" className="pulse-ring" />
+              <circle r="14" fill="#EF4444" opacity="0.2" className="pulse-ring" />
               <polygon
-                points="0,-8 7,5 -7,5"
-                fill="#ef4444"
+                points="0,-7 6,4 -6,4"
+                fill="#EF4444"
                 stroke="#fff"
                 strokeWidth="1"
-                className="animate-pulse cursor-pointer filter drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"
+                className="animate-pulse cursor-pointer shadow-xs"
                 onClick={() => {
-                  // Alert click
                   alert(`NASA FIRMS Hotspot #${spot.id}\nCoordenadas: Lat: 6.244, Lng: -75.589\nConfianza Térmica: 92%`);
                 }}
               />
-              <text y="-12" textAnchor="middle" fill="#f87171" fontSize="8" fontWeight="bold" fontFamily="monospace">
+              <text y="-10" textAnchor="middle" fill="#C21C1C" fontSize="8" fontWeight="bold" fontFamily="monospace">
                 FIRMS #{spot.id}
               </text>
             </g>
           ))}
 
-          {/* IoT Sensor Nodes */}
+          {/* IoT Sensor Nodes represented as clean flat circular icons */}
           {showNodes && nodes.map((node) => {
             const isSelected = node.id === selectedNodeId;
-            // Node colors based on individual risk
-            let nodeColor = '#22c55e'; // Green
-            if (node.status === 'alarm') nodeColor = '#ef4444';
-            else if (node.status === 'warning') nodeColor = '#f97316';
+            
+            // Standard colors based on status (eco-friendly: stable green, amber warning, red alarm)
+            let nodeBg = '#10B981'; // Stable emerald green
+            let glow = 'glow-green';
+            if (node.status === 'alarm') {
+              nodeBg = '#F87171'; // Coral red for alarm
+              glow = 'glow-red';
+            } else if (node.status === 'warning') {
+              nodeBg = '#F59E0B'; // Amber for warning
+              glow = 'glow-yellow';
+            }
+
+            // If selected, we override to blue as requested: "distinct blue for selected"
+            if (isSelected) {
+              nodeBg = '#2563EB';
+              glow = 'glow-blue';
+            }
 
             return (
               <g
@@ -252,97 +273,111 @@ export default function MapSimulator({
                 className="cursor-pointer"
                 onClick={() => setSelectedNodeId(node.id)}
               >
-                {/* Pulsing ring if selected or if in alarm */}
-                {(isSelected || node.status === 'alarm') && (
+                {/* Outer ring for selected or warning/alarm state */}
+                {(isSelected || node.status === 'alarm' || node.status === 'warning') && (
                   <circle
-                    r="22"
+                    r="16"
                     fill="none"
-                    stroke={nodeColor}
-                    strokeWidth="2"
+                    stroke={nodeBg}
+                    strokeWidth="1.5"
+                    strokeOpacity="0.6"
                     className="pulse-ring"
                   />
                 )}
-                
-                {/* Acoustic alert wave animation */}
+
+                {/* Acoustic alert ultrasonic wave animation */}
                 {acousticAlertActive && node.status === 'alarm' && (
-                  <g className="opacity-75">
-                    <circle r="30" fill="none" stroke="#3b82f6" strokeWidth="1" className="pulse-ring" style={{ animationDelay: '0s' }} />
-                    <circle r="45" fill="none" stroke="#3b82f6" strokeWidth="1" className="pulse-ring" style={{ animationDelay: '1s' }} />
+                  <g className="opacity-40">
+                    <circle r="25" fill="none" stroke="#2563EB" strokeWidth="1" className="pulse-ring" style={{ animationDelay: '0s' }} />
+                    <circle r="40" fill="none" stroke="#2563EB" strokeWidth="1" className="pulse-ring" style={{ animationDelay: '1s' }} />
                   </g>
                 )}
 
-                {/* Node pin */}
+                {/* Clean, flat circular node icon */}
                 <circle
-                  r={isSelected ? '10' : '8'}
-                  fill={isSelected ? '#090d16' : nodeColor}
-                  stroke={isSelected ? '#3b82f6' : '#fff'}
-                  strokeWidth={isSelected ? '3' : '1.5'}
-                  className="transition-all duration-200"
+                  r={isSelected ? '9' : '7.5'}
+                  fill={nodeBg}
+                  stroke="#FFFFFF"
+                  strokeWidth="2"
+                  className="transition-all duration-200 shadow-sm"
                 />
 
-                {/* Inner dot for selected node */}
+                {/* Small center dot for selected node to make it pop */}
                 {isSelected && (
-                  <circle r="4" fill="#3b82f6" />
+                  <circle r="3" fill="#FFFFFF" />
                 )}
 
-                {/* Label */}
-                <text
-                  y="20"
-                  textAnchor="middle"
-                  fill={isSelected ? '#fff' : '#9ca3af'}
-                  fontSize="9"
-                  fontWeight={isSelected ? 'bold' : 'normal'}
-                  fontFamily="monospace"
-                  className="bg-black/60 px-1 py-0.5 rounded"
-                >
-                  NODO 0{node.id}
-                </text>
+                {/* Label capsule */}
+                <g transform="translate(0, 18)">
+                  <rect
+                    x="-24"
+                    y="-6"
+                    width="48"
+                    height="12"
+                    rx="4"
+                    fill="white"
+                    fillOpacity="0.85"
+                    stroke={isSelected ? '#2563EB' : '#E2E8F0'}
+                    strokeWidth="1"
+                    className="shadow-2xs"
+                  />
+                  <text
+                    y="3"
+                    textAnchor="middle"
+                    fill={isSelected ? '#1E3A8A' : '#475569'}
+                    fontSize="8"
+                    fontWeight={isSelected ? 'bold' : '600'}
+                    fontFamily="monospace"
+                  >
+                    NODO 0{node.id}
+                  </text>
+                </g>
               </g>
             );
           })}
 
-          {/* Simulated Flying Drone */}
+          {/* Flying Drone */}
           {droneActive && (
             <g transform="translate(320, 200)" className="drone-bob">
               <path
-                d="M -20 -20 L 20 20 M -20 20 L 20 -20"
-                stroke="#60a5fa"
-                strokeWidth="2"
+                d="M -16 -16 L 16 16 M -16 16 L 16 -16"
+                stroke="#2563EB"
+                strokeWidth="1.5"
               />
-              <circle r="6" fill="#3b82f6" stroke="#fff" strokeWidth="1" />
+              <circle r="5" fill="#2563EB" stroke="#fff" strokeWidth="1.5" />
               {/* Drone propellers */}
-              <circle cx="-20" cy="-20" r="4" fill="none" stroke="#60a5fa" className="animate-spin" />
-              <circle cx="20" cy="-20" r="4" fill="none" stroke="#60a5fa" className="animate-spin" />
-              <circle cx="-20" cy="20" r="4" fill="none" stroke="#60a5fa" className="animate-spin" />
-              <circle cx="20" cy="20" r="4" fill="none" stroke="#60a5fa" className="animate-spin" />
-              <text y="-25" textAnchor="middle" fill="#60a5fa" fontSize="8" fontWeight="bold" fontFamily="monospace">
+              <circle cx="-16" cy="-16" r="3" fill="none" stroke="#3b82f6" strokeWidth="1" />
+              <circle cx="16" cy="-16" r="3" fill="none" stroke="#3b82f6" strokeWidth="1" />
+              <circle cx="-16" cy="16" r="3" fill="none" stroke="#3b82f6" strokeWidth="1" />
+              <circle cx="16" cy="16" r="3" fill="none" stroke="#3b82f6" strokeWidth="1" />
+              <text y="-20" textAnchor="middle" fill="#2563EB" fontSize="8" fontWeight="bold" fontFamily="monospace">
                 DRON RECON
               </text>
-              {/* Laser camera vector scanning below */}
-              <path d="M 0 0 L -40 120 M 0 0 L 40 120" stroke="#3b82f6" strokeWidth="0.5" strokeDasharray="2,2" opacity="0.5" />
+              {/* Laser scanning vector lines */}
+              <path d="M 0 0 L -35 120 M 0 0 L 35 120" stroke="#3b82f6" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.3" />
             </g>
           )}
 
-          {/* Gradients definitions */}
+          {/* Gradients definitions for Fire Perimeter */}
           <defs>
             <radialGradient id="fireGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor={score >= 0.8 ? '#c084fc' : '#ef4444'} stopOpacity="0.8" />
-              <stop offset="70%" stopColor="#f97316" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#F87171" stopOpacity="0.45" />
+              <stop offset="70%" stopColor="#FB923C" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#F87171" stopOpacity="0.0" />
             </radialGradient>
           </defs>
         </svg>
       </div>
 
-      {/* Footer Info for coordinates */}
-      <div className="bg-gray-950 px-4 py-2 border-t border-gray-800 flex items-center justify-between text-[10px] font-mono text-gray-500">
+      {/* Footer Info for coordinates (Clean Light Style) */}
+      <div className="bg-white px-4 py-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-mono text-slate-500 shadow-2xs">
         <div className="flex items-center gap-1">
-          <Navigation className="h-3 w-3 text-red-500 animate-pulse" />
-          <span>CENTRO DEL MAPA: 6°14'44.2"N 75°35'21.1"W</span>
+          <Navigation className="h-3 w-3 text-red-500" />
+          <span>COORDS: 6°14'44.2"N 75°35'21.1"W</span>
         </div>
         <div className="flex items-center gap-3">
           <span>ALTITUD: 1,820m</span>
-          <span>COB: 94%</span>
+          <span>COBERTURA RED: 94%</span>
         </div>
       </div>
     </div>

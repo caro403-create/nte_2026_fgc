@@ -187,30 +187,30 @@ export default function App() {
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[2];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-gray-100 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#F0F2F5] text-slate-800 flex flex-col antialiased">
       {/* Header bar */}
       <Header score={score} setScore={setScore} />
 
       {/* Status Bar */}
-      <div className="bg-gray-900 border-b border-gray-800 px-6 py-2 flex flex-wrap items-center justify-between text-xs font-mono text-gray-400 gap-2">
+      <div className="bg-white border-b border-gray-200 px-6 py-2 flex flex-wrap items-center justify-between text-xs font-mono text-slate-500 gap-2 shadow-xs">
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-green-400">
+          <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
             <Wifi className="h-3.5 w-3.5" />
             RED NODOS: ONLINE (5/5)
           </span>
-          <span className="flex items-center gap-1.5 text-blue-400">
+          <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
             <Database className="h-3.5 w-3.5" />
             TELEMETRÍA: LORA WAN 915MHZ
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-yellow-400">
+          <span className="flex items-center gap-1.5 text-amber-600 font-semibold">
             <Clock className="h-3.5 w-3.5" />
             SINCRO: {new Date().toLocaleDateString()} 13:08 COT
           </span>
           <button 
             onClick={() => setScore(0.72)} 
-            className="flex items-center gap-1 hover:text-white transition-colors duration-200 border border-gray-800 rounded px-1.5 py-0.5 bg-gray-950 cursor-pointer"
+            className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded px-1.5 py-0.5 bg-gray-50 cursor-pointer text-slate-600 font-medium"
           >
             <RefreshCw className="h-3 w-3" />
             RESTABLECER
@@ -260,7 +260,7 @@ export default function App() {
       </main>
       
       {/* Footer copyright */}
-      <footer className="bg-gray-950 border-t border-gray-900 px-6 py-3 text-center text-xs text-gray-500 font-mono">
+      <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-xs text-slate-400 font-mono shadow-xs">
         SISTEMA DE DEFENSA ACTIVA © 2026 // EQUIPO COLOMBIA // DESARROLLADO PARA ENTORNOS DE MISIÓN CRÍTICA
       </footer>
     </div>

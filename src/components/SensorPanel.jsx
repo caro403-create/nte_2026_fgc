@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef } from 'react';
-import { Thermometer, Wind, Eye, Compass, Activity } from 'lucide-react';
-
+import { Thermometer, Droplet, Wind, Eye, Compass, Activity, Cloud } from 'lucide-react';
 
 export default function SensorPanel({ node, globalScore }) {
   const [acousticData, setAcousticData] = useState([30, 45, 60, 35, 70, 85, 40, 50, 65, 55]);
@@ -13,7 +12,6 @@ export default function SensorPanel({ node, globalScore }) {
       setAcousticData(prev => 
         prev.map(val => {
           const baseChange = Math.floor(Math.random() * 21) - 10;
-          // Scale activity based on node alarm level
           const limit = node.status === 'alarm' ? 95 : node.status === 'warning' ? 70 : 40;
           const min = node.status === 'alarm' ? 55 : 20;
           let newVal = val + baseChange;
@@ -27,7 +25,7 @@ export default function SensorPanel({ node, globalScore }) {
     return () => clearInterval(interval);
   }, [node]);
 
-  // Canvas-based ESP32-CAM mockup drawing
+  // Canvas-based ESP32-CAM thermal mockup drawing
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -41,12 +39,12 @@ export default function SensorPanel({ node, globalScore }) {
       const w = canvas.width;
       const h = canvas.height;
 
-      // Background - simulated thermal (infrared) night vision green-blue gradient
-      ctx.fillStyle = '#060d17';
+      // Dark background for viewfinder to make thermal feed stand out
+      ctx.fillStyle = '#0F172A';
       ctx.fillRect(0, 0, w, h);
 
       // Draw grid lines
-      ctx.strokeStyle = 'rgba(30, 58, 138, 0.25)';
+      ctx.strokeStyle = 'rgba(51, 65, 85, 0.3)';
       ctx.lineWidth = 1;
       for (let i = 20; i < w; i += 20) {
         ctx.beginPath();
@@ -62,93 +60,92 @@ export default function SensorPanel({ node, globalScore }) {
       }
 
       // Draw simulated forest background elements
-      ctx.fillStyle = '#043425';
+      ctx.fillStyle = '#064E3B';
       // Left trees
       ctx.beginPath();
       ctx.moveTo(0, h);
-      ctx.lineTo(30, h - 60);
+      ctx.lineTo(30, h - 50);
       ctx.lineTo(70, h);
       ctx.fill();
       
       // Right trees
       ctx.beginPath();
       ctx.moveTo(w - 80, h);
-      ctx.lineTo(w - 40, h - 85);
+      ctx.lineTo(w - 40, h - 70);
       ctx.lineTo(w, h);
       ctx.fill();
 
       // Draw threat depending on status
       if (node.status === 'alarm') {
-        // Draw fire flames on canvas
         const flameCenterX = w / 2 + Math.sin(frame * 0.1) * 5;
         const flameCenterY = h / 2 + 10;
-        const radius = 25 + Math.sin(frame * 0.3) * 6;
+        const radius = 22 + Math.sin(frame * 0.3) * 5;
 
-        // Outer glow
-        const glowGrad = ctx.createRadialGradient(flameCenterX, flameCenterY, 5, flameCenterX, flameCenterY, radius * 2.5);
-        glowGrad.addColorStop(0, 'rgba(239, 68, 68, 0.8)');
-        glowGrad.addColorStop(0.4, 'rgba(249, 115, 22, 0.4)');
-        glowGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        // Outer thermal glow (coral red / orange)
+        const glowGrad = ctx.createRadialGradient(flameCenterX, flameCenterY, 4, flameCenterX, flameCenterY, radius * 2.3);
+        glowGrad.addColorStop(0, 'rgba(248, 113, 113, 0.8)'); // Coral red
+        glowGrad.addColorStop(0.5, 'rgba(249, 115, 22, 0.45)');
+        glowGrad.addColorStop(1, 'rgba(248, 113, 113, 0)');
         ctx.fillStyle = glowGrad;
         ctx.beginPath();
-        ctx.arc(flameCenterX, flameCenterY, radius * 2.5, 0, Math.PI * 2);
+        ctx.arc(flameCenterX, flameCenterY, radius * 2.3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Inner fire
-        const fireGrad = ctx.createRadialGradient(flameCenterX, flameCenterY, 2, flameCenterX, flameCenterY - 10, radius);
-        fireGrad.addColorStop(0, '#ffffff');
-        fireGrad.addColorStop(0.3, '#facc15'); // Yellow
-        fireGrad.addColorStop(0.7, '#f97316'); // Orange
-        fireGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        // Inner fire core
+        const fireGrad = ctx.createRadialGradient(flameCenterX, flameCenterY, 2, flameCenterX, flameCenterY - 8, radius);
+        fireGrad.addColorStop(0, '#FFFFFF');
+        fireGrad.addColorStop(0.3, '#FBBF24'); // Amber
+        fireGrad.addColorStop(0.7, '#F97316');
+        fireGrad.addColorStop(1, 'rgba(248, 113, 113, 0)');
         ctx.fillStyle = fireGrad;
         ctx.beginPath();
         ctx.moveTo(flameCenterX - radius, flameCenterY);
-        ctx.quadraticCurveTo(flameCenterX - radius/2, flameCenterY - radius * 1.5, flameCenterX, flameCenterY - radius * 2);
-        ctx.quadraticCurveTo(flameCenterX + radius/2, flameCenterY - radius * 1.5, flameCenterX + radius, flameCenterY);
+        ctx.quadraticCurveTo(flameCenterX - radius/2, flameCenterY - radius * 1.4, flameCenterX, flameCenterY - radius * 1.8);
+        ctx.quadraticCurveTo(flameCenterX + radius/2, flameCenterY - radius * 1.4, flameCenterX + radius, flameCenterY);
         ctx.closePath();
         ctx.fill();
 
-        // ESP32 AI Target Box
-        ctx.strokeStyle = '#ef4444';
+        // ESP32 AI Target box
+        ctx.strokeStyle = '#F87171'; // Coral red
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(flameCenterX - radius - 15, flameCenterY - radius - 35, radius * 2 + 30, radius * 2 + 50);
+        ctx.strokeRect(flameCenterX - radius - 12, flameCenterY - radius - 30, radius * 2 + 24, radius * 2 + 42);
 
         // Target Box Text
-        ctx.fillStyle = '#ef4444';
+        ctx.fillStyle = '#F87171';
         ctx.font = 'bold 8px monospace';
-        ctx.fillText(`ANOMALIA: LLAMA ACTIVA (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)`, flameCenterX - radius - 12, flameCenterY - radius - 42);
+        ctx.fillText(`ANOMALIA: LLAMA ACTIVA (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)`, flameCenterX - radius - 9, flameCenterY - radius - 35);
       } else if (node.status === 'warning') {
         // Draw smoke
-        const smokeX = w / 2 - 20 + Math.sin(frame * 0.05) * 15;
-        const smokeY = h / 2 - 10;
+        const smokeX = w / 2 - 15 + Math.sin(frame * 0.05) * 12;
+        const smokeY = h / 2 - 8;
         
-        ctx.fillStyle = 'rgba(100, 116, 139, 0.45)';
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
         ctx.beginPath();
-        ctx.arc(smokeX, smokeY, 15, 0, Math.PI * 2);
-        ctx.arc(smokeX + 10, smokeY - 15, 22, 0, Math.PI * 2);
-        ctx.arc(smokeX - 10, smokeY - 25, 18, 0, Math.PI * 2);
+        ctx.arc(smokeX, smokeY, 12, 0, Math.PI * 2);
+        ctx.arc(smokeX + 8, smokeY - 12, 18, 0, Math.PI * 2);
+        ctx.arc(smokeX - 8, smokeY - 20, 15, 0, Math.PI * 2);
         ctx.fill();
 
-        // ESP32 Target Box
-        ctx.strokeStyle = '#f97316';
+        // Target box for warning
+        ctx.strokeStyle = '#F59E0B'; // Amber
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(smokeX - 25, smokeY - 45, 60, 70);
+        ctx.strokeRect(smokeX - 20, smokeY - 35, 50, 55);
 
-        ctx.fillStyle = '#f97316';
+        ctx.fillStyle = '#F59E0B';
         ctx.font = 'bold 8px monospace';
-        ctx.fillText(`HUMO DETECTADO (${Math.floor(74 + Math.sin(frame*0.04)*4)}%)`, smokeX - 22, smokeY - 50);
+        ctx.fillText(`HUMO DETECTADO (${Math.floor(74 + Math.sin(frame*0.04)*4)}%)`, smokeX - 18, smokeY - 40);
       } else {
-        // Safe state
-        ctx.strokeStyle = '#22c55e';
+        // Stable state
+        ctx.strokeStyle = '#10B981'; // Emerald Green
         ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, w - 40, h - 40);
-        ctx.fillStyle = '#22c55e';
+        ctx.fillStyle = '#10B981';
         ctx.font = '8px monospace';
         ctx.fillText("VISTA CAM: NO SE DETECTAN ANOMALIAS", w/2 - 75, 12);
       }
 
       // Camera status overlays
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx.font = '9px monospace';
       ctx.fillText(`ESP32-CAM // NODE_0${node.id}`, 8, 16);
       
@@ -156,12 +153,12 @@ export default function SensorPanel({ node, globalScore }) {
       ctx.fillText(timeStr, w - 65, 16);
 
       // Flickering green dot
-      if (Math.floor(frame / 10) % 2 === 0) {
-        ctx.fillStyle = '#10b981';
+      if (Math.floor(frame / 12) % 2 === 0) {
+        ctx.fillStyle = '#10B981';
         ctx.beginPath();
         ctx.arc(12, h - 12, 3, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillText("REC", 20, h - 9);
+        ctx.fillText("LIVE FEED", 20, h - 9);
       }
 
       animationId = requestAnimationFrame(render);
@@ -172,118 +169,125 @@ export default function SensorPanel({ node, globalScore }) {
     return () => cancelAnimationFrame(animationId);
   }, [node]);
 
-  // Get status color helper
-  const getStatusTextClass = (status) => {
-    if (status === 'alarm') return 'text-red-500 font-extrabold';
-    if (status === 'warning') return 'text-orange-500 font-bold';
-    return 'text-green-500 font-medium';
+  // Get status color styling helper
+  const getStatusBadgeClass = (status) => {
+    if (status === 'alarm') return 'bg-red-50 text-[#C21C1C] border-red-200';
+    if (status === 'warning') return 'bg-amber-50 text-amber-800 border-amber-200';
+    return 'bg-emerald-50 text-emerald-800 border-emerald-200';
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 h-full">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-4 h-full shadow-xs">
       {/* Sensor Title Header */}
-      <div className="flex items-center justify-between border-b border-gray-800 pb-2">
+      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
         <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-blue-400" />
-          <h2 className="text-sm font-bold tracking-wider text-gray-200 uppercase m-0">
+          <Activity className="h-4.5 w-4.5 text-blue-600" />
+          <h2 className="text-xs font-bold tracking-wider text-slate-800 uppercase m-0 font-sans">
             SENSORES: NODO 0{node.id}
           </h2>
         </div>
-        <div className="text-[10px] font-mono bg-gray-950 px-2 py-1 rounded border border-gray-800 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
-          <span>ESTADO: <span className={getStatusTextClass(node.status)}>{node.status.toUpperCase()}</span></span>
+        
+        <div className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${getStatusBadgeClass(node.status)} flex items-center gap-1.5 transition-all`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${node.status === 'alarm' ? 'bg-[#EF4444]' : node.status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse`}></span>
+          <span>ESTADO: {node.status.toUpperCase()}</span>
         </div>
       </div>
 
-      {/* Grid of the 5 Senses */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 overflow-y-auto">
-        {/* 1. TACTO (Térmico) */}
-        <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-gray-500 font-mono tracking-wider">I. TACTO (TÉRMICO)</span>
-            <Thermometer className={`h-4 w-4 ${node.temp > 35 ? 'text-red-500 animate-bounce' : 'text-orange-400'}`} />
+      {/* Grid of the Senses (Bento Grid layout with generous padding) */}
+      <div className="grid grid-cols-2 gap-4 flex-1 overflow-y-auto pr-1">
+        
+        {/* Card 1: Temperature Sub-card */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl flex flex-col justify-between shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">TEMPERATURA</span>
+            <Thermometer className={`h-4 w-4 ${node.temp > 35 ? 'text-[#EF4444] animate-pulse' : 'text-slate-400'}`} />
           </div>
-          <div className="flex items-end justify-between mt-1">
-            <div>
-              <span className="text-xs text-gray-400 block font-mono">Temperatura</span>
-              <span className={`text-2xl font-black font-mono tracking-tight ${node.temp > 35 ? 'text-red-500' : 'text-white'}`}>
-                {node.temp}°C
-              </span>
-            </div>
-            <div className="text-right">
-              <span className="text-xs text-gray-400 block font-mono">Humedad R.</span>
-              <span className={`text-xl font-bold font-mono tracking-tight ${node.hum < 30 ? 'text-orange-400' : 'text-white'}`}>
-                {node.hum}%
-              </span>
-            </div>
-          </div>
-          {/* Progress bar gauges */}
-          <div className="mt-2.5 space-y-1">
-            <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+          <div className="mt-3">
+            <span className={`text-2xl font-extrabold tracking-tight font-sans ${node.temp > 35 ? 'text-[#C21C1C]' : 'text-slate-900'}`}>
+              {node.temp}°C
+            </span>
+            {/* Thin clean gauge */}
+            <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden mt-3">
               <div 
-                className={`h-full rounded-full transition-all duration-500 ${node.temp > 35 ? 'bg-red-500' : 'bg-orange-500'}`}
-                style={{ width: `${Math.min(100, (node.temp / 50) * 100)}%` }}
+                className={`h-full rounded-full transition-all duration-500 ${node.temp > 35 ? 'bg-[#EF4444]' : 'bg-emerald-500'}`}
+                style={{ width: `${Math.min(100, (node.temp / 60) * 100)}%` }}
               />
             </div>
-            <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+          </div>
+        </div>
+
+        {/* Card 2: Humidity Sub-card */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl flex flex-col justify-between shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">HUMEDAD REL.</span>
+            <Droplet className={`h-4 w-4 ${node.hum < 20 ? 'text-amber-500' : 'text-blue-500'}`} />
+          </div>
+          <div className="mt-3">
+            <span className={`text-2xl font-extrabold tracking-tight font-sans ${node.hum < 20 ? 'text-[#C21C1C]' : 'text-slate-900'}`}>
+              {node.hum}%
+            </span>
+            {/* Thin clean gauge */}
+            <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden mt-3">
               <div 
-                className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                className={`h-full rounded-full transition-all duration-500 ${node.hum < 20 ? 'bg-amber-500' : 'bg-blue-500'}`}
                 style={{ width: `${node.hum}%` }}
               />
             </div>
           </div>
         </div>
 
-        {/* 2. OLFATO (Químico) */}
-        <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-gray-500 font-mono tracking-wider">II. OLFATO (QUÍMICO)</span>
-            <span className="text-[9px] font-mono text-gray-400 bg-gray-900 px-1 py-0.5 rounded border border-gray-800">GASES</span>
+        {/* Card 3: CO Sub-card (Gas) */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl flex flex-col justify-between shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">MONÓXIDO (CO)</span>
+            <Cloud className={`h-4 w-4 ${node.co > 80 ? 'text-[#EF4444]' : 'text-slate-400'}`} />
           </div>
-          <div className="space-y-2.5 mt-1">
-            <div>
-              <div className="flex justify-between text-[10px] font-mono mb-0.5">
-                <span className="text-gray-400">CO (Monóxido de Carbono)</span>
-                <span className={`font-bold ${node.co > 80 ? 'text-red-500' : 'text-gray-300'}`}>{node.co} ppm</span>
-              </div>
-              <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${node.co > 80 ? 'bg-red-500' : node.co > 40 ? 'bg-orange-500' : 'bg-green-500'}`}
-                  style={{ width: `${Math.min(100, (node.co / 150) * 100)}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[10px] font-mono mb-0.5">
-                <span className="text-gray-400">VOC (Comp. Orgánicos Vól.)</span>
-                <span className={`font-bold ${node.voc > 400 ? 'text-red-500' : 'text-gray-300'}`}>{node.voc} ppm</span>
-              </div>
-              <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${node.voc > 400 ? 'bg-red-500' : node.voc > 200 ? 'bg-orange-500' : 'bg-green-500'}`}
-                  style={{ width: `${Math.min(100, (node.voc / 800) * 100)}%` }}
-                />
-              </div>
+          <div className="mt-3">
+            <span className="text-xl font-bold font-sans text-slate-800">{node.co} <span className="text-xs font-normal text-slate-500">ppm</span></span>
+            {/* Thin progress bar with soft color scale */}
+            <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden mt-3">
+              <div 
+                className={`h-full rounded-full transition-all duration-500 ${node.co > 85 ? 'bg-[#EF4444]' : node.co > 40 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                style={{ width: `${Math.min(100, (node.co / 150) * 100)}%` }}
+              />
             </div>
           </div>
         </div>
 
-        {/* 3. OÍDO (Acústico) */}
-        <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 flex flex-col justify-between">
+        {/* Card 4: VOC Sub-card (Gas) */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl flex flex-col justify-between shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">C. ORGÁNICOS (VOC)</span>
+            <Cloud className={`h-4 w-4 ${node.voc > 400 ? 'text-[#EF4444]' : 'text-slate-400'}`} />
+          </div>
+          <div className="mt-3">
+            <span className="text-xl font-bold font-sans text-slate-800">{node.voc} <span className="text-xs font-normal text-slate-500">ppm</span></span>
+            {/* Thin progress bar with soft color scale */}
+            <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden mt-3">
+              <div 
+                className={`h-full rounded-full transition-all duration-500 ${node.voc > 400 ? 'bg-[#EF4444]' : node.voc > 200 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                style={{ width: `${Math.min(100, (node.voc / 800) * 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 5: Audio Spectrum Sub-card */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl col-span-2 shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-bold text-gray-500 font-mono tracking-wider">III. OÍDO (ACÚSTICO)</span>
-            <span className={`text-[9px] font-mono ${node.status === 'alarm' ? 'text-red-400 animate-pulse font-extrabold' : 'text-gray-500'}`}>
-              {node.status === 'alarm' ? 'CREPITACIÓN' : 'ESPECTRO ACTIVO'}
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">ANÁLISIS ACÚSTICO</span>
+            <span className={`text-[9px] font-mono font-bold ${node.status === 'alarm' ? 'text-[#C21C1C] animate-pulse' : 'text-slate-500'}`}>
+              {node.status === 'alarm' ? 'DETECTADO CREPITACIÓN' : 'ESPECTRO AMBIENTAL'}
             </span>
           </div>
-          <span className="text-[10px] text-gray-400 block font-mono mb-2">Frecuencia (100 - 1000 Hz)</span>
-          {/* Dynamic frequencies bar chart */}
-          <div className="flex items-end justify-between h-14 bg-gray-900/60 p-1.5 rounded border border-gray-900 gap-0.5">
+          <span className="text-[9px] text-slate-400 font-mono block mb-2">Frecuencia (100 - 1000 Hz)</span>
+          {/* Dynamic frequencies bar chart on light panel background */}
+          <div className="flex items-end justify-between h-14 bg-white p-2 rounded-lg border border-slate-100 gap-0.5">
             {acousticData.map((val, idx) => (
-              <div key={idx} className="flex-1 bg-gray-800 rounded-t overflow-hidden h-full flex items-end">
+              <div key={idx} className="flex-1 bg-slate-100 rounded-t overflow-hidden h-full flex items-end">
                 <div 
                   className={`w-full transition-all duration-150 rounded-t ${
-                    node.status === 'alarm' ? 'bg-red-500' : node.status === 'warning' ? 'bg-orange-400' : 'bg-blue-500'
+                    node.status === 'alarm' ? 'bg-[#EF4444]' : node.status === 'warning' ? 'bg-amber-500' : 'bg-emerald-500'
                   }`}
                   style={{ height: `${val}%` }}
                 />
@@ -292,45 +296,45 @@ export default function SensorPanel({ node, globalScore }) {
           </div>
         </div>
 
-        {/* 4. INTUICIÓN (Contextual) */}
-        <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 flex flex-col justify-between">
+        {/* Card 6: Environmental Context Sub-card */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl col-span-2 shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-gray-500 font-mono tracking-wider">IV. INTUICIÓN (CONTEXTO)</span>
-            <Compass className="h-4 w-4 text-blue-400" />
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">VIENTO & VEGETACIÓN (CONTEXTUAL)</span>
+            <Compass className="h-4 w-4 text-slate-400" />
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-1">
-            <div>
-              <span className="text-[10px] text-gray-500 block font-mono">VIENTO</span>
-              <span className="text-sm font-bold font-mono text-white block mt-0.5">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="border-r border-gray-200/80 pr-2">
+              <span className="text-[9px] text-slate-400 font-bold block font-mono">VELOCIDAD VIENTO</span>
+              <span className="text-md font-bold font-sans text-slate-800 block mt-1">
                 {node.windSpeed} km/h
               </span>
-              <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1 mt-0.5">
-                <Wind className="h-3 w-3 shrink-0 text-blue-400" style={{ transform: `rotate(${node.windAngle}deg)` }} />
+              <span className="text-[9px] text-slate-500 font-mono flex items-center gap-1 mt-1">
+                <Wind className="h-3.5 w-3.5 text-blue-500 shrink-0" style={{ transform: `rotate(${node.windAngle}deg)` }} />
                 <span>DIR: {node.windDir}</span>
               </span>
             </div>
-            <div>
-              <span className="text-[10px] text-gray-500 block font-mono">INDICE NDVI</span>
-              <span className={`text-sm font-bold font-mono block mt-0.5 ${node.ndvi < 0.35 ? 'text-red-400' : node.ndvi < 0.55 ? 'text-yellow-400' : 'text-green-400'}`}>
+            <div className="pl-2">
+              <span className="text-[9px] text-slate-400 font-bold block font-mono">INDICE VEG. NDVI</span>
+              <span className={`text-md font-bold font-sans block mt-1 ${node.ndvi < 0.35 ? 'text-[#C21C1C]' : node.ndvi < 0.55 ? 'text-amber-600' : 'text-emerald-600'}`}>
                 {node.ndvi.toFixed(2)}
               </span>
-              <span className="text-[8px] text-gray-400 font-mono block">
-                {node.ndvi < 0.35 ? 'Sequedad Extrema' : node.ndvi < 0.55 ? 'Estrés Hídrico' : 'Vegetación Sana'}
+              <span className="text-[8px] text-slate-500 font-mono font-medium block mt-1 leading-normal">
+                {node.ndvi < 0.35 ? 'Combustible seco / Riesgo' : node.ndvi < 0.55 ? 'Estrés hídrico' : 'Vegetación sana'}
               </span>
             </div>
           </div>
         </div>
 
-        {/* 5. VISTA (Visual ESP32-CAM) */}
-        <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 sm:col-span-2 flex flex-col">
+        {/* Card 7: ESP32-CAM Viewfinder Sub-card */}
+        <div className="bg-[#F8F9FA] border border-gray-200 p-4 rounded-xl col-span-2 shadow-2xs hover:shadow-xs hover:border-gray-300 transition-all flex flex-col">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-gray-500 font-mono tracking-wider">V. VISTA (SENSADO VISUAL)</span>
+            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">MONITOR SENSADO VISUAL</span>
             <div className="flex items-center gap-1.5">
-              <Eye className="h-3.5 w-3.5 text-red-500" />
-              <span className="text-[9px] font-mono text-red-400 font-bold tracking-wider">ESP32-CAM FEED</span>
+              <Eye className="h-3.5 w-3.5 text-[#EF4444] animate-pulse" />
+              <span className="text-[9px] font-mono text-[#C21C1C] font-bold tracking-wider">ESP32-CAM</span>
             </div>
           </div>
-          <div className="crt-effect border border-gray-800 rounded overflow-hidden aspect-video bg-black flex items-center justify-center relative">
+          <div className="crt-effect border border-gray-200 rounded-lg overflow-hidden aspect-video bg-slate-900 flex items-center justify-center relative shadow-inner">
             <canvas 
               ref={canvasRef} 
               width={380} 
@@ -339,6 +343,7 @@ export default function SensorPanel({ node, globalScore }) {
             />
           </div>
         </div>
+
       </div>
     </div>
   );
