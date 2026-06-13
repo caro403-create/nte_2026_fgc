@@ -6,6 +6,7 @@ import SensorPanel from './components/SensorPanel';
 import AlertsAndActions from './components/AlertsAndActions';
 import { Shield, Wifi, Database, Clock, RefreshCw } from 'lucide-react';
 import EmergencyPanel from './components/EmergencyPanel';
+import Chatbot from './components/Chatbot';
 
 
 export default function App() {
@@ -271,6 +272,7 @@ export default function App() {
       <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-xs text-slate-400 font-mono shadow-xs">
         SISTEMA DE DEFENSA ACTIVA © 2026 // EQUIPO COLOMBIA // DESARROLLADO PARA ENTORNOS DE MISIÓN CRÍTICA
       </footer>
+      <Chatbot />
     </div>
   );
 }
