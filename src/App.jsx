@@ -5,6 +5,7 @@ import MapSimulator from './components/MapSimulator';
 import SensorPanel from './components/SensorPanel';
 import AlertsAndActions from './components/AlertsAndActions';
 import { Shield, Wifi, Database, Clock, RefreshCw } from 'lucide-react';
+import EmergencyPanel from './components/EmergencyPanel';
 
 
 export default function App() {
@@ -219,7 +220,8 @@ export default function App() {
       </div>
 
       {/* Main Content Layout - Single Pane of Glass */}
-      <main className="flex-1 p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 overflow-hidden">
+      <main className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 shrink-0">
         {/* Left/Middle Column (Map & Alerts) - Takes 7/12 cols on desktop */}
         <div className="xl:col-span-7 flex flex-col gap-6 h-full">
           {/* Map Section */}
@@ -256,6 +258,12 @@ export default function App() {
         {/* Right Column (Sensor metrics panel) - Takes 5/12 cols on desktop */}
         <div className="xl:col-span-5 h-full">
           <SensorPanel node={selectedNode} globalScore={score} />
+        </div>
+        </div>
+        
+        {/* Emergency Panel */}
+        <div className="shrink-0">
+          <EmergencyPanel globalScore={score} />
         </div>
       </main>
       
