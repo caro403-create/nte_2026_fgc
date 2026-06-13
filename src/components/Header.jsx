@@ -1,59 +1,35 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
-import { Shield, AlertTriangle, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function Header({ score, setScore }) {
   // Determine risk details based on score
   const getRiskDetails = (val) => {
-    if (val <= 0.2) {
+    if (val <= 0.4) {
       return {
-        label: 'VERDE (NORMAL)',
-        shortLabel: 'Verde',
-        textColor: 'text-emerald-700',
-        borderColor: 'border-emerald-200',
-        bgMuted: 'bg-emerald-50',
-        dotColor: 'bg-emerald-500',
-        desc: 'Humedad del suelo óptima (>65%), vegetación hidratada y vientos calmados. Sin anomalías.'
+        label: 'Todo tranquilo',
+        icon: '✅',
+        textColor: 'text-[#2D6A4F]',
+        borderColor: 'border-[#EEF5E9]',
+        bgMuted: 'bg-[#EEF5E9]',
+        desc: 'Condiciones normales. Riesgo bajo de incendio.'
       };
-    } else if (val <= 0.4) {
+    } else if (val <= 0.7) {
       return {
-        label: 'AMARILLO (VIGILANCIA)',
-        shortLabel: 'Amarillo',
-        textColor: 'text-amber-700',
-        borderColor: 'border-amber-200',
-        bgMuted: 'bg-amber-50',
-        dotColor: 'bg-amber-500',
-        desc: 'Humedad relativa del 45%, vientos moderados. Monitoreo preventivo activo.'
-      };
-    } else if (val <= 0.6) {
-      return {
-        label: 'NARANJA (ALERTA)',
-        shortLabel: 'Naranja',
-        textColor: 'text-orange-700',
-        borderColor: 'border-orange-200',
-        bgMuted: 'bg-orange-50',
-        dotColor: 'bg-orange-500',
-        desc: 'Humedad crítica (<35%), vientos >20 km/h. Riesgo moderado-alto de ignición.'
-      };
-    } else if (val <= 0.8) {
-      return {
-        label: 'NIVEL ROJO (ALARMA)',
-        shortLabel: 'Nivel Rojo',
-        textColor: 'text-[#C21C1C]', // Clear, non-aggressive red
-        borderColor: 'border-red-200',
-        bgMuted: 'bg-red-50',
-        dotColor: 'bg-[#EF4444]',
-        desc: 'Temperaturas >34°C, vientos >25 km/h. Foco crítico activo detectado.'
+        label: 'Revisar zonas secas',
+        icon: '⚠️',
+        textColor: 'text-[#F4A261]',
+        borderColor: 'border-[#F4A261]/20',
+        bgMuted: 'bg-[#F4A261]/10',
+        desc: 'Precaución: Condiciones propensas a ignición.'
       };
     } else {
       return {
-        label: 'PÚRPURA (EVACUACIÓN)',
-        shortLabel: 'Púrpura',
-        textColor: 'text-purple-700',
-        borderColor: 'border-purple-200',
-        bgMuted: 'bg-purple-50',
-        dotColor: 'bg-purple-500',
-        desc: 'Propagación acelerada de fuego a menos de 1.5 km de interfaces urbanas.'
+        label: '¡Atención inmediata requerida!',
+        icon: '🔴',
+        textColor: 'text-[#E63946]',
+        borderColor: 'border-[#E63946]/20',
+        bgMuted: 'bg-[#E63946]/10',
+        desc: 'Alarma: Posible foco activo detectado.'
       };
     }
   };
@@ -61,37 +37,62 @@ export default function Header({ score, setScore }) {
   const risk = getRiskDetails(score);
 
   return (
-    <header className="border-b border-gray-200 bg-white/95 backdrop-blur-md px-6 py-3.5 flex flex-col lg:flex-row items-center justify-between gap-4 sticky top-0 z-50 shadow-xs">
+    <header className="border-b border-[#EEF5E9] bg-white px-6 py-4 flex flex-col lg:flex-row items-center justify-between gap-6 sticky top-0 z-50 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      
       {/* Brand Title (Left Side) */}
       <div className="flex items-center gap-3 w-full lg:w-auto">
-        <div className="p-2 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-center shadow-2xs">
-          <Shield className="h-5 w-5 text-emerald-600" />
+        <div className="p-2.5 bg-[#EEF5E9] border border-[#52B788]/20 rounded-xl flex items-center justify-center">
+          <Shield className="h-6 w-6 text-[#2D6A4F]" />
         </div>
         <div>
-          <h1 className="text-lg font-bold tracking-tight text-slate-900 m-0 flex items-center gap-2 font-sans">
+          <h1 className="text-xl font-bold text-[#2D3436] m-0 flex items-center gap-2">
             SISTEMA DE DEFENSA ACTIVA
-            <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
-              COLOMBIA
+            <span className="text-[10px] bg-[#EEF5E9] text-[#2D6A4F] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+              Colombia
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 font-sans tracking-wide mt-0.5 uppercase font-medium">
-            Wildfire Monitoring & Early Warning System
+          <p className="text-xs text-[#636E72] mt-0.5">
+            Sincronizado: {new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
       </div>
 
-      {/* Control Panel (Middle Area) - Compact, Figma-style controls */}
-      <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 w-full lg:w-auto max-w-md">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">
-            SIMULAR RIESGO GLOBAL
+      {/* Global Status Bar (Center) */}
+      <div className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border ${risk.borderColor} ${risk.bgMuted} transition-all duration-500 w-full lg:w-auto min-w-[300px]`}>
+        <div className="text-2xl">{risk.icon}</div>
+        <div className="flex flex-col">
+          <span className={`text-base font-bold ${risk.textColor}`}>
+            {risk.label}
           </span>
-          <span className="text-xs font-mono font-bold text-slate-700">
-            SCORE: {score.toFixed(2)}
+          <span className="text-xs text-[#636E72] font-medium">
+            {risk.desc}
           </span>
         </div>
+      </div>
+
+      {/* Risk Score Meter (Right Side) */}
+      <div className="flex flex-col gap-1 w-full lg:w-auto max-w-[200px]">
+        <div className="flex justify-between items-end mb-1">
+          <span className="text-xs font-bold text-[#2D3436]">Riesgo Global</span>
+          <span className="text-[10px] text-[#636E72] font-bold">{(score * 100).toFixed(0)}%</span>
+        </div>
         
-        <div className="flex-1 flex items-center gap-2 min-w-[120px]">
+        {/* Visual segmented bar that acts as a slider */}
+        <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
+          {/* Segments for visual zones */}
+          <div className="h-full w-[40%] bg-[#52B788] opacity-20"></div>
+          <div className="h-full w-[30%] bg-[#F4A261] opacity-20"></div>
+          <div className="h-full w-[30%] bg-[#E63946] opacity-20"></div>
+          
+          {/* Actual fill */}
+          <div 
+            className={`absolute top-0 left-0 h-full transition-all duration-300 rounded-full ${
+              score <= 0.4 ? 'bg-[#52B788]' : score <= 0.7 ? 'bg-[#F4A261]' : 'bg-[#E63946]'
+            }`}
+            style={{ width: `${score * 100}%` }}
+          ></div>
+          
+          {/* Invisible range input for interaction */}
           <input
             type="range"
             min="0"
@@ -99,53 +100,17 @@ export default function Header({ score, setScore }) {
             step="0.01"
             value={score}
             onChange={(e) => setScore(parseFloat(e.target.value))}
-            className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 focus:outline-hidden"
+            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+            title="Simular nivel de riesgo"
           />
         </div>
-
-        {/* Level shortcuts */}
-        <div className="flex items-center gap-1 border-l border-slate-200 pl-3">
-          {[0.1, 0.5, 0.72].map((sVal, idx) => {
-            const label = sVal === 0.1 ? 'V' : sVal === 0.5 ? 'N' : 'R';
-            const title = sVal === 0.1 ? 'Normal' : sVal === 0.5 ? 'Alerta' : 'Alarma';
-            const isActive = (score > sVal - 0.2 && score <= sVal) || (sVal === 0.72 && score > 0.6 && score <= 0.8);
-            return (
-              <button
-                key={idx}
-                onClick={() => setScore(sVal)}
-                title={`Configurar: ${title}`}
-                className={`w-5 h-5 rounded font-mono text-[9px] font-bold flex items-center justify-center transition-all ${
-                  isActive
-                    ? 'bg-slate-900 text-white shadow-sm scale-105'
-                    : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100 hover:text-slate-700'
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
+        <div className="flex justify-between text-[9px] text-[#636E72] font-bold mt-0.5 uppercase">
+          <span>Verde</span>
+          <span>Amarillo</span>
+          <span>Rojo</span>
         </div>
       </div>
-
-      {/* Elegant Alert Banner Capsule (Right Side) */}
-      <div className={`flex items-center gap-3 px-4 py-2 rounded-full border ${risk.borderColor} ${risk.bgMuted} transition-all duration-300 w-full lg:w-auto max-w-md shadow-2xs`}>
-        {/* Pulsating danger dot */}
-        <div className="relative flex h-2.5 w-2.5 shrink-0">
-          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${risk.dotColor}`}></span>
-          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${risk.dotColor}`}></span>
-        </div>
-        
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
-            <span className={`text-xs font-bold font-sans uppercase tracking-wide ${risk.textColor}`}>
-              {risk.label}
-            </span>
-          </div>
-          <span className="text-[10px] text-slate-600 leading-tight font-sans font-medium line-clamp-1">
-            {risk.desc}
-          </span>
-        </div>
-      </div>
+      
     </header>
   );
 }

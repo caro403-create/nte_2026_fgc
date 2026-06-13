@@ -188,7 +188,7 @@ export default function App() {
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[2];
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] text-slate-800 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
       <Header score={score} setScore={setScore} />
 
