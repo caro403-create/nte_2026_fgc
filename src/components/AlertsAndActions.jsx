@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
-import { Send, Map, Volume2, Bell, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
+import { Send, Map, Volume2, Bell, AlertTriangle, ShieldCheck, Info, Plane, Radio, Eye } from 'lucide-react';
 
 export default function AlertsAndActions({
   alerts,
@@ -13,169 +12,208 @@ export default function AlertsAndActions({
   setAcousticAlertActive,
   onTriggerSimulatedAlert
 }) {
+  
+  // Categorized icons based on alert source string matching
+  const getIconForSource = (source) => {
+    const s = source.toLowerCase();
+    if (s.includes('dron')) return Plane;
+    if (s.includes('nodo') || s.includes('sensor')) return Radio;
+    if (s.includes('satélite') || s.includes('nasa')) return Eye;
+    if (s.includes('acústic') || s.includes('sirena')) return Volume2;
+    if (s.includes('sistema') || s.includes('central')) return ShieldCheck;
+    return Info;
+  };
+
+  const getLatestSummary = () => {
+    if (alerts.length === 0) return "Todo está tranquilo en este momento.";
+    const latest = alerts[0];
+    if (latest.type === 'danger') return "¡Atención! Hay un reporte crítico reciente.";
+    if (latest.type === 'warning') return "Precaución: El sistema está monitoreando una anomalía.";
+    return "El sistema está funcionando con normalidad.";
+  };
+
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-4 h-full shadow-xs">
+    <div className="bg-white border border-[#EEF5E9] rounded-2xl p-6 flex flex-col gap-5 h-full shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+      
       {/* Panel header */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+      <div className="flex items-center justify-between border-b border-[#EEF5E9] pb-4">
         <div className="flex items-center gap-2">
-          <Bell className="h-4.5 w-4.5 text-amber-500" />
-          <h2 className="text-xs font-bold tracking-wider text-slate-800 uppercase m-0 font-sans">
-            ALERTAS Y ACCIONES INMEDIATAS
+          <Bell className="h-5 w-5 text-[#2D6A4F]" />
+          <h2 className="text-lg font-bold text-[#2D3436]">
+            Alertas y Acciones Inmediatas
           </h2>
         </div>
         <button
           onClick={clearAlerts}
-          className="text-[10px] font-mono text-slate-500 hover:text-slate-800 border border-gray-200 hover:border-gray-300 px-2 py-0.5 rounded transition-all cursor-pointer font-medium"
+          className="text-xs text-[#636E72] hover:text-[#2D3436] border border-[#EEF5E9] hover:bg-[#F8FAF5] px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold"
         >
-          LIMPIAR REGISTROS
+          Limpiar registros
         </button>
       </div>
 
-      {/* Main Grid: Left is Action buttons, Right is Timeline logs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 flex-1 min-h-[160px] overflow-hidden">
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 min-h-[160px] overflow-hidden">
         
-        {/* Quick Action Buttons (Misiones Críticas) */}
+        {/* Quick Action Buttons */}
         <div className="flex flex-col gap-3 justify-center">
-          <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider mb-0.5">
-            BOTONES DE ACCIÓN RÁPIDA (MISIONES CRÍTICAS)
+          <span className="text-xs font-bold text-[#636E72] mb-1">
+            ACCIONES RÁPIDAS
           </span>
 
           {/* Action 1: Drone Reconnaissance */}
           <button
             onClick={() => setDroneActive(!droneActive)}
-            className={`flex items-center justify-between p-3.5 rounded-xl border transition-all duration-200 font-mono text-xs text-left cursor-pointer group ${
+            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
               droneActive
-                ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
-                : 'bg-slate-50/70 border-gray-200 text-slate-500 hover:border-gray-300 hover:bg-slate-100/50 hover:text-slate-800'
+                ? 'bg-[#EEF5E9] border-[#52B788] text-[#2D6A4F] shadow-sm'
+                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#52B788]/50 hover:bg-white'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <Send className={`h-4.5 w-4.5 shrink-0 ${droneActive ? 'text-blue-600 animate-pulse' : 'text-slate-400 group-hover:text-blue-500'}`} />
+            <div className="flex items-center gap-4">
+              <div className={`p-2 rounded-lg ${droneActive ? 'bg-[#52B788] text-white' : 'bg-[#EEF5E9] text-[#52B788] group-hover:bg-[#52B788] group-hover:text-white transition-colors'}`}>
+                <Plane className="h-5 w-5" />
+              </div>
               <div>
-                <span className="font-bold block text-slate-800">ENVIAR DRON RECON</span>
-                <span className="text-[9px] text-slate-500 font-normal font-sans">Lanzar inspección aérea autónoma</span>
+                <span className={`font-bold block text-sm ${droneActive ? 'text-[#2D6A4F]' : 'text-[#2D3436]'}`}>Enviar Dron de Reconocimiento</span>
+                <span className="text-xs opacity-80 font-medium mt-0.5 block">Inspección aérea de la zona</span>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 border-l border-slate-200 pl-3">
-              <span className={`w-1.5 h-1.5 rounded-full ${droneActive ? 'bg-blue-500 animate-ping' : 'bg-slate-300'}`}></span>
-              <span className="text-[9px] uppercase font-bold">{droneActive ? 'ACTIVO' : 'STANDBY'}</span>
+            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
+              <span className={`w-2 h-2 rounded-full ${droneActive ? 'bg-[#52B788] animate-pulse' : 'bg-slate-300'}`}></span>
+              <span className="text-xs font-bold">{droneActive ? 'EN VUELO' : 'ESPERA'}</span>
             </div>
           </button>
 
           {/* Action 2: Evacuation Routes */}
           <button
             onClick={() => setEvacRoutesActive(!evacRoutesActive)}
-            className={`flex items-center justify-between p-3.5 rounded-xl border transition-all duration-200 font-mono text-xs text-left cursor-pointer group ${
+            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
               evacRoutesActive
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'
-                : 'bg-slate-50/70 border-gray-200 text-slate-500 hover:border-gray-300 hover:bg-slate-100/50 hover:text-slate-800'
+                ? 'bg-[#EEF5E9] border-[#52B788] text-[#2D6A4F] shadow-sm'
+                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#52B788]/50 hover:bg-white'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <Map className={`h-4.5 w-4.5 shrink-0 ${evacRoutesActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-emerald-600'}`} />
+            <div className="flex items-center gap-4">
+              <div className={`p-2 rounded-lg ${evacRoutesActive ? 'bg-[#52B788] text-white' : 'bg-[#EEF5E9] text-[#52B788] group-hover:bg-[#52B788] group-hover:text-white transition-colors'}`}>
+                <Map className="h-5 w-5" />
+              </div>
               <div>
-                <span className="font-bold block text-slate-800">DESPLEGAR RUTAS EVAC.</span>
-                <span className="text-[9px] text-slate-500 font-normal font-sans">Trazar rutas de escape optimizadas</span>
+                <span className={`font-bold block text-sm ${evacRoutesActive ? 'text-[#2D6A4F]' : 'text-[#2D3436]'}`}>Ver Rutas de Evacuación</span>
+                <span className="text-xs opacity-80 font-medium mt-0.5 block">Trazar caminos seguros en el mapa</span>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 border-l border-slate-200 pl-3">
-              <span className={`w-1.5 h-1.5 rounded-full ${evacRoutesActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></span>
-              <span className="text-[9px] uppercase font-bold">{evacRoutesActive ? 'VISIBLE' : 'OCULTO'}</span>
+            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
+              <span className={`w-2 h-2 rounded-full ${evacRoutesActive ? 'bg-[#52B788] animate-pulse' : 'bg-slate-300'}`}></span>
+              <span className="text-xs font-bold">{evacRoutesActive ? 'ACTIVO' : 'OCULTO'}</span>
             </div>
           </button>
 
           {/* Action 3: Bioacoustic Alert */}
           <button
             onClick={() => setAcousticAlertActive(!acousticAlertActive)}
-            className={`flex items-center justify-between p-3.5 rounded-xl border transition-all duration-200 font-mono text-xs text-left cursor-pointer group ${
+            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
               acousticAlertActive
-                ? 'bg-red-50 border-red-200 text-[#C21C1C] shadow-sm animate-pulse'
-                : 'bg-slate-50/70 border-gray-200 text-slate-500 hover:border-gray-300 hover:bg-slate-100/50 hover:text-slate-800'
+                ? 'bg-[#E63946]/10 border-[#E63946]/30 text-[#E63946] shadow-sm'
+                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#E63946]/30 hover:bg-white hover:text-[#E63946]'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <Volume2 className={`h-4.5 w-4.5 shrink-0 ${acousticAlertActive ? 'text-[#EF4444]' : 'text-slate-400'}`} />
+            <div className="flex items-center gap-4">
+              <div className={`p-2 rounded-lg transition-colors ${acousticAlertActive ? 'bg-[#E63946] text-white' : 'bg-[#E63946]/10 text-[#E63946] group-hover:bg-[#E63946] group-hover:text-white'}`}>
+                <Volume2 className="h-5 w-5" />
+              </div>
               <div>
-                <span className="font-bold block text-slate-800">ALERTA BIOACÚSTICA</span>
-                <span className="text-[9px] text-slate-500 font-normal font-sans">Sonar ahuyentadores de fauna forestal</span>
+                <span className={`font-bold block text-sm ${acousticAlertActive ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>Activar Alerta Sonora</span>
+                <span className="text-xs opacity-80 font-medium mt-0.5 block">Ahuyentar fauna en peligro</span>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 border-l border-slate-200 pl-3">
-              <span className={`w-1.5 h-1.5 rounded-full ${acousticAlertActive ? 'bg-[#EF4444] animate-ping' : 'bg-slate-300'}`}></span>
-              <span className="text-[9px] uppercase font-bold">{acousticAlertActive ? 'EMITIENDO' : 'STANDBY'}</span>
+            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
+              <span className={`w-2 h-2 rounded-full ${acousticAlertActive ? 'bg-[#E63946] animate-ping' : 'bg-slate-300'}`}></span>
+              <span className="text-xs font-bold">{acousticAlertActive ? 'SONANDO' : 'ESPERA'}</span>
             </div>
           </button>
         </div>
 
-        {/* Timeline Log Lists (Light Theme) */}
+        {/* Timeline Log Lists */}
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider">
-              TIMELINE DE EVENTOS (TIEMPO REAL)
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-[#636E72]">
+              LÍNEA DE EVENTOS
             </span>
-            {/* Simulation trigger */}
             <button
               onClick={onTriggerSimulatedAlert}
-              className="text-[9px] font-mono bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2 py-0.5 rounded transition-all cursor-pointer font-bold"
+              className="text-xs bg-[#EEF5E9] hover:bg-[#52B788] text-[#2D6A4F] hover:text-white border border-[#52B788]/20 px-3 py-1.5 rounded-lg transition-colors font-bold shadow-sm"
             >
-              + SIMULAR ANOMALÍA
+              + Simular Evento
             </button>
           </div>
           
-          <div className="bg-[#F8F9FA] rounded-xl border border-gray-200 p-3.5 flex-1 overflow-y-auto flex flex-col gap-2 shadow-inner">
-            {alerts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center text-slate-400 gap-2 py-4">
-                <ShieldCheck className="h-6 w-6 text-slate-300" />
-                <span className="text-[9px] font-mono font-bold tracking-tight uppercase">SISTEMA EN CALMA</span>
-                <span className="text-[9px] text-slate-400">No se han registrado incidentes críticos.</span>
+          <div className="bg-[#F8FAF5] rounded-2xl border border-[#EEF5E9] p-4 flex-1 flex flex-col overflow-hidden">
+            
+            {/* Contextual Banner */}
+            <div className="bg-white border border-[#EEF5E9] rounded-xl p-3 mb-3 shadow-sm flex items-center gap-3 shrink-0">
+              <div className="bg-[#EEF5E9] text-[#2D6A4F] p-2 rounded-lg">
+                <Info className="h-5 w-5" />
               </div>
-            ) : (
-              alerts.map((alert) => {
-                let statusBg = 'bg-slate-100 border-slate-200 text-slate-600';
-                let textStyle = 'text-slate-700';
-                let Icon = Info;
-                
-                if (alert.type === 'danger') {
-                  statusBg = 'bg-red-50 border-red-200 text-[#C21C1C]';
-                  textStyle = 'text-slate-800';
-                  Icon = AlertTriangle;
-                } else if (alert.type === 'warning') {
-                  statusBg = 'bg-amber-50 border-amber-200 text-amber-800';
-                  textStyle = 'text-slate-800';
-                  Icon = AlertTriangle;
-                } else if (alert.type === 'success') {
-                  statusBg = 'bg-emerald-50 border-emerald-200 text-emerald-800';
-                  textStyle = 'text-slate-700';
-                  Icon = ShieldCheck;
-                } else if (alert.type === 'info') {
-                  statusBg = 'bg-blue-50 border-blue-200 text-blue-800';
-                  textStyle = 'text-slate-700';
-                  Icon = Info;
-                }
+              <div>
+                <span className="text-xs font-bold text-[#636E72] block">¿Qué está pasando?</span>
+                <span className="text-sm font-bold text-[#2D3436]">{getLatestSummary()}</span>
+              </div>
+            </div>
 
-                return (
-                  <div
-                    key={alert.id}
-                    className={`flex items-start gap-3 p-2.5 rounded-lg border text-xs font-mono transition-all duration-300 shadow-2xs ${statusBg}`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0 mt-0.5" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-0.5">
-                        <span className="font-bold text-[9px] uppercase tracking-wide">
-                          {alert.source}
-                        </span>
-                        <span className="text-[8px] opacity-75">
-                          {alert.time}
-                        </span>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar">
+              {alerts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center text-[#636E72] gap-3 py-6">
+                  <ShieldCheck className="h-8 w-8 text-[#52B788] opacity-50" />
+                  <span className="text-sm font-bold">Todo tranquilo</span>
+                  <span className="text-xs">No hay eventos recientes para mostrar.</span>
+                </div>
+              ) : (
+                alerts.map((alert) => {
+                  let statusBg = 'bg-white border-[#EEF5E9] text-[#636E72]';
+                  let iconColor = 'text-[#2D6A4F] bg-[#EEF5E9]';
+                  
+                  if (alert.type === 'danger') {
+                    statusBg = 'bg-[#E63946]/5 border-[#E63946]/20 text-[#2D3436]';
+                    iconColor = 'text-[#E63946] bg-[#E63946]/10';
+                  } else if (alert.type === 'warning') {
+                    statusBg = 'bg-[#F4A261]/5 border-[#F4A261]/20 text-[#2D3436]';
+                    iconColor = 'text-[#F4A261] bg-[#F4A261]/10';
+                  } else if (alert.type === 'success') {
+                    statusBg = 'bg-[#52B788]/5 border-[#52B788]/20 text-[#2D3436]';
+                    iconColor = 'text-[#52B788] bg-[#EEF5E9]';
+                  } else if (alert.type === 'info') {
+                    statusBg = 'bg-white border-[#EEF5E9] text-[#2D3436]';
+                    iconColor = 'text-[#2D6A4F] bg-[#EEF5E9]';
+                  }
+
+                  const DynamicIcon = getIconForSource(alert.source);
+
+                  return (
+                    <div
+                      key={alert.id}
+                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all duration-300 shadow-sm ${statusBg}`}
+                    >
+                      <div className={`p-2 rounded-lg shrink-0 ${iconColor}`}>
+                        <DynamicIcon className="h-4 w-4" />
                       </div>
-                      <p className={`text-[10px] leading-relaxed font-sans ${textStyle} font-medium`}>
-                        {alert.message}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-bold text-xs text-[#2D3436]">
+                            {alert.source}
+                          </span>
+                          <span className="text-[10px] font-bold text-[#636E72]">
+                            {alert.time}
+                          </span>
+                        </div>
+                        <p className="text-xs leading-relaxed font-medium opacity-90">
+                          {alert.message}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
 
