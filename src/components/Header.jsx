@@ -1,7 +1,7 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
 
-export default function Header({ score, setScore }) {
+export default function Header({ score, setScore, onBackToLanding }) {
   // Determine risk details based on score
   const getRiskDetails = (val) => {
     if (val <= 0.4) {
@@ -41,6 +41,15 @@ export default function Header({ score, setScore }) {
       
       {/* Brand Title (Left Side) */}
       <div className="flex items-center gap-3 w-full lg:w-auto">
+        {onBackToLanding && (
+          <button 
+            onClick={onBackToLanding}
+            className="mr-2 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-full flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition-all duration-200 shadow-xs cursor-pointer"
+            title="Volver a Inicio"
+          >
+            ← Inicio
+          </button>
+        )}
         <div className="p-2.5 bg-[#EEF5E9] border border-[#52B788]/20 rounded-xl flex items-center justify-center">
           <Shield className="h-6 w-6 text-[#2D6A4F]" />
         </div>

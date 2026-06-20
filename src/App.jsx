@@ -7,9 +7,13 @@ import AlertsAndActions from './components/AlertsAndActions';
 import { Shield, Wifi, Database, Clock, RefreshCw } from 'lucide-react';
 import EmergencyPanel from './components/EmergencyPanel';
 import Chatbot from './components/Chatbot';
+import LandingPage from './components/LandingPage';
 
 
 export default function App() {
+  // View routing state: 'landing' or 'dashboard'
+  const [view, setView] = useState('landing');
+
   // Global Risk Score (0 to 1) - defaults to 0.72 (Rojo/Alarma)
   const [score, setScore] = useState(0.72);
 
@@ -188,10 +192,18 @@ export default function App() {
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[2];
 
+  if (view === 'landing') {
+    return (
+      <LandingPage 
+        onEnterDashboard={(tab) => setView('dashboard')} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
-      <Header score={score} setScore={setScore} />
+      <Header score={score} setScore={setScore} onBackToLanding={() => setView('landing')} />
 
       {/* Status Bar */}
       <div className="bg-white border-b border-gray-200 px-6 py-2 flex flex-wrap items-center justify-between text-xs font-mono text-slate-500 gap-2 shadow-xs">

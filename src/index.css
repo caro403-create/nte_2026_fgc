@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-cream: #F4F6F0;
+  --color-brand-darkgreen: #0D1D15;
+  --color-brand-darkgreen-m: #0C1812;
+  --color-brand-sage: #4D725E;
+  --font-serif-editorial: "Cormorant Garamond", Georgia, serif;
+}
+
 @layer base {
   :root {
     --color-bg: #F0F2F5;
