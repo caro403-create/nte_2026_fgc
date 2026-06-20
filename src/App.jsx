@@ -192,6 +192,39 @@ export default function App() {
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[2];
 
+  const getRiskDetails = (val) => {
+    if (val <= 0.4) {
+      return {
+        label: 'Todo tranquilo',
+        icon: '✅',
+        textColor: 'text-[#2D6A4F]',
+        borderColor: 'border-[#EEF5E9]',
+        bgMuted: 'bg-[#EEF5E9]',
+        desc: 'Condiciones normales. Riesgo bajo de incendio.'
+      };
+    } else if (val <= 0.7) {
+      return {
+        label: 'Revisar zonas secas',
+        icon: '⚠️',
+        textColor: 'text-[#F4A261]',
+        borderColor: 'border-[#F4A261]/20',
+        bgMuted: 'bg-[#F4A261]/10',
+        desc: 'Precaución: Condiciones propensas a ignición.'
+      };
+    } else {
+      return {
+        label: '¡Atención inmediata requerida!',
+        icon: '🔴',
+        textColor: 'text-[#E63946]',
+        borderColor: 'border-[#E63946]/20',
+        bgMuted: 'bg-[#E63946]/10',
+        desc: 'Alarma: Posible foco activo detectado.'
+      };
+    }
+  };
+
+  const risk = getRiskDetails(score);
+
   if (view === 'landing') {
     return (
       <LandingPage 
@@ -203,11 +236,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
-      <Header score={score} setScore={setScore} onBackToLanding={() => setView('landing')} />
+      <Header onBackToLanding={() => setView('landing')} />
 
-      {/* Status Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-2 flex flex-wrap items-center justify-between text-xs font-mono text-slate-500 gap-2 shadow-xs">
-        <div className="flex items-center gap-4">
+      {/* Control & Status Bar */}
+      <div className="bg-white border-b border-gray-200 px-6 py-3 flex flex-col xl:flex-row items-center justify-between gap-4 text-xs shadow-xs">
+        
+        {/* Left Side: Telemetry Status */}
+        <div className="flex flex-wrap items-center gap-4 font-mono text-slate-500">
           <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
             <Wifi className="h-3.5 w-3.5" />
             RED NODOS: ONLINE (5/5)
@@ -216,18 +251,62 @@ export default function App() {
             <Database className="h-3.5 w-3.5" />
             TELEMETRÍA: LORA WAN 915MHZ
           </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-amber-600 font-semibold">
+          <span className="flex items-center gap-1.5 text-slate-400">
             <Clock className="h-3.5 w-3.5" />
-            SINCRO: {new Date().toLocaleDateString()} 13:08 COT
+            SINCRO: {new Date().toLocaleDateString()} COT
           </span>
+        </div>
+
+        {/* Center: Global Alert status badge */}
+        <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border ${risk.borderColor} ${risk.bgMuted} transition-all duration-500 font-sans`}>
+          <span className="text-sm">{risk.icon}</span>
+          <span className={`font-bold ${risk.textColor} text-xs`}>
+            {risk.label}
+          </span>
+          <span className="text-slate-600 text-[11px] font-medium hidden sm:inline">
+            {risk.desc}
+          </span>
+        </div>
+
+        {/* Right Side: Risk Score Slider & Reset */}
+        <div className="flex items-center gap-4 font-sans w-full xl:w-auto max-w-sm xl:max-w-xs justify-end">
+          <div className="flex flex-col gap-0.5 w-full">
+            <div className="flex justify-between items-center text-[10px] font-bold text-[#2D3436] mb-0.5">
+              <span>RIESGO SIMULADO</span>
+              <span>{(score * 100).toFixed(0)}%</span>
+            </div>
+            
+            <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+              <div className="h-full w-[40%] bg-[#52B788] opacity-20"></div>
+              <div className="h-full w-[30%] bg-[#F4A261] opacity-20"></div>
+              <div className="h-full w-[30%] bg-[#E63946] opacity-20"></div>
+              
+              <div 
+                className={`absolute top-0 left-0 h-full transition-all duration-300 rounded-full ${
+                  score <= 0.4 ? 'bg-[#52B788]' : score <= 0.7 ? 'bg-[#F4A261]' : 'bg-[#E63946]'
+                }`}
+                style={{ width: `${score * 100}%` }}
+              ></div>
+              
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={score}
+                onChange={(e) => setScore(parseFloat(e.target.value))}
+                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                title="Simular nivel de riesgo"
+              />
+            </div>
+          </div>
+
           <button 
             onClick={() => setScore(0.72)} 
-            className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded px-1.5 py-0.5 bg-gray-50 cursor-pointer text-slate-600 font-medium"
+            className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded-full px-3 py-1.5 bg-gray-50 cursor-pointer text-slate-600 font-mono text-[10px] shrink-0 font-semibold"
           >
             <RefreshCw className="h-3 w-3" />
-            RESTABLECER
+            RESET
           </button>
         </div>
       </div>

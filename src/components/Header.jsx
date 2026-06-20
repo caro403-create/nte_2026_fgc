@@ -1,125 +1,92 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
 
-export default function Header({ score, setScore, onBackToLanding }) {
-  // Determine risk details based on score
-  const getRiskDetails = (val) => {
-    if (val <= 0.4) {
-      return {
-        label: 'Todo tranquilo',
-        icon: '✅',
-        textColor: 'text-[#2D6A4F]',
-        borderColor: 'border-[#EEF5E9]',
-        bgMuted: 'bg-[#EEF5E9]',
-        desc: 'Condiciones normales. Riesgo bajo de incendio.'
-      };
-    } else if (val <= 0.7) {
-      return {
-        label: 'Revisar zonas secas',
-        icon: '⚠️',
-        textColor: 'text-[#F4A261]',
-        borderColor: 'border-[#F4A261]/20',
-        bgMuted: 'bg-[#F4A261]/10',
-        desc: 'Precaución: Condiciones propensas a ignición.'
-      };
-    } else {
-      return {
-        label: '¡Atención inmediata requerida!',
-        icon: '🔴',
-        textColor: 'text-[#E63946]',
-        borderColor: 'border-[#E63946]/20',
-        bgMuted: 'bg-[#E63946]/10',
-        desc: 'Alarma: Posible foco activo detectado.'
-      };
-    }
-  };
-
-  const risk = getRiskDetails(score);
-
+export default function Header({ onBackToLanding }) {
   return (
-    <header className="border-b border-[#EEF5E9] bg-white px-6 py-4 flex flex-col lg:flex-row items-center justify-between gap-6 sticky top-0 z-50 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <header className="bg-brand-darkgreen border-b border-white/10 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6 sticky top-0 z-50 shadow-lg text-white">
       
-      {/* Brand Title (Left Side) */}
-      <div className="flex items-center gap-3 w-full lg:w-auto">
-        {onBackToLanding && (
-          <button 
-            onClick={onBackToLanding}
-            className="mr-2 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-full flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition-all duration-200 shadow-xs cursor-pointer"
-            title="Volver a Inicio"
-          >
-            ← Inicio
-          </button>
-        )}
-        <div className="p-2.5 bg-[#EEF5E9] border border-[#52B788]/20 rounded-xl flex items-center justify-center">
-          <Shield className="h-6 w-6 text-[#2D6A4F]" />
+      {/* Brand Logo & Title */}
+      <div 
+        className="flex items-center gap-3 cursor-pointer select-none" 
+        onClick={onBackToLanding}
+      >
+        <div className="w-9 h-9 rounded-full bg-brand-cream/10 border border-white/20 flex items-center justify-center">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 text-brand-cream fill-none stroke-current" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.97 0-9-4.03-9-9 0-2.12.74-4.07 1.97-5.61L12 2l7.03 4.39C20.26 7.93 21 9.88 21 12c0 4.97-4.03 9-9 9z" />
+          </svg>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-[#2D3436] m-0 flex items-center gap-2">
-            SISTEMA DE DEFENSA ACTIVA
-            <span className="text-[10px] bg-[#EEF5E9] text-[#2D6A4F] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-              Colombia
-            </span>
-          </h1>
-          <p className="text-xs text-[#636E72] mt-0.5">
-            Sincronizado: {new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
-          </p>
+        <div className="flex flex-col text-left">
+          <span className="font-serif-editorial text-lg font-bold tracking-wide text-white leading-none">NTE</span>
+          <span className="text-[9px] tracking-wider text-white/50 font-semibold font-mono uppercase mt-0.5">TEAM COLOMBIA · FGC 2026</span>
         </div>
       </div>
 
-      {/* Global Status Bar (Center) */}
-      <div className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border ${risk.borderColor} ${risk.bgMuted} transition-all duration-500 w-full lg:w-auto min-w-[300px]`}>
-        <div className="text-2xl">{risk.icon}</div>
-        <div className="flex flex-col">
-          <span className={`text-base font-bold ${risk.textColor}`}>
-            {risk.label}
-          </span>
-          <span className="text-xs text-[#636E72] font-medium">
-            {risk.desc}
-          </span>
-        </div>
+      {/* Navigation Menu in Center (Matches the Landing Page exactly) */}
+      <nav className="flex flex-wrap items-center justify-center gap-1 md:gap-4 text-xs font-semibold uppercase tracking-wider text-white/70">
+        <button 
+          onClick={onBackToLanding} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
+        >
+          Inicio
+        </button>
+        <button 
+          onClick={() => {
+            const mapEl = document.querySelector('.min-h-\\[380px\\]') || document.querySelector('main');
+            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
+          }} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer text-white bg-white/10"
+        >
+          Monitoreo
+        </button>
+        <button 
+          onClick={() => {
+            const dashboardEl = document.querySelector('main');
+            if (dashboardEl) dashboardEl.scrollIntoView({ behavior: 'smooth' });
+          }} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer font-bold"
+        >
+          Dashboard
+        </button>
+        <button 
+          onClick={() => {
+            const mapEl = document.querySelector('.min-h-\\[380px\\]');
+            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
+          }} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
+        >
+          Mapa de Riesgo
+        </button>
+        <button 
+          onClick={() => { 
+            onBackToLanding(); 
+            setTimeout(() => { 
+              document.getElementById('superficies')?.scrollIntoView({ behavior: 'smooth' }); 
+            }, 300); 
+          }} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
+        >
+          Saberes & Comunidad
+        </button>
+        <button 
+          onClick={() => { 
+            const chatbotBtn = document.querySelector('button[aria-label="Abrir asistente de incendios"]');
+            if (chatbotBtn) chatbotBtn.click();
+          }} 
+          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
+        >
+          Chatbot
+        </button>
+      </nav>
+
+      {/* Back to Home Action Button (Matches ACCEDER button layout) */}
+      <div className="flex items-center">
+        <button 
+          onClick={onBackToLanding} 
+          className="bg-brand-cream hover:bg-white text-brand-darkgreen font-semibold px-6 py-2 rounded-full text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] shadow-md hover:shadow-lg cursor-pointer"
+        >
+          Inicio
+        </button>
       </div>
 
-      {/* Risk Score Meter (Right Side) */}
-      <div className="flex flex-col gap-1 w-full lg:w-auto max-w-[200px]">
-        <div className="flex justify-between items-end mb-1">
-          <span className="text-xs font-bold text-[#2D3436]">Riesgo Global</span>
-          <span className="text-[10px] text-[#636E72] font-bold">{(score * 100).toFixed(0)}%</span>
-        </div>
-        
-        {/* Visual segmented bar that acts as a slider */}
-        <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
-          {/* Segments for visual zones */}
-          <div className="h-full w-[40%] bg-[#52B788] opacity-20"></div>
-          <div className="h-full w-[30%] bg-[#F4A261] opacity-20"></div>
-          <div className="h-full w-[30%] bg-[#E63946] opacity-20"></div>
-          
-          {/* Actual fill */}
-          <div 
-            className={`absolute top-0 left-0 h-full transition-all duration-300 rounded-full ${
-              score <= 0.4 ? 'bg-[#52B788]' : score <= 0.7 ? 'bg-[#F4A261]' : 'bg-[#E63946]'
-            }`}
-            style={{ width: `${score * 100}%` }}
-          ></div>
-          
-          {/* Invisible range input for interaction */}
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={score}
-            onChange={(e) => setScore(parseFloat(e.target.value))}
-            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-            title="Simular nivel de riesgo"
-          />
-        </div>
-        <div className="flex justify-between text-[9px] text-[#636E72] font-bold mt-0.5 uppercase">
-          <span>Verde</span>
-          <span>Amarillo</span>
-          <span>Rojo</span>
-        </div>
-      </div>
-      
     </header>
   );
 }
