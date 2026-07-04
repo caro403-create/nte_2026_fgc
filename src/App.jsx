@@ -8,9 +8,28 @@ import { Shield, Wifi, Database, Clock, RefreshCw } from 'lucide-react';
 import EmergencyPanel from './components/EmergencyPanel';
 import Chatbot from './components/Chatbot';
 import LandingPage from './components/LandingPage';
+import SupabaseTodos from './components/SupabaseTodos';
+import { translations } from './utils/translations';
 
 
 export default function App() {
+  // Language routing state
+  const [lang, setLang] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paramLang = params.get('lang');
+    if (paramLang) {
+      return paramLang === 'en' ? 'en' : 'es';
+    }
+    const host = window.location.hostname;
+    if (host.endsWith('.co') || host.endsWith('.cl') || host.endsWith('.es')) {
+      return 'es';
+    }
+    const browserLang = navigator.language || navigator.userLanguage || '';
+    return browserLang.toLowerCase().startsWith('es') ? 'es' : 'en';
+  });
+
+  const t = translations[lang];
+
   // View routing state: 'landing' or 'dashboard'
   const [view, setView] = useState('landing');
 
@@ -229,6 +248,8 @@ export default function App() {
     return (
       <LandingPage 
         onEnterDashboard={(tab) => setView('dashboard')} 
+        lang={lang}
+        setLang={setLang}
       />
     );
   }
@@ -236,7 +257,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
-      <Header onBackToLanding={() => setView('landing')} />
+      <Header onBackToLanding={() => setView('landing')} lang={lang} setLang={setLang} />
 
       {/* Control & Status Bar */}
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex flex-col xl:flex-row items-center justify-between gap-4 text-xs shadow-xs">
@@ -245,15 +266,15 @@ export default function App() {
         <div className="flex flex-wrap items-center gap-4 font-mono text-slate-500">
           <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
             <Wifi className="h-3.5 w-3.5" />
-            RED NODOS: ONLINE (5/5)
+            {t.dbTitle}
           </span>
           <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
             <Database className="h-3.5 w-3.5" />
-            TELEMETRÍA: LORA WAN 915MHZ
+            {t.dbTelemetry}
           </span>
           <span className="flex items-center gap-1.5 text-slate-400">
             <Clock className="h-3.5 w-3.5" />
-            SINCRO: {new Date().toLocaleDateString()} COT
+            {t.dbSincro}: {new Date().toLocaleDateString()} COT
           </span>
         </div>
 
@@ -272,7 +293,7 @@ export default function App() {
         <div className="flex items-center gap-4 font-sans w-full xl:w-auto max-w-sm xl:max-w-xs justify-end">
           <div className="flex flex-col gap-0.5 w-full">
             <div className="flex justify-between items-center text-[10px] font-bold text-[#2D3436] mb-0.5">
-              <span>RIESGO SIMULADO</span>
+              <span>{t.dbSimulatedRisk}</span>
               <span>{(score * 100).toFixed(0)}%</span>
             </div>
             
@@ -306,7 +327,7 @@ export default function App() {
             className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded-full px-3 py-1.5 bg-gray-50 cursor-pointer text-slate-600 font-mono text-[10px] shrink-0 font-semibold"
           >
             <RefreshCw className="h-3 w-3" />
-            RESET
+            {t.dbReset}
           </button>
         </div>
       </div>
@@ -347,9 +368,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right Column (Sensor metrics panel) - Takes 5/12 cols on desktop */}
-        <div className="xl:col-span-5 h-full">
-          <SensorPanel node={selectedNode} globalScore={score} />
+        {/* Right Column (Sensor metrics panel & Supabase Tasks) - Takes 5/12 cols on desktop */}
+        <div className="xl:col-span-5 flex flex-col gap-6 h-full">
+          <SensorPanel node={selectedNode} globalScore={score} lang={lang} />
+          <SupabaseTodos lang={lang} />
         </div>
         </div>
         
@@ -361,7 +383,7 @@ export default function App() {
       
       {/* Footer copyright */}
       <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-xs text-slate-400 font-mono shadow-xs">
-        SISTEMA DE DEFENSA ACTIVA © 2026 // EQUIPO COLOMBIA // DESARROLLADO PARA ENTORNOS DE MISIÓN CRÍTICA
+        {t.dbFooter}
       </footer>
       <Chatbot />
     </div>

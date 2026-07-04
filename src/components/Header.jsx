@@ -1,6 +1,9 @@
 import React from 'react';
+import { translations } from '../utils/translations';
 
-export default function Header({ onBackToLanding }) {
+export default function Header({ onBackToLanding, lang, setLang }) {
+  const t = translations[lang || 'es'];
+
   return (
     <header className="bg-brand-darkgreen border-b border-white/10 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6 sticky top-0 z-50 shadow-lg text-white">
       
@@ -15,8 +18,8 @@ export default function Header({ onBackToLanding }) {
           </svg>
         </div>
         <div className="flex flex-col text-left">
-          <span className="font-serif-editorial text-lg font-bold tracking-wide text-white leading-none">NTE</span>
-          <span className="text-[9px] tracking-wider text-white/50 font-semibold font-mono uppercase mt-0.5">TEAM COLOMBIA · FGC 2026</span>
+          <span className="font-serif-editorial text-lg font-bold tracking-wide text-white leading-none">{t.brandName}</span>
+          <span className="text-[9px] tracking-wider text-white/50 font-semibold font-mono uppercase mt-0.5">{t.brandSubtitle}</span>
         </div>
       </div>
 
@@ -26,7 +29,7 @@ export default function Header({ onBackToLanding }) {
           onClick={onBackToLanding} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
         >
-          Inicio
+          {t.menuHome}
         </button>
         <button 
           onClick={() => {
@@ -35,7 +38,7 @@ export default function Header({ onBackToLanding }) {
           }} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer text-white bg-white/10"
         >
-          Monitoreo
+          {t.menuMonitoring}
         </button>
         <button 
           onClick={() => {
@@ -44,7 +47,7 @@ export default function Header({ onBackToLanding }) {
           }} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer font-bold"
         >
-          Dashboard
+          {t.menuDashboard}
         </button>
         <button 
           onClick={() => {
@@ -53,7 +56,7 @@ export default function Header({ onBackToLanding }) {
           }} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
         >
-          Mapa de Riesgo
+          {t.menuMap}
         </button>
         <button 
           onClick={() => { 
@@ -64,7 +67,7 @@ export default function Header({ onBackToLanding }) {
           }} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
         >
-          Saberes & Comunidad
+          {t.menuCommunity}
         </button>
         <button 
           onClick={() => { 
@@ -73,17 +76,41 @@ export default function Header({ onBackToLanding }) {
           }} 
           className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
         >
-          Chatbot
+          {t.menuChatbot}
         </button>
       </nav>
 
-      {/* Back to Home Action Button (Matches ACCEDER button layout) */}
-      <div className="flex items-center">
+      {/* Action Button & Language selector */}
+      <div className="flex items-center gap-4">
+        {/* Language Selector */}
+        <div className="flex items-center gap-1 bg-white/10 rounded-full p-1 border border-white/15 font-sans text-[10px]">
+          <button 
+            onClick={() => setLang('es')} 
+            className={`px-2.5 py-1 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
+              lang === 'es' 
+                ? 'bg-brand-cream text-brand-darkgreen shadow-sm' 
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            ES
+          </button>
+          <button 
+            onClick={() => setLang('en')} 
+            className={`px-2.5 py-1 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
+              lang === 'en' 
+                ? 'bg-brand-cream text-brand-darkgreen shadow-sm' 
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            EN
+          </button>
+        </div>
+
         <button 
           onClick={onBackToLanding} 
           className="bg-brand-cream hover:bg-white text-brand-darkgreen font-semibold px-6 py-2 rounded-full text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] shadow-md hover:shadow-lg cursor-pointer"
         >
-          Inicio
+          {t.menuHome}
         </button>
       </div>
 
