@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Thermometer, Droplet, Wind, Eye, Compass, Activity, Cloud, HelpCircle } from 'lucide-react';
+import { translations } from '../utils/translations';
 
-export default function SensorPanel({ node, globalScore }) {
+export default function SensorPanel({ node, globalScore, lang }) {
   const [acousticData, setAcousticData] = useState([30, 45, 60, 35, 70, 85, 40, 50, 65, 55]);
   const canvasRef = useRef(null);
+  const t = translations[lang || 'es'];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,7 +82,7 @@ export default function SensorPanel({ node, globalScore }) {
 
         ctx.fillStyle = '#E63946';
         ctx.font = 'bold 8px sans-serif';
-        ctx.fillText(`LLAMA ACTIVA (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)`, flameCenterX - radius - 9, flameCenterY - radius - 35);
+        ctx.fillText(lang === 'en' ? `ACTIVE FLAME (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)` : `LLAMA ACTIVA (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)`, flameCenterX - radius - 9, flameCenterY - radius - 35);
       } else if (node.status === 'warning') {
         const smokeX = w / 2 - 15 + Math.sin(frame * 0.05) * 12;
         const smokeY = h / 2 - 8;
@@ -98,24 +100,24 @@ export default function SensorPanel({ node, globalScore }) {
 
         ctx.fillStyle = '#F4A261';
         ctx.font = 'bold 8px sans-serif';
-        ctx.fillText(`HUMO (${Math.floor(74 + Math.sin(frame*0.04)*4)}%)`, smokeX - 18, smokeY - 40);
+        ctx.fillText(lang === 'en' ? `SMOKE (${Math.floor(74 + Math.sin(frame*0.04)*4)}%)` : `HUMO (${Math.floor(74 + Math.sin(frame*0.04)*4)}%)`, smokeX - 18, smokeY - 40);
       } else {
         ctx.strokeStyle = '#52B788';
         ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, w - 40, h - 40);
         ctx.fillStyle = '#52B788';
         ctx.font = '8px sans-serif';
-        ctx.fillText("SIN ANOMALÍAS", w/2 - 35, 12);
+        ctx.fillText(lang === 'en' ? "NO ANOMALIES" : "SIN ANOMALÍAS", w/2 - 35, 12);
       }
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx.font = '9px sans-serif';
-      ctx.fillText(`CÁMARA // NODO 0${node.id}`, 8, 16);
+      ctx.fillText(lang === 'en' ? `CAMERA // NODE 0${node.id}` : `CÁMARA // NODO 0${node.id}`, 8, 16);
       
       if (Math.floor(frame / 12) % 2 === 0) {
         ctx.fillStyle = '#52B788';
         ctx.beginPath(); ctx.arc(12, h - 12, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.fillText("EN VIVO", 20, h - 9);
+        ctx.fillText(lang === 'en' ? "LIVE" : "EN VIVO", 20, h - 9);
       }
 
       animationId = requestAnimationFrame(render);
@@ -123,7 +125,7 @@ export default function SensorPanel({ node, globalScore }) {
 
     render();
     return () => cancelAnimationFrame(animationId);
-  }, [node]);
+  }, [node, lang]);
 
   const getStatusBadgeClass = (status) => {
     if (status === 'alarm') return 'bg-[#E63946]/10 text-[#E63946] border-[#E63946]/20';
@@ -131,21 +133,51 @@ export default function SensorPanel({ node, globalScore }) {
     return 'bg-[#EEF5E9] text-[#2D6A4F] border-[#EEF5E9]';
   };
 
-  const getTempText = (temp) => temp > 35 ? '⚠️ Riesgo activo (Muy alta)' : '✅ Normal';
+  const getTempText = (temp) => {
+    if (lang === 'en') {
+      return temp > 35 ? '⚠️ Active risk (Very high)' : '✅ Normal';
+    }
+    return temp > 35 ? '⚠️ Riesgo activo (Muy alta)' : '✅ Normal';
+  };
+
   const getTempColor = (temp) => temp > 35 ? 'text-[#E63946]' : 'text-[#2D6A4F]';
   const getTempBgColor = (temp) => temp > 35 ? 'bg-[#E63946]' : 'bg-[#52B788]';
 
-  const getHumText = (hum) => hum < 30 ? '⚠️ Peligro propagación (Baja)' : '✅ Normal';
+  const getHumText = (hum) => {
+    if (lang === 'en') {
+      return hum < 30 ? '⚠️ Spread hazard (Low)' : '✅ Normal';
+    }
+    return hum < 30 ? '⚠️ Peligro propagación (Baja)' : '✅ Normal';
+  };
+
   const getHumColor = (hum) => hum < 30 ? 'text-[#F4A261]' : 'text-[#2D6A4F]';
   const getHumBgColor = (hum) => hum < 30 ? 'bg-[#F4A261]' : 'bg-[#52B788]';
 
-  const getCoText = (co) => co > 80 ? '🔴 Alta concentración' : co > 40 ? '⚠️ Precaución' : '✅ Aire limpio';
+  const getCoText = (co) => {
+    if (lang === 'en') {
+      return co > 80 ? '🔴 High concentration' : co > 40 ? '⚠️ Warning' : '✅ Clean air';
+    }
+    return co > 80 ? '🔴 Alta concentración' : co > 40 ? '⚠️ Precaución' : '✅ Aire limpio';
+  };
+
   const getCoColor = (co) => co > 80 ? 'text-[#E63946]' : co > 40 ? 'text-[#F4A261]' : 'text-[#2D6A4F]';
   const getCoBgColor = (co) => co > 80 ? 'bg-[#E63946]' : co > 40 ? 'bg-[#F4A261]' : 'bg-[#52B788]';
 
-  const getVocText = (voc) => voc > 400 ? '🔴 Alarma de humo' : voc > 200 ? '⚠️ Posible ignición' : '✅ Aire normal';
+  const getVocText = (voc) => {
+    if (lang === 'en') {
+      return voc > 400 ? '🔴 Smoke alarm' : voc > 200 ? '⚠️ Possible ignition' : '✅ Normal air';
+    }
+    return voc > 400 ? '🔴 Alarma de humo' : voc > 200 ? '⚠️ Posible ignición' : '✅ Aire normal';
+  };
+
   const getVocColor = (voc) => voc > 400 ? 'text-[#E63946]' : voc > 200 ? 'text-[#F4A261]' : 'text-[#2D6A4F]';
   const getVocBgColor = (voc) => voc > 400 ? 'bg-[#E63946]' : voc > 200 ? 'bg-[#F4A261]' : 'bg-[#52B788]';
+
+  const getNdviText = (ndvi) => {
+    if (ndvi < 0.35) return t.sensorNdviDanger;
+    if (ndvi < 0.55) return t.sensorNdviWater;
+    return t.sensorNdviSafe;
+  };
 
   return (
     <div className="bg-white border border-[#EEF5E9] rounded-2xl p-6 flex flex-col gap-6 h-full shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
@@ -155,13 +187,13 @@ export default function SensorPanel({ node, globalScore }) {
         <div className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-[#2D6A4F]" />
           <h2 className="text-lg font-bold text-[#2D3436]">
-            Sensores: Nodo 0{node.id}
+            {t.sensorNodeTitle}{node.id}
           </h2>
         </div>
         
         <div className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(node.status)} flex items-center gap-2 transition-all`}>
           <span className={`w-2 h-2 rounded-full ${node.status === 'alarm' ? 'bg-[#E63946]' : node.status === 'warning' ? 'bg-[#F4A261]' : 'bg-[#52B788]'}`}></span>
-          <span>ESTADO: {node.status === 'alarm' ? 'CRÍTICO' : node.status === 'warning' ? 'PRECAUCIÓN' : 'NORMAL'}</span>
+          <span>{t.sensorStatus} {node.status === 'alarm' ? t.sensorCritical : node.status === 'warning' ? t.sensorWarning : t.sensorNormal}</span>
         </div>
       </div>
 
@@ -171,7 +203,7 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 1: Temperature */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-[#636E72]">Temperatura</span>
+            <span className="text-sm font-bold text-[#636E72]">{t.sensorTemp}</span>
             <Thermometer className={`h-5 w-5 ${getTempColor(node.temp)}`} />
           </div>
           <div>
@@ -188,7 +220,7 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 2: Humidity */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-[#636E72]">Humedad Rel.</span>
+            <span className="text-sm font-bold text-[#636E72]">{t.sensorHum}</span>
             <Droplet className={`h-5 w-5 ${getHumColor(node.hum)}`} />
           </div>
           <div>
@@ -205,8 +237,8 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 3: CO */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1 cursor-help group" title="Monóxido de carbono: Gas tóxico que indica presencia de humo invisible.">
-              <span className="text-sm font-bold text-[#636E72]">Monóxido (CO)</span>
+            <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Carbon Monoxide: Toxic gas that indicates presence of invisible smoke.' : 'Monóxido de carbono: Gas tóxico que indica presencia de humo invisible.'}>
+              <span className="text-sm font-bold text-[#636E72]">{t.sensorCo}</span>
               <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
             </div>
             <Cloud className={`h-5 w-5 ${getCoColor(node.co)}`} />
@@ -223,8 +255,8 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 4: VOC */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1 cursor-help group" title="Gases de compuestos orgánicos emitidos por hojas quemándose o resinas.">
-              <span className="text-sm font-bold text-[#636E72]">Gases Orgánicos</span>
+            <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Organic gases emitted by burning leaves or resin.' : 'Gases de compuestos orgánicos emitidos por hojas quemándose o resinas.'}>
+              <span className="text-sm font-bold text-[#636E72]">{t.sensorVoc}</span>
               <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
             </div>
             <Cloud className={`h-5 w-5 ${getVocColor(node.voc)}`} />
@@ -241,9 +273,9 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 5: Audio Spectrum */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold text-[#636E72]">Micrófono Acústico</span>
+            <span className="text-sm font-bold text-[#636E72]">{t.sensorMic}</span>
             <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${node.status === 'alarm' ? 'bg-[#E63946]/10 text-[#E63946]' : 'bg-[#EEF5E9] text-[#2D6A4F]'}`}>
-              {node.status === 'alarm' ? '🚨 SONIDO DE FUEGO DETECTADO' : 'Sonido del bosque normal'}
+              {node.status === 'alarm' ? t.sensorMicAlarm : t.sensorMicNormal}
             </span>
           </div>
           <div className="flex items-end justify-between h-12 bg-white p-2 rounded-xl border border-[#EEF5E9] gap-1">
@@ -263,12 +295,12 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 6: Environment */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-bold text-[#636E72]">Contexto Ambiental</span>
+            <span className="text-sm font-bold text-[#636E72]">{t.sensorContext}</span>
             <Compass className="h-5 w-5 text-[#636E72]" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="border-r border-[#EEF5E9] pr-4">
-              <span className="text-xs text-[#636E72] font-bold">Viento</span>
+              <span className="text-xs text-[#636E72] font-bold">{t.sensorWind}</span>
               <span className="text-xl font-bold text-[#2D3436] block mt-1">{node.windSpeed} km/h</span>
               <span className="text-xs text-[#636E72] flex items-center gap-1 mt-1">
                 <Wind className="h-4 w-4 text-[#52B788] shrink-0" style={{ transform: `rotate(${node.windAngle}deg)` }} />
@@ -276,15 +308,15 @@ export default function SensorPanel({ node, globalScore }) {
               </span>
             </div>
             <div className="pl-2">
-              <div className="flex items-center gap-1 cursor-help group" title="Índice de Vegetación. Valores bajos = vegetación extremadamente seca y propensa al fuego.">
-                <span className="text-xs text-[#636E72] font-bold">Vegetación Seca (NDVI)</span>
+              <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Vegetation Index. Low values = extremely dry vegetation prone to fire.' : 'Índice de Vegetación. Valores bajos = vegetación extremadamente seca y propensa al fuego.'}>
+                <span className="text-xs text-[#636E72] font-bold">{t.sensorNdvi}</span>
                 <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
               </div>
               <span className={`text-xl font-bold block mt-1 ${node.ndvi < 0.35 ? 'text-[#E63946]' : node.ndvi < 0.55 ? 'text-[#F4A261]' : 'text-[#2D6A4F]'}`}>
                 {node.ndvi.toFixed(2)}
               </span>
               <span className="text-xs text-[#636E72] font-medium block mt-1">
-                {node.ndvi < 0.35 ? '⚠️ Altamente inflamable' : node.ndvi < 0.55 ? 'Estrés hídrico' : '✅ Sana y húmeda'}
+                {getNdviText(node.ndvi)}
               </span>
             </div>
           </div>
@@ -293,7 +325,7 @@ export default function SensorPanel({ node, globalScore }) {
         {/* Card 7: Camera */}
         <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold text-[#636E72]">Cámara Térmica Visual</span>
+            <span className="text-sm font-bold text-[#636E72]">{t.sensorCamera}</span>
             <div className="flex items-center gap-1.5">
               <Eye className="h-4 w-4 text-[#2D6A4F]" />
             </div>
