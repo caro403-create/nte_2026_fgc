@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Shield, ArrowRight, Menu, X } from 'lucide-react';
 import { translations } from '../utils/translations';
+import Header from './Header';
 
 // Import local images from assets
 import heroForest from '../assets/hero-forest.jpg';
@@ -12,7 +13,7 @@ import capChatbot from '../assets/cap-chatbot.jpg';
 import fireNight from '../assets/colombia-fire-night.jpg';
 import colombiaBomberos from '../assets/colombia-bomberos.jpg';
 
-export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab, lang, setLang }) {
+export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab, lang, setLang, user, onLogout, onOpenLogin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [animateMetrics, setAnimateMetrics] = useState(false);
   const t = translations[lang || 'es'];
@@ -108,169 +109,16 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
     <div className="min-h-screen bg-brand-cream text-brand-darkgreen font-sans selection:bg-brand-sage/20 selection:text-brand-darkgreen flex flex-col overflow-x-hidden antialiased">
       
       {/* 1. Header (Landing) */}
-      <header className="fixed top-0 left-0 w-full z-50 px-4 md:px-8 py-4 transition-all duration-300">
-        <div className="max-w-7xl mx-auto flex items-center justify-between bg-brand-darkgreen/40 backdrop-blur-xl border border-white/10 rounded-full py-3 px-6 md:px-8 shadow-2xl">
-          
-          {/* Brand Logo */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            {/* Custom SVG leaf/shield logo */}
-            <div className="w-9 h-9 rounded-full bg-brand-cream/10 border border-white/20 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-brand-cream fill-none stroke-current" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.97 0-9-4.03-9-9 0-2.12.74-4.07 1.97-5.61L12 2l7.03 4.39C20.26 7.93 21 9.88 21 12c0 4.97-4.03 9-9 9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v10m-3-4h6" className="opacity-40" />
-              </svg>
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-serif-editorial text-lg font-bold tracking-wide text-white leading-none">{t.brandName}</span>
-              <span className="text-[9px] tracking-wider text-white/50 font-semibold font-mono uppercase mt-0.5">{t.brandSubtitle}</span>
-            </div>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6">
-            <button 
-              onClick={() => onEnterDashboard('monitoreo')} 
-              className="text-white/80 hover:text-white text-xs font-semibold tracking-wide uppercase transition-colors duration-200 py-1.5 px-3 rounded-full hover:bg-white/5"
-            >
-              {t.menuMonitoring}
-            </button>
-            <button 
-              onClick={() => onEnterDashboard('dashboard')} 
-              className="text-white/80 hover:text-white text-xs font-semibold tracking-wide uppercase transition-colors duration-200 py-1.5 px-3 rounded-full hover:bg-white/5"
-            >
-              {t.menuDashboard}
-            </button>
-            <button 
-              onClick={() => onEnterDashboard('mapa')} 
-              className="text-white/80 hover:text-white text-xs font-semibold tracking-wide uppercase transition-colors duration-200 py-1.5 px-3 rounded-full hover:bg-white/5"
-            >
-              {t.menuMap}
-            </button>
-            <button 
-              onClick={() => scrollToSection('superficies')} 
-              className="text-white/80 hover:text-white text-xs font-semibold tracking-wide uppercase transition-colors duration-200 py-1.5 px-3 rounded-full hover:bg-white/5"
-            >
-              {t.menuCommunity}
-            </button>
-            <button 
-              onClick={() => onEnterDashboard('chatbot')} 
-              className="text-white/80 hover:text-white text-xs font-semibold tracking-wide uppercase transition-colors duration-200 py-1.5 px-3 rounded-full hover:bg-white/5"
-            >
-              {t.menuChatbot}
-            </button>
-          </nav>
-
-          {/* Action Button & Language selector */}
-          <div className="hidden lg:flex items-center gap-4">
-            {/* Language Selector */}
-            <div className="flex items-center gap-1 bg-white/10 rounded-full p-1 border border-white/10 font-sans text-[10px] text-white">
-              <button 
-                onClick={() => setLang('es')} 
-                className={`px-2 py-0.5 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
-                  lang === 'es' 
-                    ? 'bg-brand-cream text-brand-darkgreen shadow-sm' 
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                ES
-              </button>
-              <button 
-                onClick={() => setLang('en')} 
-                className={`px-2 py-0.5 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
-                  lang === 'en' 
-                    ? 'bg-brand-cream text-brand-darkgreen shadow-sm' 
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
-            <button 
-              onClick={() => onEnterDashboard('dashboard')} 
-              className="bg-brand-cream hover:bg-white text-brand-darkgreen font-semibold px-6 py-2 rounded-full text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-md hover:shadow-lg"
-            >
-              {t.btnAccess}
-            </button>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden text-white hover:text-brand-sage transition-colors duration-200"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-
-        </div>
-      </header>
-
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-brand-darkgreen/95 backdrop-blur-2xl flex flex-col justify-center px-8 py-16 transition-all duration-300">
-          <nav className="flex flex-col gap-6 text-center">
-            <button 
-              onClick={() => { onEnterDashboard('monitoreo'); setMobileMenuOpen(false); }} 
-              className="text-white/90 hover:text-brand-sage text-2xl font-serif-editorial italic"
-            >
-              {t.menuMonitoring}
-            </button>
-            <button 
-              onClick={() => { onEnterDashboard('dashboard'); setMobileMenuOpen(false); }} 
-              className="text-white/90 hover:text-brand-sage text-2xl font-serif-editorial italic"
-            >
-              {t.menuDashboard}
-            </button>
-            <button 
-              onClick={() => { onEnterDashboard('mapa'); setMobileMenuOpen(false); }} 
-              className="text-white/90 hover:text-brand-sage text-2xl font-serif-editorial italic"
-            >
-              {t.menuMap}
-            </button>
-            <button 
-              onClick={() => { scrollToSection('superficies'); setMobileMenuOpen(false); }} 
-              className="text-white/90 hover:text-brand-sage text-2xl font-serif-editorial italic"
-            >
-              {t.menuCommunity}
-            </button>
-            <button 
-              onClick={() => { onEnterDashboard('chatbot'); setMobileMenuOpen(false); }} 
-              className="text-white/90 hover:text-brand-sage text-2xl font-serif-editorial italic"
-            >
-              {t.menuChatbot}
-            </button>
-            
-            <div className="h-px bg-white/10 my-4"></div>
-            
-            {/* Mobile Language selector */}
-            <div className="flex items-center justify-center gap-2 bg-white/10 rounded-full p-1 border border-white/10 w-28 self-center text-xs text-white">
-              <button 
-                onClick={() => setLang('es')} 
-                className={`flex-1 py-1 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
-                  lang === 'es' ? 'bg-brand-cream text-brand-darkgreen' : 'text-white/60'
-                }`}
-              >
-                ES
-              </button>
-              <button 
-                onClick={() => setLang('en')} 
-                className={`flex-1 py-1 rounded-full transition-all duration-200 uppercase font-bold cursor-pointer ${
-                  lang === 'en' ? 'bg-brand-cream text-brand-darkgreen' : 'text-white/60'
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
-            <button 
-              onClick={() => { onEnterDashboard('dashboard'); setMobileMenuOpen(false); }}
-              className="bg-brand-cream hover:bg-white text-brand-darkgreen font-semibold py-3 px-6 rounded-full text-sm uppercase tracking-wider transition-all duration-300 self-center"
-            >
-              {t.btnAccess}
-            </button>
-          </nav>
-        </div>
-      )}
+      <Header 
+        onBackToLanding={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+        lang={lang} 
+        setLang={setLang} 
+        user={user} 
+        onLogout={onLogout} 
+        onOpenLogin={onOpenLogin} 
+        isDashboard={false}
+        onEnterDashboard={onEnterDashboard}
+      />
 
       {/* 2. Hero Section */}
       <section className="relative min-h-screen flex flex-col justify-between pt-32 pb-12 px-6 md:px-12 text-white bg-brand-darkgreen overflow-hidden">
