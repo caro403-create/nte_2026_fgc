@@ -1,7 +1,7 @@
 import React from 'react';
 import { translations } from '../utils/translations';
 
-export default function Header({ onBackToLanding, lang, setLang }) {
+export default function Header({ onBackToLanding, lang, setLang, activeTab, setActiveTab }) {
   const t = translations[lang || 'es'];
 
   return (
@@ -32,31 +32,20 @@ export default function Header({ onBackToLanding, lang, setLang }) {
           {t.menuHome}
         </button>
         <button 
-          onClick={() => {
-            const mapEl = document.querySelector('.min-h-\\[380px\\]') || document.querySelector('main');
-            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
-          }} 
-          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer text-white bg-white/10"
-        >
-          {t.menuMonitoring}
-        </button>
-        <button 
-          onClick={() => {
-            const dashboardEl = document.querySelector('main');
-            if (dashboardEl) dashboardEl.scrollIntoView({ behavior: 'smooth' });
-          }} 
-          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer font-bold"
-        >
-          {t.menuDashboard}
-        </button>
-        <button 
-          onClick={() => {
-            const mapEl = document.querySelector('.min-h-\\[380px\\]');
-            if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
-          }} 
-          className="px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer"
+          onClick={() => setActiveTab('dashboard')} 
+          className={`px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer ${
+            activeTab === 'dashboard' ? 'text-white bg-white/10 font-bold' : ''
+          }`}
         >
           {t.menuMap}
+        </button>
+        <button 
+          onClick={() => setActiveTab('observatorio')} 
+          className={`px-3 py-1.5 hover:text-white rounded-full hover:bg-white/5 transition-all duration-200 cursor-pointer ${
+            activeTab === 'observatorio' ? 'text-white bg-white/10 font-bold' : ''
+          }`}
+        >
+          {t.menuObservatorio}
         </button>
         <button 
           onClick={() => { 
