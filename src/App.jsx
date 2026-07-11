@@ -12,6 +12,7 @@ import SupabaseTodos from './components/SupabaseTodos';
 import LoginPage from './components/LoginPage';
 import PublicReportModal from './components/PublicReportModal';
 import CommunityForum from './components/CommunityForum';
+import ObservatorioPanel from './components/ObservatorioPanel';
 import { supabase } from './utils/supabase';
 import { translations } from './utils/translations';
 
@@ -262,7 +263,7 @@ export default function App() {
       <LandingPage 
         onEnterDashboard={(tab) => {
           setView('dashboard');
-          setActiveTab(tab === 'comunidad' ? 'comunidad' : 'monitoreo');
+          setActiveTab(tab === 'comunidad' ? 'comunidad' : tab === 'observatorio' ? 'observatorio' : 'monitoreo');
         }} 
         lang={lang}
         setLang={setLang}
@@ -299,12 +300,23 @@ export default function App() {
         isDashboard={true}
         onEnterDashboard={(tab) => {
           setView('dashboard');
-          setActiveTab(tab === 'comunidad' ? 'comunidad' : 'monitoreo');
+          setActiveTab(tab === 'comunidad' ? 'comunidad' : tab === 'observatorio' ? 'observatorio' : 'monitoreo');
         }}
       />
 
       {/* Main Content Layout - Dynamic Tab Routing */}
-      {activeTab === 'monitoreo' ? (
+      {activeTab === 'observatorio' ? (
+        <main className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto mt-28">
+          <ObservatorioPanel
+            lang={lang}
+            globalScore={score}
+            nodes={nodes}
+            selectedNodeId={selectedNodeId}
+            setSelectedNodeId={setSelectedNodeId}
+            setActiveTab={setActiveTab}
+          />
+        </main>
+      ) : activeTab === 'monitoreo' ? (
         <>
           {/* Control & Status Bar with layout offset (only in telemetry view) */}
           <div className="bg-white border-b border-gray-200 px-6 py-3 flex flex-col xl:flex-row items-center justify-between gap-4 text-xs shadow-xs mt-28">

@@ -162,6 +162,14 @@ export default function Header({
             {t.menuMap}
           </button>
           <button 
+            onClick={() => handleNavClick(null, 'observatorio')} 
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
+              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
+            }`}
+          >
+            {t.menuObservatorio}
+          </button>
+          <button 
             onClick={handleAncestralClick} 
             className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
               isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
