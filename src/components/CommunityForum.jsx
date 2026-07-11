@@ -16,6 +16,48 @@ const CATEGORIES = {
   'Noticias de la Comunidad': { icon: Megaphone, color: '#0369A1', bg: '#E0F2FE', label_en: 'Community News' },
 };
 
+const MOCK_POSTS = [
+  {
+    id: 'mock-1',
+    author_id: 'bot-1',
+    author_name: 'Don Carlos - Líder Comunitario',
+    category: 'Saberes Ancestrales',
+    title: 'Cómo interpretar el color de las nubes sobre el Nevado',
+    content: 'Nuestros abuelos siempre nos decían que cuando las nubes sobre la cumbre se tornan de color gris oscuro con bordes amarillentos al atardecer, es señal de que los vientos fuertes bajarán hacia el valle en las próximas 48 horas. Es importante asegurar los techos.',
+    location: 'Valle del Cauca',
+    upvotes: 24,
+    comment_count: 2,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    is_mock: true
+  },
+  {
+    id: 'mock-2',
+    author_id: 'bot-2',
+    author_name: 'MariaF',
+    category: 'Fauna y Ecosistema',
+    title: 'Avistamiento de Cóndor de los Andes y cambios de temperatura',
+    content: 'Hoy durante nuestra caminata en el páramo notamos que los cóndores estaban volando mucho más bajo de lo normal. Los guardabosques locales me comentaron que esto suele ocurrir cuando hay una inversión térmica inusual. Estemos atentos a las heladas esta noche.',
+    location: 'PNN Los Nevados',
+    upvotes: 15,
+    comment_count: 5,
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+    is_mock: true
+  },
+  {
+    id: 'mock-3',
+    author_id: 'bot-3',
+    author_name: 'Defensa Civil Local',
+    category: 'Noticias de la Comunidad',
+    title: 'Alerta temprana: Prevención de incendios forestales',
+    content: 'Debido a la sequía prolongada de las últimas tres semanas, el riesgo de incendios ha subido a nivel extremo en nuestra jurisdicción. Solicitamos a todos los vecinos abstenerse de realizar quemas controladas o fogatas este fin de semana.',
+    location: 'Zona Cafetera',
+    upvotes: 42,
+    comment_count: 12,
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+    is_mock: true
+  }
+];
+
 function timeAgo(dateStr, lang) {
   const now = new Date();
   const date = new Date(dateStr);
@@ -79,7 +121,12 @@ export default function CommunityForum({ user, isBrigadista, lang }) {
         const userLiked = user ? likes.some(l => l.user_email === user.email) : false;
         return { ...post, comment_count: comments.length, like_count: likes.length, user_liked: userLiked };
       });
-      setPosts(enriched);
+      
+      if (enriched.length === 0) {
+        setPosts(MOCK_POSTS);
+      } else {
+        setPosts(enriched);
+      }
     } catch (err) {
       console.error('Error fetching community posts:', err);
       setPosts([]);
