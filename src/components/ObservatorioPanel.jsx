@@ -1093,12 +1093,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
               </div>
             </div>
 
-          </div>
         )}
-      </div>
 
-      {/* 3.1 LAYER LEGEND */}
-      <div className="absolute top-[88px] left-4 z-10 pointer-events-auto flex flex-col gap-2">
+        {/* 3.1 LAYER LEGEND */}
         {layersState.rainRadar && (
           <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
             <span className="font-bold text-[10px] opacity-80 mb-1 block">Lluvia (mm/h)</span>
