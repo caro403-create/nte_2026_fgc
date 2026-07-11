@@ -1,0 +1,1569 @@
+<?xml version='1.0' encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd"
+ [
+<!ELEMENT VendorSpecificCapabilities (inspire_vs:ExtendedCapabilities)><!ELEMENT inspire_vs:ExtendedCapabilities ((inspire_common:MetadataUrl, inspire_common:SupportedLanguages, inspire_common:ResponseLanguage) | (inspire_common:ResourceLocator+, inspire_common:ResourceType, inspire_common:TemporalReference+, inspire_common:Conformity+, inspire_common:MetadataPointOfContact+, inspire_common:MetadataDate, inspire_common:SpatialDataServiceType, inspire_common:MandatoryKeyword+, inspire_common:Keyword*, inspire_common:SupportedLanguages, inspire_common:ResponseLanguage, inspire_common:MetadataUrl?))><!ATTLIST inspire_vs:ExtendedCapabilities xmlns:inspire_vs CDATA #FIXED "http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" ><!ELEMENT inspire_common:MetadataUrl (inspire_common:URL, inspire_common:MediaType*)><!ATTLIST inspire_common:MetadataUrl xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xsi CDATA #FIXED "http://www.w3.org/2001/XMLSchema-instance" xsi:type CDATA #FIXED "inspire_common:resourceLocatorType" ><!ELEMENT inspire_common:URL (#PCDATA)><!ATTLIST inspire_common:URL xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:MediaType (#PCDATA)><!ATTLIST inspire_common:MediaType xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:SupportedLanguages (inspire_common:DefaultLanguage, inspire_common:SupportedLanguage*)><!ATTLIST inspire_common:SupportedLanguages xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:DefaultLanguage (inspire_common:Language)><!ATTLIST inspire_common:DefaultLanguage xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:SupportedLanguage (inspire_common:Language)><!ATTLIST inspire_common:SupportedLanguage xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:ResponseLanguage (inspire_common:Language)><!ATTLIST inspire_common:ResponseLanguage xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Language (#PCDATA)><!ATTLIST inspire_common:Language xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:ResourceLocator (inspire_common:URL, inspire_common:MediaType*)><!ATTLIST inspire_common:ResourceLocator xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:ResourceType (#PCDATA)> <!ATTLIST inspire_common:ResourceType xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:TemporalReference (inspire_common:DateOfCreation?, inspire_common:DateOfLastRevision?, inspire_common:DateOfPublication*, inspire_common:TemporalExtent*)><!ATTLIST inspire_common:TemporalReference xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:DateOfCreation (#PCDATA)> <!ATTLIST inspire_common:DateOfCreation xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:DateOfLastRevision (#PCDATA)><!ATTLIST inspire_common:DateOfLastRevision xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:DateOfPublication (#PCDATA)><!ATTLIST inspire_common:DateOfPublication xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:TemporalExtent (inspire_common:IndividualDate | inspire_common:IntervalOfDates)><!ATTLIST inspire_common:TemporalExtent xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:IndividualDate (#PCDATA)> <!ATTLIST inspire_common:IndividualDate xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0"><!ELEMENT inspire_common:IntervalOfDates (inspire_common:StartingDate, inspire_common:EndDate)><!ATTLIST inspire_common:IntervalOfDates xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:StartingDate (#PCDATA)><!ATTLIST inspire_common:StartingDate xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:EndDate (#PCDATA)><!ATTLIST inspire_common:EndDate xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Conformity (inspire_common:Specification, inspire_common:Degree)><!ATTLIST inspire_common:Conformity xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Specification (inspire_common:Title, (inspire_common:DateOfPublication | inspire_common:DateOfCreation | inspire_common:DateOfLastRevision), inspire_common:URI*, inspire_common:ResourceLocator*)><!ATTLIST inspire_common:Specification xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Title (#PCDATA)><!ATTLIST inspire_common:Title xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:URI (#PCDATA)><!ATTLIST inspire_common:URI xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Degree (#PCDATA)><!ATTLIST inspire_common:Degree xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:MetadataPointOfContact (inspire_common:OrganisationName, inspire_common:EmailAddress)><!ATTLIST inspire_common:MetadataPointOfContact xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:OrganisationName (#PCDATA)><!ATTLIST inspire_common:OrganisationName  xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:EmailAddress (#PCDATA)><!ATTLIST inspire_common:EmailAddress xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:MetadataDate (#PCDATA)><!ATTLIST inspire_common:MetadataDate xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:SpatialDataServiceType (#PCDATA)><!ATTLIST inspire_common:SpatialDataServiceType xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:MandatoryKeyword (inspire_common:KeywordValue)><!ATTLIST inspire_common:MandatoryKeyword xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:KeywordValue (#PCDATA)><!ATTLIST inspire_common:KeywordValue xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" ><!ELEMENT inspire_common:Keyword (inspire_common:OriginatingControlledVocabulary?, inspire_common:KeywordValue)><!ATTLIST inspire_common:Keyword xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xsi CDATA #FIXED "http://www.w3.org/2001/XMLSchemainstance" xsi:type (inspire_common:inspireTheme_bul | inspire_common:inspireTheme_cze | inspire_common:inspireTheme_dan | inspire_common:inspireTheme_dut | inspire_common:inspireTheme_eng | inspire_common:inspireTheme_est | inspire_common:inspireTheme_fin | inspire_common:inspireTheme_fre | inspire_common:inspireTheme_ger | inspire_common:inspireTheme_gre | inspire_common:inspireTheme_hun | inspire_common:inspireTheme_gle | inspire_common:inspireTheme_ita | inspire_common:inspireTheme_lav | inspire_common:inspireTheme_lit | inspire_common:inspireTheme_mlt | inspire_common:inspireTheme_pol | inspire_common:inspireTheme_por | inspire_common:inspireTheme_rum | inspire_common:inspireTheme_slo | inspire_common:inspireTheme_slv | inspire_common:inspireTheme_spa | inspire_common:inspireTheme_swe) #IMPLIED ><!ELEMENT inspire_common:OriginatingControlledVocabulary (inspire_common:Title, (inspire_common:DateOfPublication | inspire_common:DateOfCreation | inspire_common:DateOfLastRevision), inspire_common:URI*, inspire_common:ResourceLocator*)><!ATTLIST inspire_common:OriginatingControlledVocabulary xmlns:inspire_common CDATA #FIXED "http://inspire.ec.europa.eu/schemas/common/1.0">
+ ]>  <!-- end of DOCTYPE declaration -->
+
+<WMT_MS_Capabilities version="1.1.1">
+
+<!-- MapServer version 7.6.2 OUTPUT=PNG OUTPUT=JPEG OUTPUT=KML SUPPORTS=PROJ SUPPORTS=AGG SUPPORTS=FREETYPE SUPPORTS=CAIRO SUPPORTS=ICONV SUPPORTS=XMP SUPPORTS=FRIBIDI SUPPORTS=WMS_SERVER SUPPORTS=WMS_CLIENT SUPPORTS=WFS_SERVER SUPPORTS=WFS_CLIENT SUPPORTS=WCS_SERVER SUPPORTS=SOS_SERVER SUPPORTS=FASTCGI SUPPORTS=GEOS SUPPORTS=PBF INPUT=JPEG INPUT=POSTGIS INPUT=ORACLESPATIAL INPUT=OGR INPUT=GDAL INPUT=SHAPEFILE -->
+
+<Service>
+  <Name>OGC:WMS</Name>
+  <Title>EFFIS</Title>
+  <Abstract>The European Forest Fire Information System (EFFIS) supports the services in charge of the protection of forests against fires in the EU countries and provides the European Commission services and the European Parliament with updated and reliable information on wildland fires in Europe.</Abstract>
+  <KeywordList>
+      <Keyword>Europe</Keyword>
+      <Keyword> Wildfire</Keyword>
+      <Keyword> Forest</Keyword>
+      <Keyword> Forest Fires</Keyword>
+      <Keyword> FWI</Keyword>
+      <Keyword> Fire Weather Index</Keyword>
+  </KeywordList>
+  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?"/>
+  <ContactInformation>
+    <ContactPersonPrimary>
+      <ContactPerson>Jesús San-Miguel-Ayanz</ContactPerson>
+      <ContactOrganization>European Commission, Joint Research Centre</ContactOrganization>
+    </ContactPersonPrimary>
+      <ContactPosition>European Union</ContactPosition>
+    <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Via E. Fermi 2749 - TP 261</Address>
+        <City>Ispra</City>
+        <StateOrProvince>VA</StateOrProvince>
+        <PostCode>I-21027</PostCode>
+        <Country>Italy</Country>
+    </ContactAddress>
+      <ContactVoiceTelephone>+39 0332 786138</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>+39 0332 789803</ContactFacsimileTelephone>
+  <ContactElectronicMailAddress>effis@jrc.ec.europa.eu</ContactElectronicMailAddress>
+  </ContactInformation>
+  <Fees>none</Fees>
+  <AccessConstraints>None</AccessConstraints>
+</Service>
+
+<Capability>
+  <Request>
+    <GetCapabilities>
+      <Format>application/vnd.ogc.wms_xml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetCapabilities>
+    <GetMap>
+      <Format>image/png</Format>
+      <Format>image/gif</Format>
+      <Format>image/png; mode=8bit</Format>
+      <Format>image/jpeg</Format>
+      <Format>image/tiff</Format>
+      <Format>image/vnd.jpeg-png</Format>
+      <Format>image/vnd.jpeg-png8</Format>
+      <Format>application/x-pdf</Format>
+      <Format>image/svg+xml</Format>
+      <Format>application/vnd.google-earth.kml+xml</Format>
+      <Format>application/vnd.google-earth.kmz</Format>
+      <Format>application/x-protobuf</Format>
+      <Format>application/json</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetMap>
+    <GetFeatureInfo>
+      <Format>text/html</Format>
+      <Format>application/vnd.ogc.gml</Format>
+      <Format>text/plain</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetFeatureInfo>
+    <DescribeLayer>
+      <Format>text/xml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </DescribeLayer>
+    <GetLegendGraphic>
+      <Format>image/png</Format>
+      <Format>image/gif</Format>
+      <Format>image/png; mode=8bit</Format>
+      <Format>image/jpeg</Format>
+      <Format>image/vnd.jpeg-png</Format>
+      <Format>image/vnd.jpeg-png8</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetLegendGraphic>
+    <GetStyles>
+      <Format>text/xml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetStyles>
+  </Request>
+  <Exception>
+    <Format>application/vnd.ogc.se_xml</Format>
+    <Format>application/vnd.ogc.se_inimage</Format>
+    <Format>application/vnd.ogc.se_blank</Format>
+  </Exception>
+  <VendorSpecificCapabilities>
+  <inspire_vs:ExtendedCapabilities>
+    <inspire_common:ResourceLocator>
+      <inspire_common:URL>https://ies-ows.jrc.ec.europa.eu/effis?</inspire_common:URL>
+    </inspire_common:ResourceLocator>
+    <inspire_common:ResourceType>service</inspire_common:ResourceType>
+    <inspire_common:TemporalReference>
+      <inspire_common:DateOfLastRevision>2014-08-08</inspire_common:DateOfLastRevision>
+    </inspire_common:TemporalReference>
+    <inspire_common:Conformity>
+      <inspire_common:Specification>
+        <inspire_common:Title>-</inspire_common:Title>
+        <inspire_common:DateOfLastRevision>2014-08-08</inspire_common:DateOfLastRevision>
+      </inspire_common:Specification>
+      <inspire_common:Degree>notEvaluated</inspire_common:Degree>
+    </inspire_common:Conformity>
+    <inspire_common:MetadataPointOfContact>
+      <inspire_common:OrganisationName>Jesús San-Miguel-Ayanz</inspire_common:OrganisationName>
+      <inspire_common:EmailAddress>effis@jrc.ec.europa.eu</inspire_common:EmailAddress>
+    </inspire_common:MetadataPointOfContact>
+      <inspire_common:MetadataDate>2014-08-08</inspire_common:MetadataDate>
+    <inspire_common:SpatialDataServiceType>view</inspire_common:SpatialDataServiceType>
+    <inspire_common:MandatoryKeyword>
+      <inspire_common:KeywordValue>Wildfire</inspire_common:KeywordValue>
+    </inspire_common:MandatoryKeyword>
+    <inspire_common:SupportedLanguages>
+      <inspire_common:DefaultLanguage><inspire_common:Language>eng</inspire_common:Language></inspire_common:DefaultLanguage>
+    </inspire_common:SupportedLanguages>
+    <inspire_common:ResponseLanguage><inspire_common:Language>eng</inspire_common:Language></inspire_common:ResponseLanguage>
+  </inspire_vs:ExtendedCapabilities>
+  </VendorSpecificCapabilities>
+  <UserDefinedSymbolization SupportSLD="1" UserLayer="0" UserStyle="1" RemoteWFS="0"/>
+  <Layer queryable="1">
+    <Name>EFFIS</Name>
+    <Title>EFFIS</Title>
+    <Abstract>The European Forest Fire Information System (EFFIS) supports the services in charge of the protection of forests against fires in the EU countries and provides the European Commission services and the European Parliament with updated and reliable information on wildland fires in Europe.</Abstract>
+    <KeywordList>
+        <Keyword>Europe</Keyword>
+        <Keyword> Wildfire</Keyword>
+        <Keyword> Forest</Keyword>
+        <Keyword> Forest Fires</Keyword>
+        <Keyword> FWI</Keyword>
+        <Keyword> Fire Weather Index</Keyword>
+    </KeywordList>
+    <SRS>EPSG:4326</SRS>
+    <SRS>EPSG:3035</SRS>
+    <SRS>EPSG:3034</SRS>
+    <SRS>EPSG:3857</SRS>
+    <SRS>EPSG:900913</SRS>
+    <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+    <BoundingBox SRS="EPSG:4326"
+                minx="-180" miny="-90" maxx="180" maxy="90" />
+    <Attribution>
+        <Title>The geodata are released under the terms and conditions of the EU Data License, available at https://ec.europa.eu/geninfo/legal_notices_en.htm</Title>
+        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://ec.europa.eu/geninfo/legal_notices_en.htm"/>
+    </Attribution>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="301" height="4166">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=EFFIS&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+    <Layer>
+      <Name>admin.countries_borders</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>admin.countries_borders</Title>
+      <Abstract>admin.countries_borders</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="91" height="35">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.countries_borders&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.countries_borders_20m</Name>
+        <Title>admin.countries_borders_20m</Title>
+        <Abstract>Countries borders - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.countries_borders_20m"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="91" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.countries_borders_20m&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+        <ScaleHint min="2494.51474105103" max="0" />
+        <!-- WARNING: Only MINSCALEDENOM and no MAXSCALEDENOM specified in the mapfile. A default value of 0 has been returned for the Max ScaleHint but this is probably not what you want. -->
+      </Layer>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.countries_borders_01m</Name>
+        <Title>admin.countries_borders_01m</Title>
+        <Abstract>Countries borders - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.countries_borders_01m"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="91" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.countries_borders_01m&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+        <ScaleHint min="0" max="2494.51424214819" />
+      </Layer>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.countries</Name>
+        <Title>Countries</Title>
+        <Abstract>Countries - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.countries"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="82" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.countries&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.countries_names</Name>
+        <Title>Countries Names</Title>
+        <Abstract>Countries Names - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.countries_names"/>
+        </MetadataURL>
+    </Layer>
+    <Layer>
+      <Name>admin.nuts3</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>admin.nuts3</Title>
+      <Abstract>admin.nuts3</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="122" height="20">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.nuts3&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.nuts3</Name>
+        <Title>admin.nuts3</Title>
+        <Abstract>Nuts3 borders - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.nuts3"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.nuts3&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>admin.nuts5</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>admin.nuts5</Title>
+      <Abstract>admin.nuts5</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="122" height="20">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.nuts5&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.nuts5</Name>
+        <Title>admin.nuts5</Title>
+        <Abstract>Nuts3 borders - GISCO database</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.nuts5"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.nuts5&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>admin.comm_borders</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>admin.comm_borders</Title>
+      <Abstract>admin.comm_borders</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="91" height="35">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.comm_borders&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.comm_borders</Name>
+        <Title>admin.comm_borders</Title>
+        <Abstract>Communes borders - GISCO database NUTS5</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.comm_borders"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="91" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.comm_borders&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>admin.comm_es43</Name>
+        <Title>admin.comm_borders</Title>
+        <Abstract>Communes borders - GISCO database NUTS5</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=admin.comm_es43"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="91" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=admin.comm_es43&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.fwi</Name>
+        <Title>mf010.fwi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2021-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.fwi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="141" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.fwi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.danger_index</Name>
+        <Title>mf010.danger_index</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.danger_index"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.danger_index&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.ffmc</Name>
+        <Title>mf010.ffmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.ffmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.ffmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.dmc</Name>
+        <Title>mf010.dmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.dmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.dmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.dc</Name>
+        <Title>mf010.dc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.dc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.dc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.isi</Name>
+        <Title>mf010.isi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.isi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.isi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.bui</Name>
+        <Title>mf010.bui</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.bui"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.bui&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.anomaly</Name>
+        <Title>mf010.anomaly</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.anomaly"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="129" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.anomaly&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>mf010.ranking</Name>
+        <Title>mf010.ranking</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.ranking"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="78" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=mf010.ranking&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>mf010.query</Name>
+        <Title>mf010.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=mf010.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.fwi</Name>
+        <Title>ecmwf.fwi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2021-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.fwi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="141" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.fwi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.danger_index</Name>
+        <Title>ecmwf.danger_index</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.danger_index"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.danger_index&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.ffmc</Name>
+        <Title>ecmwf.ffmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.ffmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.ffmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.dmc</Name>
+        <Title>ecmwf.dmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.dmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.dmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.dc</Name>
+        <Title>ecmwf.dc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.dc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.dc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.isi</Name>
+        <Title>ecmwf.isi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.isi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.isi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.bui</Name>
+        <Title>ecmwf.bui</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.bui"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.bui&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.anomaly</Name>
+        <Title>ecmwf.anomaly</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.anomaly"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="129" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.anomaly&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf007.ranking</Name>
+        <Title>ecmwf.ranking</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.ranking"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="78" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf007.ranking&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ecmwf007.query</Name>
+        <Title>ecmwf.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf007.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer>
+      <Name>fwi_nuts5</Name>
+      <Title>fwi_nuts5</Title>
+      <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>fwi_nuts5.fwi</Name>
+        <Title>fwi_nuts5.fwi</Title>
+        <Abstract>FWI model mapped on NUTS5 GISCO layer</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:3035</SRS>
+        <SRS>EPSG:3034</SRS>
+        <SRS>EPSG:3857</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-45" miny="0" maxx="45" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-45" miny="0" maxx="45" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2017-05-01" nearestValue="0">2016-03-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=fwi_nuts5.fwi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="141" height="110">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=fwi_nuts5.fwi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.fwi</Name>
+        <Title>ecmwf.fwi.fwi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.fwi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="141" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.fwi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.danger_index</Name>
+        <Title>ecmwf.fwi.danger_index</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.danger_index"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.danger_index&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.ffmc</Name>
+        <Title>ecmwf.ffmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.ffmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.ffmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.dmc</Name>
+        <Title>ecmwf.dmc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.dmc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.dmc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.dc</Name>
+        <Title>ecmwf.dc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.dc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.dc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.isi</Name>
+        <Title>ecmwf.isi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.isi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.isi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.bui</Name>
+        <Title>ecmwf.bui</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.bui"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.bui&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.anomaly</Name>
+        <Title>ecmwf.anomaly</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.anomaly"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="129" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.anomaly&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.ranking</Name>
+        <Title>ecmwf.ranking</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.ranking"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="78" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.fwi.ranking&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ecmwf.fwi.query</Name>
+        <Title>ecmwf.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.fwi.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.mark5.kbdi</Name>
+        <Title>ecmwf.mark5.kbdi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.mark5.kbdi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="112" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.mark5.kbdi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.mark5.df</Name>
+        <Title>ecmwf.mark5.df</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.mark5.df"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="101" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.mark5.df&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.mark5.ros</Name>
+        <Title>ecmwf.mark5.ros</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.mark5.ros"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="110" height="98">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.mark5.ros&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.mark5.fdi</Name>
+        <Title>ecmwf.mark5.fdi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.mark5.fdi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="105" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.mark5.fdi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ecmwf.mark5.query</Name>
+        <Title>ecmwf.mark5.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.mark5.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.ros</Name>
+        <Title>ecmwf.nfdrs.ros</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.ros"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="110" height="98">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.nfdrs.ros&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.sc</Name>
+        <Title>ecmwf.nfdrs.sc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.sc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="102" height="98">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.nfdrs.sc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.erc</Name>
+        <Title>ecmwf.nfdrs.erc</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.erc"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="110" height="98">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.nfdrs.erc&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.bi</Name>
+        <Title>ecmwf.nfdrs.bi</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.bi"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="97" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.nfdrs.bi&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.ic</Name>
+        <Title>ecmwf.nfdrs.ic</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.ic"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="97" height="98">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.nfdrs.ic&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ecmwf.nfdrs.query</Name>
+        <Title>ecmwf.nfdrs.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.nfdrs.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.haines.low</Name>
+        <Title>ecmwf.haines.low</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.haines.low"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="150" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.haines.low&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.haines.med</Name>
+        <Title>ecmwf.haines.med</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.haines.med"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="150" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.haines.med&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ecmwf.haines.high</Name>
+        <Title>ecmwf.haines.high</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-180" miny="-90" maxx="180" maxy="90" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.haines.high"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="150" height="95">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ecmwf.haines.high&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ecmwf.haines.query</Name>
+        <Title>ecmwf.query</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="50" maxy="72" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="50" maxy="72" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2019-01-01" nearestValue="0">2018-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ecmwf.haines.query"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>corine.l2</Name>
+        <Title>Corine.l2</Title>
+        <Abstract>Corine Land Cover - Ver. 18.5</Abstract>
+        <SRS>EPSG:3035</SRS>
+        <LatLonBoundingBox minx="-81.7655" miny="-29.1976" maxx="94.1417" maxy="72.6642" />
+        <BoundingBox SRS="EPSG:3035"
+                    minx="-2.7e+06" miny="-3.09e+06" maxx="1.0048e+07" maxy="5.5e+06" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=corine.l2"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="301" height="232">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=corine.l2&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>fuel_map</Name>
+        <Title>effis.fuel_map</Title>
+        <Abstract>Fuel Map - ver. 2017</Abstract>
+        <SRS>EPSG:3035</SRS>
+        <LatLonBoundingBox minx="-72.8056" miny="22.2152" maxx="90.3823" maxy="81.8474" />
+        <BoundingBox SRS="EPSG:3035"
+                    minx="800000" miny="700000" maxx="7.5e+06" maxy="6.5e+06" />
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=fuel_map"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="141" height="158">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=fuel_map&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ercc.evos</Name>
+<!-- WARNING: Mandatory metadata '..._title.eng' was missing in this context. -->
+        <Title>ercc.evos</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>epsg:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.evos"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ercc.evos_2</Name>
+<!-- WARNING: Mandatory metadata '..._title.eng' was missing in this context. -->
+        <Title>ercc.evos_2</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>epsg:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.evos_2"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ercc.evos_1</Name>
+<!-- WARNING: Mandatory metadata '..._title.eng' was missing in this context. -->
+        <Title>ercc.evos_1</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>epsg:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.evos_1"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ercc.evos_0</Name>
+<!-- WARNING: Mandatory metadata '..._title.eng' was missing in this context. -->
+        <Title>ercc.evos_0</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>epsg:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.evos_0"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ercc.ba</Name>
+        <Title>Current Season Burned Areas in last 30 days</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>EPSG:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.ba"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="122" height="20">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ercc.ba&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ercc.ba_24hrs_point</Name>
+        <Title>Current Season Burned Areas in last 24 hrs</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <SRS>EPSG:900913</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.ba_24hrs_point"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ercc.hs_24hrs_point</Name>
+        <Title>Latest Hot Spots</Title>
+        <SRS>epsg:4326</SRS>
+        <SRS>epsg:3035</SRS>
+        <!-- WARNING: Optional LatLonBoundingBox could not be established for this layer.  Consider setting the EXTENT in the LAYER object, or wms_extent metadata. Also check that your data exists in the DATA statement -->
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.hs_24hrs_point"/>
+        </MetadataURL>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="150" height="21">
+             <Format>image/png</Format>
+             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=ercc.hs_24hrs_point&amp;format=image/png&amp;STYLE=default"/>
+          </LegendURL>
+        </Style>
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>ercc.fbm</Name>
+<!-- WARNING: Mandatory metadata '..._title.eng' was missing in this context. -->
+        <Title>ercc.fbm</Title>
+        <Abstract>Fire Behaviour Model - Test layer</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:3035</SRS>
+        <SRS>EPSG:3034</SRS>
+        <SRS>EPSG:3857</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="65" maxy="75" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="65" maxy="75" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2016-08-01" nearestValue="0">2014-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.fbm"/>
+        </MetadataURL>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>ercc.evos_t</Name>
+        <Title>ercc.evos_t</Title>
+        <Abstract>Burnt areas evolution - test layer</Abstract>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:3035</SRS>
+        <SRS>EPSG:3034</SRS>
+        <SRS>EPSG:3857</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-25" miny="25" maxx="65" maxy="75" />
+        <BoundingBox SRS="EPSG:4326"
+                    minx="-25" miny="25" maxx="65" maxy="75" />
+        <Dimension name="time" units="ISO8601"/>
+        <Extent name="time" default="2016-06-01" nearestValue="0">2014-01-01/2099-12-31</Extent>
+        <MetadataURL type="TC211">
+          <Format>text/xml</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://ies-ows.jrc.ec.europa.eu/effis?language=eng&amp;request=GetMetadata&amp;layer=ercc.evos_t"/>
+        </MetadataURL>
+    </Layer>
+  </Layer>
+</Capability>
+</WMT_MS_Capabilities>
