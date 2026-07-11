@@ -1,149 +1,119 @@
 import React from 'react';
-import { Send, Map, Volume2, Bell, AlertTriangle, ShieldCheck, Info, Plane, Radio, Eye } from 'lucide-react';
+import { Bell, AlertTriangle, ShieldCheck, Info, Radio, Eye, Lock, RefreshCw, Trash2 } from 'lucide-react';
+import { translations } from '../utils/translations';
 
 export default function AlertsAndActions({
   alerts,
   clearAlerts,
-  droneActive,
-  setDroneActive,
-  evacRoutesActive,
-  setEvacRoutesActive,
-  acousticAlertActive,
-  setAcousticAlertActive,
-  onTriggerSimulatedAlert
+  onTriggerSimulatedAlert,
+  isLoggedIn,
+  isBrigadista,
+  onOpenLogin,
+  onOpenReport,
+  lang
 }) {
-  
+  const t = translations[lang || 'es'];
+
   // Categorized icons based on alert source string matching
   const getIconForSource = (source) => {
     const s = source.toLowerCase();
-    if (s.includes('dron')) return Plane;
     if (s.includes('nodo') || s.includes('sensor')) return Radio;
     if (s.includes('satélite') || s.includes('nasa')) return Eye;
-    if (s.includes('acústic') || s.includes('sirena')) return Volume2;
     if (s.includes('sistema') || s.includes('central')) return ShieldCheck;
+    if (s.includes('ciudadan') || s.includes('públic') || s.includes('avistamiento')) return AlertTriangle;
     return Info;
   };
 
   const getLatestSummary = () => {
-    if (alerts.length === 0) return "Todo está tranquilo en este momento.";
+    if (alerts.length === 0) return lang === 'en' ? "Everything is calm at this moment." : "Todo está tranquilo en este momento.";
     const latest = alerts[0];
-    if (latest.type === 'danger') return "¡Atención! Hay un reporte crítico reciente.";
-    if (latest.type === 'warning') return "Precaución: El sistema está monitoreando una anomalía.";
-    return "El sistema está funcionando con normalidad.";
+    if (latest.type === 'danger') return lang === 'en' ? "Warning! A critical alert has been logged." : "¡Atención! Hay un reporte crítico reciente.";
+    if (latest.type === 'warning') return lang === 'en' ? "Caution: System is monitoring an anomaly." : "Precaución: El sistema está monitoreando una anomalía.";
+    return lang === 'en' ? "System is operating normally." : "El sistema está funcionando con normalidad.";
   };
 
+  const handleProtectedAction = (actionFn) => {
+    if (!isLoggedIn) {
+      onOpenLogin();
+    } else if (!isBrigadista) {
+      alert(lang === 'en'
+        ? "Access Denied: This operational action requires official Brigade or Coordinator credentials."
+        : "Acceso denegado: Esta acción de operación requiere credenciales oficiales de Brigadista o Coordinador.");
+    } else {
+      actionFn();
+    }
+  };
+
+  const showLock = !isLoggedIn || !isBrigadista;
+
   return (
-    <div className="bg-white border border-[#EEF5E9] rounded-2xl p-6 flex flex-col gap-5 h-full shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+    <div className="bg-white border border-[#EEF5E9] rounded-2xl p-6 flex flex-col gap-5 h-full shadow-[0_2px_12px_rgba(0,0,0,0.07)] text-left">
       
       {/* Panel header */}
       <div className="flex items-center justify-between border-b border-[#EEF5E9] pb-4">
         <div className="flex items-center gap-2">
           <Bell className="h-5 w-5 text-[#2D6A4F]" />
-          <h2 className="text-lg font-bold text-[#2D3436]">
-            Alertas y Acciones Inmediatas
+          <h2 className="text-md font-bold text-[#2D3436]">
+            {lang === 'en' ? "Operations Center & Alerts" : "Centro de Operaciones y Alertas"}
           </h2>
         </div>
         <button
-          onClick={clearAlerts}
-          className="text-xs text-[#636E72] hover:text-[#2D3436] border border-[#EEF5E9] hover:bg-[#F8FAF5] px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold"
+          onClick={() => handleProtectedAction(clearAlerts)}
+          className="text-xs text-[#636E72] hover:text-red-600 border border-[#EEF5E9] hover:bg-[#F8FAF5] px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold flex items-center gap-1"
         >
-          Limpiar registros
+          {showLock && <Lock className="h-3 w-3 text-slate-400" />}
+          <Trash2 className="h-3.5 w-3.5" />
+          {lang === 'en' ? "Clear logs" : "Limpiar registros"}
         </button>
       </div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 min-h-[160px] overflow-hidden">
         
-        {/* Quick Action Buttons */}
-        <div className="flex flex-col gap-3 justify-center">
-          <span className="text-xs font-bold text-[#636E72] mb-1">
-            ACCIONES RÁPIDAS
+        {/* Operations Command Menu */}
+        <div className="flex flex-col gap-4 justify-center bg-[#F8FAF5] border border-[#EEF5E9] rounded-2xl p-5 text-left">
+          <span className="text-xs font-bold text-[#636E72] font-mono tracking-wider block uppercase">
+            {lang === 'en' ? "BRIGADE SYSTEMS SIMULATOR" : "SIMULADOR DE SISTEMAS - BRIGADA"}
           </span>
 
-          {/* Action 1: Drone Reconnaissance */}
+          <p className="text-[11px] text-slate-500 leading-normal font-light">
+            {lang === 'en'
+              ? "Simulate sensor failures, extreme temperatures or risk events. Verify immediate automated Telegram alarms and telemetry updates."
+              : "Simula fallas en sensores, picos térmicos de riesgo o eventos de peligro forestal. Verifica las alertas de Telegram automáticas y actualizaciones de telemetría."}
+          </p>
+
           <button
-            onClick={() => setDroneActive(!droneActive)}
-            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
-              droneActive
-                ? 'bg-[#EEF5E9] border-[#52B788] text-[#2D6A4F] shadow-sm'
-                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#52B788]/50 hover:bg-white'
-            }`}
+            onClick={() => handleProtectedAction(onTriggerSimulatedAlert)}
+            className="w-full bg-[#2D6A4F] hover:bg-[#1E4635] text-white py-3 rounded-xl font-bold uppercase transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 cursor-pointer text-xs"
           >
-            <div className="flex items-center gap-4">
-              <div className={`p-2 rounded-lg ${droneActive ? 'bg-[#52B788] text-white' : 'bg-[#EEF5E9] text-[#52B788] group-hover:bg-[#52B788] group-hover:text-white transition-colors'}`}>
-                <Plane className="h-5 w-5" />
-              </div>
-              <div>
-                <span className={`font-bold block text-sm ${droneActive ? 'text-[#2D6A4F]' : 'text-[#2D3436]'}`}>Enviar Dron de Reconocimiento</span>
-                <span className="text-xs opacity-80 font-medium mt-0.5 block">Inspección aérea de la zona</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
-              <span className={`w-2 h-2 rounded-full ${droneActive ? 'bg-[#52B788] animate-pulse' : 'bg-slate-300'}`}></span>
-              <span className="text-xs font-bold">{droneActive ? 'EN VUELO' : 'ESPERA'}</span>
-            </div>
+            {showLock && <Lock className="h-3.5 w-3.5 text-white/70" />}
+            <RefreshCw className="h-4 w-4" />
+            <span>{lang === 'en' ? "Simulate Risk Event" : "Simular Evento de Riesgo"}</span>
           </button>
 
-          {/* Action 2: Evacuation Routes */}
-          <button
-            onClick={() => setEvacRoutesActive(!evacRoutesActive)}
-            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
-              evacRoutesActive
-                ? 'bg-[#EEF5E9] border-[#52B788] text-[#2D6A4F] shadow-sm'
-                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#52B788]/50 hover:bg-white'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`p-2 rounded-lg ${evacRoutesActive ? 'bg-[#52B788] text-white' : 'bg-[#EEF5E9] text-[#52B788] group-hover:bg-[#52B788] group-hover:text-white transition-colors'}`}>
-                <Map className="h-5 w-5" />
-              </div>
-              <div>
-                <span className={`font-bold block text-sm ${evacRoutesActive ? 'text-[#2D6A4F]' : 'text-[#2D3436]'}`}>Ver Rutas de Evacuación</span>
-                <span className="text-xs opacity-80 font-medium mt-0.5 block">Trazar caminos seguros en el mapa</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
-              <span className={`w-2 h-2 rounded-full ${evacRoutesActive ? 'bg-[#52B788] animate-pulse' : 'bg-slate-300'}`}></span>
-              <span className="text-xs font-bold">{evacRoutesActive ? 'ACTIVO' : 'OCULTO'}</span>
-            </div>
-          </button>
-
-          {/* Action 3: Bioacoustic Alert */}
-          <button
-            onClick={() => setAcousticAlertActive(!acousticAlertActive)}
-            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 text-left cursor-pointer group ${
-              acousticAlertActive
-                ? 'bg-[#E63946]/10 border-[#E63946]/30 text-[#E63946] shadow-sm'
-                : 'bg-[#F8FAF5] border-[#EEF5E9] text-[#636E72] hover:border-[#E63946]/30 hover:bg-white hover:text-[#E63946]'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`p-2 rounded-lg transition-colors ${acousticAlertActive ? 'bg-[#E63946] text-white' : 'bg-[#E63946]/10 text-[#E63946] group-hover:bg-[#E63946] group-hover:text-white'}`}>
-                <Volume2 className="h-5 w-5" />
-              </div>
-              <div>
-                <span className={`font-bold block text-sm ${acousticAlertActive ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>Activar Alerta Sonora</span>
-                <span className="text-xs opacity-80 font-medium mt-0.5 block">Ahuyentar fauna en peligro</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 border-l border-[#EEF5E9] pl-4">
-              <span className={`w-2 h-2 rounded-full ${acousticAlertActive ? 'bg-[#E63946] animate-ping' : 'bg-slate-300'}`}></span>
-              <span className="text-xs font-bold">{acousticAlertActive ? 'SONANDO' : 'ESPERA'}</span>
-            </div>
-          </button>
+          {/* Access indicator */}
+          <div className="border-t border-[#EEF5E9] pt-3 mt-1 flex items-center gap-2 text-[10px] text-slate-400 font-medium">
+            <span className={`w-2 h-2 rounded-full ${isLoggedIn ? (isBrigadista ? 'bg-[#52B788]' : 'bg-amber-400') : 'bg-slate-300'}`}></span>
+            <span>
+              {isLoggedIn 
+                ? (isBrigadista 
+                  ? (lang === 'en' ? "Coordinators Mode: Full Access" : "Modo Coordinador: Acceso Total") 
+                  : (lang === 'en' ? "Community Mode: Read-Only Simulation" : "Modo Comunidad: Simulación Deshabilitada"))
+                : (lang === 'en' ? "Guest Mode: Read-Only" : "Modo Invitado: Solo Lectura")}
+            </span>
+          </div>
         </div>
 
         {/* Timeline Log Lists */}
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold text-[#636E72]">
-              LÍNEA DE EVENTOS
-            </span>
+          <div className="flex justify-between items-center mb-2 gap-2 flex-wrap">
+            {/* Unlocked public report button */}
             <button
-              onClick={onTriggerSimulatedAlert}
-              className="text-xs bg-[#EEF5E9] hover:bg-[#52B788] text-[#2D6A4F] hover:text-white border border-[#52B788]/20 px-3 py-1.5 rounded-lg transition-colors font-bold shadow-sm"
+              onClick={onOpenReport}
+              className="text-[10px] bg-[#E63946] hover:bg-[#C92A3A] text-white px-3.5 py-1.5 rounded-lg transition-colors font-bold shadow-sm flex items-center gap-1 cursor-pointer w-full"
             >
-              + Simular Evento
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {t.reportBtn || (lang === 'en' ? "Report Emergency / Sighting" : "Reportar Avistamiento / Emergencia")}
             </button>
           </div>
           
@@ -155,8 +125,10 @@ export default function AlertsAndActions({
                 <Info className="h-5 w-5" />
               </div>
               <div>
-                <span className="text-xs font-bold text-[#636E72] block">¿Qué está pasando?</span>
-                <span className="text-sm font-bold text-[#2D3436]">{getLatestSummary()}</span>
+                <span className="text-[10px] font-bold text-[#636E72] block uppercase tracking-wider font-mono">
+                  {lang === 'en' ? "TERRITORY STATUS" : "¿Qué está pasando?"}
+                </span>
+                <span className="text-xs font-bold text-[#2D3436] mt-0.5 block">{getLatestSummary()}</span>
               </div>
             </div>
 
@@ -164,8 +136,12 @@ export default function AlertsAndActions({
               {alerts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-[#636E72] gap-3 py-6">
                   <ShieldCheck className="h-8 w-8 text-[#52B788] opacity-50" />
-                  <span className="text-sm font-bold">Todo tranquilo</span>
-                  <span className="text-xs">No hay eventos recientes para mostrar.</span>
+                  <span className="text-xs font-bold uppercase tracking-wider font-mono">
+                    {lang === 'en' ? "ALL SECURE" : "Todo tranquilo"}
+                  </span>
+                  <span className="text-[11px] font-light">
+                    {lang === 'en' ? "No anomalies detected or reported." : "No hay eventos recientes para mostrar."}
+                  </span>
                 </div>
               ) : (
                 alerts.map((alert) => {
@@ -205,7 +181,7 @@ export default function AlertsAndActions({
                             {alert.time}
                           </span>
                         </div>
-                        <p className="text-xs leading-relaxed font-medium opacity-90">
+                        <p className="text-xs leading-relaxed font-light opacity-90">
                           {alert.message}
                         </p>
                       </div>

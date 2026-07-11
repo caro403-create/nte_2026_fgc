@@ -9,9 +9,11 @@ import EmergencyPanel from './components/EmergencyPanel';
 import Chatbot from './components/Chatbot';
 import LandingPage from './components/LandingPage';
 import SupabaseTodos from './components/SupabaseTodos';
-import ObservatorioPanel from './components/ObservatorioPanel';
+import LoginPage from './components/LoginPage';
+import PublicReportModal from './components/PublicReportModal';
+import CommunityForum from './components/CommunityForum';
+import { supabase } from './utils/supabase';
 import { translations } from './utils/translations';
-
 
 export default function App() {
   // Language routing state
@@ -31,19 +33,25 @@ export default function App() {
 
   const t = translations[lang];
 
-  // View routing state: 'landing' or 'dashboard'
+  // View routing state: 'landing', 'dashboard', or 'login'
   const [view, setView] = useState('landing');
   
-  // Tab within dashboard: 'dashboard' or 'observatorio'
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // Dashboard internal active sub-tab: 'monitoreo' or 'comunidad'
+  const [activeTab, setActiveTab] = useState('monitoreo');
+
+  // Authentication State
+  const [user, setUser] = useState(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+
+  // Compute if the logged in user is a Brigadista or official administrator
+  const isBrigadista = user && (
+    user.email.endsWith('@nte.gov') || 
+    user.email.endsWith('@brigada.org') || 
+    user.user_metadata?.role === 'brigadista'
+  );
 
   // Global Risk Score (0 to 1) - defaults to 0.72 (Rojo/Alarma)
   const [score, setScore] = useState(0.72);
-
-  // States for mission controls
-  const [droneActive, setDroneActive] = useState(false);
-  const [evacRoutesActive, setEvacRoutesActive] = useState(false);
-  const [acousticAlertActive, setAcousticAlertActive] = useState(false);
   
   // Selected IoT node in the right sensor panel
   const [selectedNodeId, setSelectedNodeId] = useState(3);
@@ -70,6 +78,47 @@ export default function App() {
     { id: 3, type: 'warning', source: 'ESTIMACIÓN NDVI', message: 'VEGETACIÓN EN RIESGO: Zona C4 desciende a NDVI 0.22 (Estrés hídrico extremo, combustible forestal seco).', time: '12:45:10' },
     { id: 4, type: 'info', source: 'SISTEMA CENTRAL', message: 'RED ACTIVA: Conexión establecida con los 5 nodos de defensa activa. Todos transmitiendo en ráfaga.', time: '12:00:00' }
   ]);
+
+  // Listen to Supabase Auth State Changes
+  useEffect(() => {
+    // Get active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen to changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  const handleCitizenReport = ({ nodeId, type, desc }) => {
+    const time = new Date().toTimeString().split(' ')[0];
+    const typeLabels = {
+      fire: lang === 'en' ? 'Active Fire' : 'Fuego Activo',
+      smoke: lang === 'en' ? 'Smoke Column' : 'Columna de Humo',
+      burn: lang === 'en' ? 'Controlled Burning' : 'Quema Agrícola',
+      other: lang === 'en' ? 'Suspicious Sighting' : 'Avistamiento Sospechoso'
+    };
+
+    setAlerts(prev => [
+      {
+        id: Date.now(),
+        type: 'danger',
+        source: `REPORTES CIUDADANOS (NODO 0${nodeId})`,
+        message: `${typeLabels[type].toUpperCase()}: ${desc}`,
+        time
+      },
+      ...prev
+    ]);
+  };
 
   // Effect to update nodes, hotspots and alerts dynamically when global score is adjusted
   useEffect(() => {
@@ -148,46 +197,6 @@ export default function App() {
 
   }, [score]);
 
-  const addSystemLog = (source, message, type) => {
-    const time = new Date().toTimeString().split(' ')[0];
-    setAlerts(prev => [
-      {
-        id: Date.now() + Math.random(),
-        type,
-        source,
-        message,
-        time
-      },
-      ...prev
-    ]);
-  };
-
-  // Quick Action feedback logs
-  useEffect(() => {
-    if (droneActive) {
-      addSystemLog('DRON RECON', 'Misión aérea iniciada. Dron de ala fija despegando de base regional. Estimado de arribo a Zona C4: 4 min.', 'info');
-    } else {
-      addSystemLog('DRON RECON', 'Dron retornado a base. Inspección completada y guardada en registros.', 'success');
-    }
-  }, [droneActive]);
-
-  useEffect(() => {
-    if (evacRoutesActive) {
-      addSystemLog('CONTROL DE EVACUACIÓN', 'Rutas de escape activadas. Desplegando señalizadores luminosos forestales hacia Zonas Seguras A y B.', 'success');
-    } else {
-      addSystemLog('CONTROL DE EVACUACIÓN', 'Rutas de evacuación en standby.', 'info');
-    }
-  }, [evacRoutesActive]);
-
-  useEffect(() => {
-    if (acousticAlertActive) {
-      addSystemLog('ALERTA BIOACÚSTICA', 'Emisión ultrasónica activa en Nodos 3 y 4. Dispersión preventiva de avifauna y fauna terrestre iniciada.', 'danger');
-    } else {
-      addSystemLog('ALERTA BIOACÚSTICA', 'Emisores de frecuencia desactivados.', 'info');
-    }
-  }, [acousticAlertActive]);
-
-
   // Trigger simulated anomaly button
   const triggerSimulatedAnomaly = () => {
     const time = new Date().toTimeString().split(' ')[0];
@@ -253,14 +262,26 @@ export default function App() {
       <LandingPage 
         onEnterDashboard={(tab) => {
           setView('dashboard');
-          if (tab === 'monitoreo' || tab === 'observatorio' || tab === 'mapa') {
-            setActiveTab('observatorio');
-          } else {
-            setActiveTab('dashboard');
-          }
+          setActiveTab(tab === 'comunidad' ? 'comunidad' : 'monitoreo');
         }} 
         lang={lang}
         setLang={setLang}
+        user={user}
+        onLogout={handleLogout}
+        onOpenLogin={() => setView('login')}
+      />
+    );
+  }
+
+  if (view === 'login') {
+    return (
+      <LoginPage 
+        onLogin={(loggedInUser) => {
+          setUser(loggedInUser);
+          setView('dashboard');
+        }}
+        onBack={() => setView('landing')}
+        lang={lang}
       />
     );
   }
@@ -268,149 +289,160 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
-      <Header onBackToLanding={() => setView('landing')} lang={lang} setLang={setLang} activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Header 
+        onBackToLanding={() => setView('landing')} 
+        lang={lang} 
+        setLang={setLang} 
+        user={user} 
+        onLogout={handleLogout} 
+        onOpenLogin={() => setView('login')} 
+        isDashboard={true}
+        onEnterDashboard={(tab) => {
+          setView('dashboard');
+          setActiveTab(tab === 'comunidad' ? 'comunidad' : 'monitoreo');
+        }}
+      />
 
-      {/* Control & Status Bar */}
-      {activeTab !== 'observatorio' && (
-        <div className="bg-white border-b border-gray-200 px-6 py-3 flex flex-col xl:flex-row items-center justify-between gap-4 text-xs shadow-xs">
-          
-          {/* Left Side: Telemetry Status */}
-          <div className="flex flex-wrap items-center gap-4 font-mono text-slate-500">
-            <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
-              <Wifi className="h-3.5 w-3.5" />
-              {t.dbTitle}
-            </span>
-            <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
-              <Database className="h-3.5 w-3.5" />
-              {t.dbTelemetry}
-            </span>
-            <span className="flex items-center gap-1.5 text-slate-400">
-              <Clock className="h-3.5 w-3.5" />
-              {t.dbSincro}: {new Date().toLocaleDateString()} COT
-            </span>
-          </div>
-
-          {/* Center: Global Alert status badge */}
-          <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border ${risk.borderColor} ${risk.bgMuted} transition-all duration-500 font-sans`}>
-            <span className="text-sm">{risk.icon}</span>
-            <span className={`font-bold ${risk.textColor} text-xs`}>
-              {risk.label}
-            </span>
-            <span className="text-slate-600 text-[11px] font-medium hidden sm:inline">
-              {risk.desc}
-            </span>
-          </div>
-
-          {/* Right Side: Risk Score Slider & Reset */}
-          <div className="flex items-center gap-4 font-sans w-full xl:w-auto max-w-sm xl:max-w-xs justify-end">
-            <div className="flex flex-col gap-0.5 w-full">
-              <div className="flex justify-between items-center text-[10px] font-bold text-[#2D3436] mb-0.5">
-                <span>{t.dbSimulatedRisk}</span>
-                <span>{(score * 100).toFixed(0)}%</span>
-              </div>
-              
-              <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
-                <div className="h-full w-[40%] bg-[#52B788] opacity-20"></div>
-                <div className="h-full w-[30%] bg-[#F4A261] opacity-20"></div>
-                <div className="h-full w-[30%] bg-[#E63946] opacity-20"></div>
-                
-                <div 
-                  className={`absolute top-0 left-0 h-full transition-all duration-300 rounded-full ${
-                    score <= 0.4 ? 'bg-[#52B788]' : score <= 0.7 ? 'bg-[#F4A261]' : 'bg-[#E63946]'
-                  }`}
-                  style={{ width: `${score * 100}%` }}
-                ></div>
-                
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={score}
-                  onChange={(e) => setScore(parseFloat(e.target.value))}
-                  className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                  title="Simular nivel de riesgo"
-                />
-              </div>
+      {/* Main Content Layout - Dynamic Tab Routing */}
+      {activeTab === 'monitoreo' ? (
+        <>
+          {/* Control & Status Bar with layout offset (only in telemetry view) */}
+          <div className="bg-white border-b border-gray-200 px-6 py-3 flex flex-col xl:flex-row items-center justify-between gap-4 text-xs shadow-xs mt-28">
+            
+            {/* Left Side: Telemetry Status */}
+            <div className="flex flex-wrap items-center gap-4 font-mono text-slate-500">
+              <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
+                <Wifi className="h-3.5 w-3.5" />
+                {t.dbTitle}
+              </span>
+              <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
+                <Database className="h-3.5 w-3.5" />
+                {t.dbTelemetry}
+              </span>
+              <span className="flex items-center gap-1.5 text-slate-400">
+                <Clock className="h-3.5 w-3.5" />
+                {t.dbSincro}: {new Date().toLocaleDateString()} COT
+              </span>
             </div>
 
-            <button 
-              onClick={() => setScore(0.72)} 
-              className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded-full px-3 py-1.5 bg-gray-50 cursor-pointer text-slate-600 font-mono text-[10px] shrink-0 font-semibold"
-            >
-              <RefreshCw className="h-3 w-3" />
-              {t.dbReset}
-            </button>
+            {/* Center: Global Alert status badge */}
+            <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border ${risk.borderColor} ${risk.bgMuted} transition-all duration-500 font-sans`}>
+              <span className="text-sm">{risk.icon}</span>
+              <span className={`font-bold ${risk.textColor} text-xs`}>
+                {risk.label}
+              </span>
+              <span className="text-slate-600 text-[11px] font-medium hidden sm:inline">
+                {risk.desc}
+              </span>
+            </div>
+
+            {/* Right Side: Risk Score Slider & Reset */}
+            <div className="flex items-center gap-4 font-sans w-full xl:w-auto max-w-sm xl:max-w-xs justify-end">
+              <div className="flex flex-col gap-0.5 w-full">
+                <div className="flex justify-between items-center text-[10px] font-bold text-[#2D3436] mb-0.5">
+                  <span>{t.dbSimulatedRisk}</span>
+                  <span>{(score * 100).toFixed(0)}%</span>
+                </div>
+                
+                <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                  <div className="h-full w-[40%] bg-[#52B788] opacity-20"></div>
+                  <div className="h-full w-[30%] bg-[#F4A261] opacity-20"></div>
+                  <div className="h-full w-[30%] bg-[#E63946] opacity-20"></div>
+                  
+                  <div 
+                    className={`absolute top-0 left-0 h-full transition-all duration-300 rounded-full ${
+                      score <= 0.4 ? 'bg-[#52B788]' : score <= 0.7 ? 'bg-[#F4A261]' : 'bg-[#E63946]'
+                    }`}
+                    style={{ width: `${score * 100}%` }}
+                  ></div>
+                  
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={score}
+                    onChange={(e) => setScore(parseFloat(e.target.value))}
+                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Simular nivel de riesgo"
+                  />
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setScore(0.72)} 
+                className="flex items-center gap-1 hover:bg-gray-100 hover:text-slate-900 transition-colors duration-200 border border-gray-200 rounded-full px-3 py-1.5 bg-gray-50 cursor-pointer text-slate-600 font-mono text-[10px] shrink-0 font-semibold"
+              >
+                <RefreshCw className="h-3 w-3" />
+                {t.dbReset}
+              </button>
+            </div>
           </div>
-        </div>
+
+          <main className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 shrink-0">
+              {/* Left/Middle Column (Map & Alerts) - Takes 7/12 cols on desktop */}
+              <div className="xl:col-span-7 flex flex-col gap-6 h-full">
+                {/* Map Section */}
+                <div className="flex-1 min-h-[380px]">
+                  <MapSimulator
+                    score={score}
+                    nodes={nodes}
+                    selectedNodeId={selectedNodeId}
+                    setSelectedNodeId={setSelectedNodeId}
+                    hotspots={hotspots}
+                    setHotspots={setHotspots}
+                    lang={lang}
+                  />
+                </div>
+
+                {/* Alerts Timeline & Action Buttons Section */}
+                <div className="shrink-0">
+                  <AlertsAndActions
+                    alerts={alerts}
+                    clearAlerts={clearAlerts}
+                    onTriggerSimulatedAlert={triggerSimulatedAnomaly}
+                    isLoggedIn={!!user}
+                    isBrigadista={isBrigadista}
+                    onOpenLogin={() => setView('login')}
+                    onOpenReport={() => setReportModalOpen(true)}
+                    lang={lang}
+                  />
+                </div>
+              </div>
+
+              {/* Right Column (Sensor metrics panel & Supabase Tasks) - Takes 5/12 cols on desktop */}
+              <div className="xl:col-span-5 flex flex-col gap-6 h-full">
+                <SensorPanel node={selectedNode} globalScore={score} lang={lang} />
+                <SupabaseTodos lang={lang} isLoggedIn={!!user} isBrigadista={isBrigadista} />
+              </div>
+            </div>
+            
+            {/* Emergency Panel */}
+            <div className="shrink-0">
+              <EmergencyPanel globalScore={score} />
+            </div>
+          </main>
+        </>
+      ) : (
+        <main className="flex-1 overflow-y-auto pt-28">
+          <CommunityForum user={user} isBrigadista={isBrigadista} lang={lang} />
+        </main>
       )}
-
-      {/* Main Content Layout - Single Pane of Glass */}
-      <main className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto">
-        {activeTab === 'observatorio' ? (
-          <ObservatorioPanel
-            lang={lang}
-            globalScore={score}
-            nodes={nodes}
-            selectedNodeId={selectedNodeId}
-            setSelectedNodeId={setSelectedNodeId}
-            setActiveTab={setActiveTab}
-          />
-        ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 shrink-0">
-            {/* Left/Middle Column (Map & Alerts) - Takes 7/12 cols on desktop */}
-            <div className="xl:col-span-7 flex flex-col gap-6 h-full">
-              {/* Map Section */}
-              <div className="flex-1 min-h-[380px]">
-                <MapSimulator
-                  score={score}
-                  nodes={nodes}
-                  selectedNodeId={selectedNodeId}
-                  setSelectedNodeId={setSelectedNodeId}
-                  droneActive={droneActive}
-                  evacRoutesActive={evacRoutesActive}
-                  acousticAlertActive={acousticAlertActive}
-                  hotspots={hotspots}
-                  setHotspots={setHotspots}
-                />
-              </div>
-
-              {/* Alerts Timeline & Action Buttons Section */}
-              <div className="shrink-0">
-                <AlertsAndActions
-                  alerts={alerts}
-                  clearAlerts={clearAlerts}
-                  droneActive={droneActive}
-                  setDroneActive={setDroneActive}
-                  evacRoutesActive={evacRoutesActive}
-                  setEvacRoutesActive={setEvacRoutesActive}
-                  acousticAlertActive={acousticAlertActive}
-                  setAcousticAlertActive={setAcousticAlertActive}
-                  onTriggerSimulatedAlert={triggerSimulatedAnomaly}
-                />
-              </div>
-            </div>
-
-            {/* Right Column (Sensor metrics panel & Supabase Tasks) - Takes 5/12 cols on desktop */}
-            <div className="xl:col-span-5 flex flex-col gap-6 h-full">
-              <SensorPanel node={selectedNode} globalScore={score} lang={lang} />
-              <SupabaseTodos lang={lang} />
-            </div>
-          </div>
-        )}
-        
-        {/* Emergency Panel */}
-        {activeTab !== 'observatorio' && (
-          <div className="shrink-0">
-            <EmergencyPanel globalScore={score} />
-          </div>
-        )}
-      </main>
       
       {/* Footer copyright */}
       <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-xs text-slate-400 font-mono shadow-xs">
         {t.dbFooter}
       </footer>
+
+      {/* Auth Modals */}
+      <PublicReportModal 
+        isOpen={reportModalOpen} 
+        onClose={() => setReportModalOpen(false)} 
+        onSubmitReport={handleCitizenReport} 
+        lang={lang} 
+      />
+
       <Chatbot />
     </div>
   );

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import { CheckCircle, Circle, Plus, Trash2, Database, AlertCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, Circle, Plus, Trash2, Database, AlertCircle, RefreshCw, Lock } from 'lucide-react';
 import { translations } from '../utils/translations';
 
-export default function SupabaseTodos({ lang }) {
+export default function SupabaseTodos({ lang, isLoggedIn, isBrigadista }) {
   const [todos, setTodos] = useState([]);
   const [newTodoName, setNewTodoName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -28,7 +28,6 @@ export default function SupabaseTodos({ lang }) {
         .order('id', { ascending: true });
 
       if (error) {
-        // If table doesn't exist, we fallback
         if (error.code === 'PGRST205') {
           console.warn("Supabase: Table 'todos' not found. Using fallback mockup data.");
           setTodos(fallbackTodos);
@@ -54,12 +53,26 @@ export default function SupabaseTodos({ lang }) {
     fetchTodos();
   }, [lang]);
 
+  const verifyBrigadistaPermission = () => {
+    if (!isLoggedIn) return false;
+    if (!isBrigadista) {
+      alert(
+        lang === 'en' 
+          ? "Permission Denied: Editing prevention checklists is restricted to official Brigades." 
+          : "Acceso denegado: La edición de tareas de prevención está restringida a brigadistas oficiales y coordinadores."
+      );
+      return false;
+    }
+    return true;
+  };
+
   async function handleAddTodo(e) {
     e.preventDefault();
+    if (!isLoggedIn) return;
+    if (!verifyBrigadistaPermission()) return;
     if (!newTodoName.trim()) return;
 
     if (isUsingFallback) {
-      // Offline/fallback state local addition
       const newLocalTodo = {
         id: Date.now(),
         name: newTodoName,
@@ -87,6 +100,9 @@ export default function SupabaseTodos({ lang }) {
   }
 
   async function handleToggleTodo(id, currentCompleted) {
+    if (!isLoggedIn) return;
+    if (!verifyBrigadistaPermission()) return;
+
     if (isUsingFallback) {
       setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
       return;
@@ -99,7 +115,6 @@ export default function SupabaseTodos({ lang }) {
         .eq('id', id);
 
       if (error) {
-        // Fallback: if 'completed' column doesn't exist, we delete it to complete it
         const { error: deleteError } = await supabase
           .from('todos')
           .delete()
@@ -116,6 +131,9 @@ export default function SupabaseTodos({ lang }) {
   }
 
   async function handleDeleteTodo(id) {
+    if (!isLoggedIn) return;
+    if (!verifyBrigadistaPermission()) return;
+
     if (isUsingFallback) {
       setTodos(todos.filter(t => t.id !== id));
       return;
@@ -165,22 +183,36 @@ export default function SupabaseTodos({ lang }) {
         </div>
       )}
 
-      {/* Add Todo Form */}
-      <form onSubmit={handleAddTodo} className="flex gap-2">
-        <input
-          type="text"
-          value={newTodoName}
-          onChange={(e) => setNewTodoName(e.target.value)}
-          placeholder={t.todoPlaceholder}
-          className="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:border-transparent bg-slate-50"
-        />
-        <button
-          type="submit"
-          className="bg-[#2D6A4F] hover:bg-[#1E4635] text-white p-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center shrink-0"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
-      </form>
+      {/* Add Todo Form / Locked Warning */}
+      {isLoggedIn ? (
+        isBrigadista ? (
+          <form onSubmit={handleAddTodo} className="flex gap-2">
+            <input
+              type="text"
+              value={newTodoName}
+              onChange={(e) => setNewTodoName(e.target.value)}
+              placeholder={t.todoPlaceholder}
+              className="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:border-transparent bg-slate-50"
+            />
+            <button
+              type="submit"
+              className="bg-[#2D6A4F] hover:bg-[#1E4635] text-white p-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center shrink-0 cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </form>
+        ) : (
+          <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-xs text-slate-500 font-bold flex items-center gap-2">
+            <Lock className="h-4 w-4 text-slate-400 shrink-0" />
+            <span>{lang === 'en' ? "ReadOnly: Restructured for Brigades" : "Lectura: Tareas restringidas para Brigadas"}</span>
+          </div>
+        )
+      ) : (
+        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-3 rounded-xl text-center text-xs text-slate-500 font-bold flex items-center justify-center gap-2">
+          <Lock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+          <span>{t.todoReadOnlyWarn}</span>
+        </div>
+      )}
 
       {/* Todos List */}
       <div className="max-h-[160px] overflow-y-auto pr-1">
@@ -197,7 +229,7 @@ export default function SupabaseTodos({ lang }) {
               >
                 <div 
                   onClick={() => handleToggleTodo(todo.id, todo.completed)}
-                  className="flex items-center gap-2.5 cursor-pointer flex-1"
+                  className={`flex items-center gap-2.5 flex-1 ${isLoggedIn && isBrigadista ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                 >
                   {todo.completed ? (
                     <CheckCircle className="h-4 w-4 text-[#2D6A4F] shrink-0" />
@@ -209,13 +241,15 @@ export default function SupabaseTodos({ lang }) {
                   </span>
                 </div>
 
-                <button
-                  onClick={() => handleDeleteTodo(todo.id)}
-                  className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-md"
-                  title={lang === 'en' ? "Delete task" : "Eliminar tarea"}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {isLoggedIn && isBrigadista && (
+                  <button
+                    onClick={() => handleDeleteTodo(todo.id)}
+                    className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-md cursor-pointer"
+                    title={lang === 'en' ? "Delete task" : "Eliminar tarea"}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </li>
             ))}
           </ul>
