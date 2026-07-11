@@ -22,7 +22,7 @@ export default function Chatbot() {
   // Mock response logic based on keywords
   const generateBotResponse = (userInput) => {
     const input = userInput.toLowerCase();
-    
+
     if (input.includes('hola') || input.includes('saludos')) {
       return "¡Hola! ¿En qué te puedo ayudar hoy?";
     }
@@ -38,7 +38,10 @@ export default function Chatbot() {
     if (input.includes('sensor') || input.includes('funciona') || input.includes('dashboard')) {
       return "El sistema usa sensores IoT (miden calor, gases como CO/VOC) y satélites de la NASA. Si el nivel de riesgo ('Score') sube mucho, se activan alertas automáticas.";
     }
-    
+    if (input.includes('sos') || input.includes('ayuda')) {
+      return "Busca ayuda en tu casa o llama el 123 red Colombia";
+    }
+
     // Default fallback
     return "Es una pregunta interesante. Como soy un asistente de demostración, mis conocimientos son limitados. Intenta preguntarme sobre prevención, evacuación o cómo funcionan los sensores.";
   };
@@ -70,7 +73,7 @@ export default function Chatbot() {
         aria-label="Abrir asistente de incendios"
       >
         <MessageCircle className="h-7 w-7" />
-        
+
         {/* Unread badge / pulse effect */}
         <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
@@ -79,7 +82,7 @@ export default function Chatbot() {
       </button>
 
       {/* Chat Window */}
-      <div 
+      <div
         className={`fixed bottom-6 right-6 z-50 w-full max-w-[360px] h-[500px] max-h-[80vh] flex flex-col bg-white border border-[#EEF5E9] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 origin-bottom-right ${isOpen ? 'scale-100 opacity-100' : 'scale-50 opacity-0 pointer-events-none'}`}
       >
         {/* Header */}
@@ -93,7 +96,7 @@ export default function Chatbot() {
               <p className="text-xs text-white/80 font-medium">Guía y Prevención</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setIsOpen(false)}
             className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
           >
@@ -104,22 +107,21 @@ export default function Chatbot() {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 bg-[#F8FAF5] custom-scrollbar flex flex-col gap-4">
           {messages.map((msg) => (
-            <div 
-              key={msg.id} 
+            <div
+              key={msg.id}
               className={`flex gap-3 max-w-[85%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`}
             >
               {/* Avatar */}
               <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${msg.sender === 'bot' ? 'bg-[#EEF5E9] text-[#2D6A4F]' : 'bg-[#E2E8F0] text-[#64748B]'}`}>
                 {msg.sender === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
               </div>
-              
+
               {/* Message Bubble */}
-              <div 
-                className={`p-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.sender === 'user' 
-                    ? 'bg-[#2D6A4F] text-white rounded-tr-sm' 
-                    : 'bg-white border border-[#EEF5E9] text-[#2D3436] rounded-tl-sm shadow-sm'
-                }`}
+              <div
+                className={`p-3 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user'
+                  ? 'bg-[#2D6A4F] text-white rounded-tr-sm'
+                  : 'bg-white border border-[#EEF5E9] text-[#2D3436] rounded-tl-sm shadow-sm'
+                  }`}
                 style={{ whiteSpace: 'pre-line' }}
               >
                 {msg.text}

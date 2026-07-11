@@ -1,9 +1,69 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Layers, MapPin, Wind, Thermometer, Droplets, Flame, RefreshCw, Play, Pause, ChevronRight, Settings, Info, CloudRain, Search, X, ShieldAlert, Cpu, ThermometerSun, CloudFog, HelpCircle, Users, Cloud, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Layers, MapPin, Wind, Thermometer, Droplets, Flame, RefreshCw, Play, Pause, ChevronLeft, ChevronRight, Settings, Info, CloudRain, Search, X, ShieldAlert, Cpu, ThermometerSun, CloudFog, HelpCircle, Users, Cloud, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { translations } from '../utils/translations';
 import WeatherDashboard from './WeatherDashboard';
+import MeteorologicalTrends from './MeteorologicalTrends';
+
+const CITIES_BAR_DATA = [
+  { name: 'Bogotá', lat: 4.6097, lng: -74.0817, temp: 14, icon: '☁️' },
+  { name: 'Medellín', lat: 6.2442, lng: -75.5812, temp: 24, icon: '⛅' },
+  { name: 'Cali', lat: 3.4516, lng: -76.5320, temp: 28, icon: '☀️' },
+  { name: 'Barranquilla', lat: 10.9685, lng: -74.7813, temp: 32, icon: '☀️' },
+  { name: 'Cartagena', lat: 10.3997, lng: -75.5144, temp: 31, icon: '☀️' },
+  { name: 'Bucaramanga', lat: 7.1193, lng: -73.1227, temp: 23, icon: '⛅' },
+  { name: 'Pereira', lat: 4.8133, lng: -75.6961, temp: 22, icon: '🌧️' },
+  { name: 'Santa Marta', lat: 11.2408, lng: -74.1990, temp: 33, icon: '☀️' },
+  { name: 'Pasto', lat: 1.2136, lng: -77.2811, temp: 13, icon: '🌧️' },
+  { name: 'Cúcuta', lat: 7.8939, lng: -72.5078, temp: 34, icon: '☀️' }
+];
+
+const CitiesBar = ({ onCityClick, currentCityName }) => {
+  const scrollRef = useRef(null);
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300;
+      scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto mb-6 flex items-center bg-[#1C1C1C]/90 p-3 rounded-xl border border-white/10 shadow-lg text-white">
+      <div className="px-4 py-2 text-white/50 border-r border-white/10 mr-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider shrink-0">
+        <MapPin className="w-4 h-4 text-amber-500"/> Capitales
+      </div>
+      
+      <button onClick={() => scroll('left')} className="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors shrink-0 mx-1">
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      <div ref={scrollRef} className="flex overflow-x-hidden gap-3 items-center flex-1 scroll-smooth">
+        {CITIES_BAR_DATA.map((city, idx) => {
+          const isSelected = currentCityName && currentCityName.includes(city.name);
+          return (
+            <button 
+              key={idx} 
+              onClick={() => onCityClick(city.lat, city.lng, true)}
+              className={`flex items-center gap-3 min-w-max px-4 py-2 rounded-lg border transition-all hover:bg-white/10 cursor-pointer
+                ${isSelected ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'bg-transparent border-transparent text-white/70'}`}
+            >
+              <span className="font-semibold text-sm">{city.name}</span>
+              <span className="flex items-center gap-1.5 font-bold">
+                {city.icon} {city.temp}°
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <button onClick={() => scroll('right')} className="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors shrink-0 mx-1">
+        <ChevronRight className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
 
 export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNodeId, setSelectedNodeId, setActiveTab }) {
   const t = translations[lang || 'es'];
@@ -49,7 +109,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     const style = document.createElement('style');
     style.innerHTML = `
       .temp-layer-msn-style { filter: saturate(3) contrast(1.2); }
-      .wind-layer-style { filter: saturate(2) hue-rotate(-10deg); }
+      .wind-layer-style { filter: hue-rotate(120deg) saturate(2) brightness(1.2); }
       .clouds-layer-style { filter: contrast(1.5) brightness(1.2); }
       .effis-layer-style { filter: saturate(2.5) contrast(1.2); }
     `;
@@ -86,11 +146,11 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     hotspotsFirms: true,
     thermalGibs: false,
     owmTemp: false,
-    gibsSmoke: false,
     effisBurned: false,
     owmWind: false,
     owmClouds: false,
     owmHumidity: false,
+    owmPrecip: false,
   });
 
   const [opacities, setOpacities] = useState({
@@ -98,11 +158,11 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     rainRadar: 0.7,
     thermalGibs: 0.8,
     owmTemp: 1.0,
-    gibsSmoke: 0.8,
     effisBurned: 0.7,
     owmWind: 0.6,
     owmClouds: 0.6,
     owmHumidity: 0.6,
+    owmPrecip: 0.8,
   });
 
   const toggleLayer = (layerName) => {
@@ -110,7 +170,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       if (isMultiSelectMode) {
         return { ...prev, [layerName]: !prev[layerName] };
       } else {
-        const exclusiveLayers = ['rainRadar', 'thermalGibs', 'owmTemp', 'gibsSmoke', 'effisBurned', 'satGibs', 'owmWind', 'owmClouds', 'owmHumidity'];
+        const exclusiveLayers = ['rainRadar', 'thermalGibs', 'owmTemp', 'effisBurned', 'satGibs', 'owmWind', 'owmClouds', 'owmHumidity', 'owmPrecip'];
         const newState = { ...prev };
         exclusiveLayers.forEach(l => newState[l] = false);
         newState[layerName] = !prev[layerName]; // Toggle the clicked one
@@ -180,9 +240,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     mapRef.current = map;
 
-    // Base OSM Layer (Voyager styling)
-    const baseOsm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    // Base OSM Layer (Standard OSM for intense sea color)
+    const baseOsm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 20
     }).addTo(map);
     layersRef.current.baseOsm = baseOsm;
@@ -200,16 +260,26 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     );
     layersRef.current.satGibs = satGibs;
 
-    // Thermal Anomalies NASA GIBS
-    const thermalGibs = L.tileLayer(
-      `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Thermal_Anomalies_All/default/${yesterday}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
-      {
-        attribution: 'NASA EOSDIS GIBS Thermal Anomalies',
-        opacity: opacities.thermalGibs,
-        maxZoom: 18,
-        maxNativeZoom: 9
-      }
-    );
+    // Thermal Anomalies NASA GIBS / FIRMS
+    const firmsKey = localStorage.getItem('nte_firms_key');
+    const thermalGibs = firmsKey
+      ? L.tileLayer.wms(`https://firms.modaps.eosdis.nasa.gov/mapserver/wms/fires/${firmsKey}/`, {
+          layers: 'fires_modis_24,fires_viirs_24',
+          format: 'image/png',
+          transparent: true,
+          attribution: 'NASA FIRMS',
+          opacity: opacities.thermalGibs,
+          maxZoom: 18
+        })
+      : L.tileLayer(
+          `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Thermal_Anomalies_All/default/${yesterday}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
+          {
+            attribution: 'NASA EOSDIS GIBS Thermal Anomalies',
+            opacity: opacities.thermalGibs,
+            maxZoom: 18,
+            maxNativeZoom: 9
+          }
+        );
     layersRef.current.thermalGibs = thermalGibs;
 
     // OpenWeatherMap Layers (Temp, Wind, Clouds)
@@ -247,23 +317,24 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
         }
       );
       layersRef.current.owmClouds = owmClouds;
+
+      const owmPrecip = L.tileLayer(
+        `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmKey}`,
+        {
+          attribution: 'Map data &copy; OpenWeatherMap',
+          opacity: opacities.owmPrecip,
+          maxZoom: 18,
+          className: 'precip-layer-style'
+        }
+      );
+      layersRef.current.owmPrecip = owmPrecip;
     }
 
-    // NASA GIBS Smoke/Aerosol
-    const gibsSmoke = L.tileLayer(
-      `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Aerosol/default/${yesterday}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png`,
-      {
-        attribution: 'NASA EOSDIS GIBS Aerosol (Smoke)',
-        opacity: opacities.gibsSmoke,
-        maxZoom: 18,
-        maxNativeZoom: 9
-      }
-    );
-    layersRef.current.gibsSmoke = gibsSmoke;
+
 
     // Copernicus EFFIS Fire Danger Forecast (FWI)
-    const effisBurned = L.tileLayer.wms('https://m3.effis.jrc.ec.europa.eu/applications/wms/map', {
-      layers: 'ecmwf.fwi',
+    const effisBurned = L.tileLayer.wms('https://ies-ows.jrc.ec.europa.eu/effis', {
+      layers: 'ecmwf.fwi.danger_index',
       format: 'image/png',
       transparent: true,
       attribution: 'Copernicus EFFIS FWI',
@@ -368,7 +439,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     if (!frame) return;
 
     const radarLayer = L.tileLayer(
-      `https://tilecache.rainviewer.com/v2/radar/${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,
+      `https://tilecache.rainviewer.com/v2/radar/${frame.path}/256/{z}/{x}/{y}/4/1_1.png`,
       {
         attribution: 'RainViewer weather radar',
         opacity: opacities.rainRadar,
@@ -409,11 +480,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       if (layersRef.current.owmTemp && map.hasLayer(layersRef.current.owmTemp)) map.removeLayer(layersRef.current.owmTemp);
     }
 
-    if (layersState.gibsSmoke) {
-      if (layersRef.current.gibsSmoke && !map.hasLayer(layersRef.current.gibsSmoke)) layersRef.current.gibsSmoke.addTo(map);
-    } else {
-      if (layersRef.current.gibsSmoke && map.hasLayer(layersRef.current.gibsSmoke)) map.removeLayer(layersRef.current.gibsSmoke);
-    }
+
 
     if (layersState.effisBurned) {
       if (layersRef.current.effisBurned && !map.hasLayer(layersRef.current.effisBurned)) layersRef.current.effisBurned.addTo(map);
@@ -431,6 +498,12 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       if (layersRef.current.owmClouds && !map.hasLayer(layersRef.current.owmClouds)) layersRef.current.owmClouds.addTo(map);
     } else {
       if (layersRef.current.owmClouds && map.hasLayer(layersRef.current.owmClouds)) map.removeLayer(layersRef.current.owmClouds);
+    }
+
+    if (layersState.owmPrecip) {
+      if (layersRef.current.owmPrecip && !map.hasLayer(layersRef.current.owmPrecip)) layersRef.current.owmPrecip.addTo(map);
+    } else {
+      if (layersRef.current.owmPrecip && map.hasLayer(layersRef.current.owmPrecip)) map.removeLayer(layersRef.current.owmPrecip);
     }
 
     if (layersState.rainRadar) {
@@ -459,9 +532,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     if (layersRef.current.owmTemp) layersRef.current.owmTemp.setOpacity(opacities.owmTemp);
   }, [opacities.owmTemp]);
 
-  useEffect(() => {
-    if (layersRef.current.gibsSmoke) layersRef.current.gibsSmoke.setOpacity(opacities.gibsSmoke);
-  }, [opacities.gibsSmoke]);
+
 
   useEffect(() => {
     if (layersRef.current.effisBurned) layersRef.current.effisBurned.setOpacity(opacities.effisBurned);
@@ -474,6 +545,10 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   useEffect(() => {
     if (layersRef.current.owmClouds) layersRef.current.owmClouds.setOpacity(opacities.owmClouds);
   }, [opacities.owmClouds]);
+
+  useEffect(() => {
+    if (layersRef.current.owmPrecip) layersRef.current.owmPrecip.setOpacity(opacities.owmPrecip);
+  }, [opacities.owmPrecip]);
 
   // RainViewer Playing Effect
   useEffect(() => {
@@ -597,10 +672,32 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   }, [selectedNodeId, selectedPoint]);
 
   // Handle map click
-  const handleMapClick = async (lat, lng) => {
+  const handleMapClick = async (lat, lng, isDefault = false) => {
+    if (isQuerying && !isDefault) return;
     setIsQuerying(true);
     const updatedTime = new Date().toTimeString().split(' ')[0];
     setLastUpdatedTime(updatedTime);
+
+    let locationName = `Coordenada: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°W`;
+    try {
+      const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+      const geoResponse = await fetch(geoUrl);
+      if (geoResponse.ok) {
+        const geoData = await geoResponse.json();
+        if (geoData && geoData.address) {
+          const addr = geoData.address;
+          const city = addr.city || addr.town || addr.village || addr.municipality || addr.county || addr.suburb;
+          const state = addr.state || addr.region || addr.country;
+          if (city) {
+            locationName = `${city}${state ? `, ${state}` : ''}`;
+          } else if (geoData.name) {
+            locationName = geoData.name;
+          }
+        }
+      }
+    } catch(e) {
+      console.warn('Geocoding failed');
+    }
 
     if (!useRealApi) {
       setTimeout(() => {
@@ -615,7 +712,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           type: 'coordinate',
           lat: parseFloat(lat.toFixed(4)),
           lng: parseFloat(lng.toFixed(4)),
-          name: `Coordenada: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°W`,
+          name: locationName,
           temp: simulatedTemp,
           apparent_temp: parseFloat((simulatedTemp + 1.8).toFixed(1)),
           hum: simulatedHum,
@@ -656,7 +753,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
         type: 'coordinate',
         lat: parseFloat(lat.toFixed(4)),
         lng: parseFloat(lng.toFixed(4)),
-        name: `Coordenada: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°W`,
+        name: locationName,
         temp: currentW.temperature_2m,
         apparent_temp: currentW.apparent_temperature,
         hum: currentW.relative_humidity_2m,
@@ -682,17 +779,32 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
         type: 'coordinate',
         lat: parseFloat(lat.toFixed(4)),
         lng: parseFloat(lng.toFixed(4)),
-        name: `Coordenada: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°W`,
+        name: locationName,
         temp: simulatedTemp,
         apparent_temp: parseFloat((simulatedTemp + 1.5).toFixed(1)),
         hum: Math.round(58 + Math.random() * 20),
         rain: 0,
+        weatherCode: 2,
+        pressure: 1012,
+        visibility: 10000,
         windSpeed: 8.5,
         windDir: 'E',
+        windGusts: 12,
+        windDegree: 90,
         pm2_5: 18,
         pm10: 25,
         co: 0.18,
         ozone: 32,
+        daily: {
+          time: [...Array(6)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d.toISOString().split('T')[0]; }),
+          weather_code: [2, 3, 1, 61, 0, 2],
+          temperature_2m_max: [30, 28, 31, 25, 33, 29],
+          temperature_2m_min: [20, 19, 21, 18, 22, 20],
+          precipitation_probability_max: [10, 30, 5, 80, 0, 20],
+          sunrise: [new Date(new Date().setHours(6, 0, 0, 0)).toISOString()],
+          sunset: [new Date(new Date().setHours(18, 30, 0, 0)).toISOString()],
+          uv_index_max: [8]
+        },
         isSimulated: true,
         networkError: true
       });
@@ -742,6 +854,14 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       setIsQuerying(false);
     }
   };
+
+  // Default city on load
+  useEffect(() => {
+    // Select Cali by default on mount
+    if (!selectedPoint) {
+      handleMapClick(3.4516, -76.5320, true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSaveApiKey = () => {
     localStorage.setItem('nte_firms_key', firmsApiKey);
@@ -794,7 +914,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   };
 
   return (
-    <div className="flex-1 w-full h-[calc(100vh-140px)] relative rounded-3xl overflow-y-auto overflow-x-hidden border border-slate-200/40 bg-[#121212]">
+    <div className="flex-1 w-full h-[calc(100vh-140px)] relative rounded-3xl overflow-y-auto overflow-x-hidden border border-slate-200 shadow-sm bg-slate-50/50">
       
       {/* 1. Leaflet Fullscreen Container (Now limited height) */}
       <div className="relative w-full h-[60vh] min-h-[500px] shrink-0">
@@ -862,14 +982,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           >
             <Droplets className="w-5 h-5" />
           </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('gibsSmoke')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.gibsSmoke ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Humo / Aerosoles (NASA GIBS)"
-          >
-            <CloudFog className="w-5 h-5" />
-          </button>
+
           <div className="w-px h-6 bg-white/20 mx-1"></div>
           <button 
             onClick={() => toggleLayer('effisBurned')}
@@ -901,6 +1014,14 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
             title="Nubosidad (OpenWeatherMap)"
           >
             <Cloud className="w-5 h-5" />
+          </button>
+          <div className="w-px h-6 bg-white/20 mx-1"></div>
+          <button 
+            onClick={() => toggleLayer('owmPrecip')}
+            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmPrecip ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
+            title="Precipitación / Tormenta (OpenWeatherMap)"
+          >
+            <CloudRain className="w-5 h-5" />
           </button>
           <div className="w-px h-6 bg-white/20 mx-2"></div>
           <button 
@@ -1015,6 +1136,26 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
             <div className="flex justify-between text-[8px] opacity-60 mt-1"><span>0.1</span><span>Llovizna</span><span>Tormenta</span></div>
           </div>
         )}
+        {layersState.owmPrecip && (
+          <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
+            <span className="font-bold text-[10px] opacity-80 mb-1 block">Precipitación / Tormenta (OWM)</span>
+            <div className="h-1.5 rounded-full w-full" style={{ background: 'linear-gradient(90deg, #b2d8ff, #66b2ff, #0080ff, #0059b3, #003366, #ff00ff, #990099)' }} />
+            <div className="flex justify-between text-[8px] opacity-60 mt-1"><span>Lluvia Ligera</span><span>Moderada</span><span>Tormenta Fuerte</span></div>
+          </div>
+        )}
+        {layersState.thermalGibs && (
+          <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
+            <span className="font-bold text-[10px] opacity-80 mb-1 block">Focos de Calor (NASA FIRMS)</span>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="w-3 h-3 bg-red-600 rounded-sm shadow-[0_0_5px_rgba(255,0,0,0.8)]"></div>
+              <span className="text-[10px] font-bold">MODIS (Aqua & Terra) [1km]</span>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="w-3 h-3 bg-red-400 rounded-sm shadow-[0_0_5px_rgba(255,100,100,0.8)]"></div>
+              <span className="text-[10px] font-bold">VIIRS (NOAA-20/21) [375m]</span>
+            </div>
+          </div>
+        )}
         {layersState.owmTemp && (
           <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
             <span className="font-bold text-[10px] opacity-80 mb-1 block">Temperatura (°C)</span>
@@ -1029,13 +1170,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
             <div className="flex justify-between text-[8px] opacity-60 mt-1"><span>Bajo</span><span>Moderado</span><span>Extremo</span></div>
           </div>
         )}
-        {layersState.gibsSmoke && (
-          <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
-            <span className="font-bold text-[10px] opacity-80 mb-1 block">Humo / Aerosoles</span>
-            <div className="h-1.5 rounded-full w-full" style={{ background: 'linear-gradient(90deg, rgba(200,200,200,0), rgba(150,150,150,0.8), rgba(80,80,80,1))' }} />
-          <div className="flex justify-between text-[8px] opacity-60 mt-1"><span>Poco</span><span>Denso</span></div>
-          </div>
-        )}
+
       </div>
 
       {/* 4. FLOATING RIGHT DETAIL CARD (Dark MSN Style) */}
@@ -1264,13 +1399,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                 <p className="text-white/60 text-xs">Niveles de humedad relativa en superficie.</p>
               </div>
 
-              <div className={`p-3 rounded-xl border ${layersState.gibsSmoke ? 'bg-slate-500/10 border-slate-500/50' : 'bg-white/5 border-transparent'}`}>
-                <p className="font-bold flex items-center justify-between mb-1">
-                  <span className="flex items-center gap-2"><CloudFog className="w-4 h-4 text-slate-400"/> Humo / Aerosoles</span>
-                  {layersState.gibsSmoke && <CheckCircle2 className="w-4 h-4 text-slate-400" />}
-                </p>
-                <p className="text-white/60 text-xs">Capa de humo generada por incendios (NASA GIBS).</p>
-              </div>
+
 
               <div className={`p-3 rounded-xl border ${layersState.effisBurned ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent'}`}>
                 <p className="font-bold flex items-center justify-between mb-1">
@@ -1389,11 +1518,15 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       </div> {/* End of map relative wrapper */}
 
       {/* DASHBOARD COMPONENT */}
-      {selectedPoint && selectedPoint.type === 'coordinate' && selectedPoint.daily && (
-        <div className="p-4 md:p-6 lg:p-8">
-           <WeatherDashboard point={selectedPoint} />
-        </div>
-      )}
+      <div className="p-4 md:p-6 lg:p-8">
+        <CitiesBar onCityClick={handleMapClick} currentCityName={selectedPoint?.name} />
+        {selectedPoint && selectedPoint.type === 'coordinate' && selectedPoint.daily && (
+           <>
+             <WeatherDashboard point={selectedPoint} />
+             <MeteorologicalTrends />
+           </>
+        )}
+      </div>
 
     </div>
   );
