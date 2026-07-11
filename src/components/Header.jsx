@@ -9,7 +9,8 @@ export default function Header({
   onLogout, 
   onOpenLogin,
   isDashboard = false,
-  onEnterDashboard
+  onEnterDashboard,
+  activeTab
 }) {
   const t = translations[lang || 'es'];
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,23 +30,26 @@ export default function Header({
   const isLightTheme = isDashboard || isScrolled;
 
   const handleNavClick = (sectionId, tabName) => {
-    if (isDashboard) {
-      if (sectionId === 'home') {
+    if (sectionId === 'home') {
+      if (isDashboard) {
         onBackToLanding();
-      } else if (tabName) {
-        const tabEl = document.querySelector(`button[title="${tabName}"]`) || document.querySelector('main');
-        if (tabEl) tabEl.scrollIntoView({ behavior: 'smooth' });
       } else {
-        const el = document.getElementById(sectionId) || document.querySelector('.min-h-\\[380px\\]') || document.querySelector('main');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      if (sectionId === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (tabName) {
-        onEnterDashboard(tabName);
       }
+    } else if (tabName) {
+      onEnterDashboard(tabName);
+    } else if (sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const getBtnClass = (tab) => {
+    const isActive = activeTab === tab;
+    if (isActive) {
+      return isLightTheme ? 'bg-[#2D6A4F] text-white shadow-md' : 'bg-brand-cream text-brand-darkgreen shadow-md';
+    }
+    return isLightTheme ? 'text-slate-500 hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'text-white/70 hover:text-white hover:bg-white/5';
   };
 
   const handleAncestralClick = () => {
@@ -139,57 +143,43 @@ export default function Header({
           </button>
           <button 
             onClick={() => handleNavClick(null, 'monitoreo')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('monitoreo')}`}
           >
             {t.menuMonitoring}
           </button>
           <button 
             onClick={() => handleNavClick(null, 'dashboard')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('dashboard')}`}
           >
             {t.menuDashboard}
           </button>
           <button 
             onClick={() => handleNavClick(null, 'mapa')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('mapa')}`}
           >
             {t.menuMap}
           </button>
           <button 
             onClick={() => handleNavClick(null, 'observatorio')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('observatorio')}`}
           >
             {t.menuObservatorio}
           </button>
           <button 
             onClick={handleAncestralClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${isLightTheme ? 'text-slate-500 hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
           >
             {t.menuAncestral}
           </button>
           <button 
             onClick={handleCommunityClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('comunidad')}`}
           >
             {t.menuCommunity}
           </button>
           <button 
             onClick={handleChatbotClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('chatbot')}`}
           >
             {t.menuChatbot}
           </button>
