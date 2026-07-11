@@ -1093,36 +1093,6 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
               </div>
             </div>
 
-            {/* FIRMS Key input */}
-            <div className="flex flex-col gap-1 mt-1">
-              <span className="font-semibold text-white/60">{t.obsEnterFirmsKey}</span>
-              <input
-                type="text"
-                value={firmsApiKey}
-                onChange={(e) => setFirmsApiKey(e.target.value)}
-                placeholder="Ingresar MAP_KEY de FIRMS"
-                className="w-full bg-black/50 border border-white/10 rounded-lg py-1.5 px-3 text-[10px] text-white focus:outline-amber-500"
-              />
-            </div>
-
-            {/* OWM Key input */}
-            <div className="flex flex-col gap-1 mt-1">
-              <span className="font-semibold text-white/60">API Key OpenWeatherMap</span>
-              <input
-                type="text"
-                value={owmApiKey}
-                onChange={(e) => setOwmApiKey(e.target.value)}
-                placeholder="Ingresar API Key OWM"
-                className="w-full bg-black/50 border border-white/10 rounded-lg py-1.5 px-3 text-[10px] text-white focus:outline-amber-500"
-              />
-            </div>
-            
-            <button
-              onClick={handleSaveApiKey}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-bold uppercase tracking-wider py-2 rounded-lg cursor-pointer transition-colors"
-            >
-              {t.obsSaveKey}
-            </button>
           </div>
         )}
       </div>
