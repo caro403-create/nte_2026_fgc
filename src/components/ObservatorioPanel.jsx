@@ -74,8 +74,8 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   
   // Settings & Status
   const [useRealApi, setUseRealApi] = useState(true);
-  const [firmsApiKey, setFirmsApiKey] = useState(() => localStorage.getItem('nte_firms_key') || '');
-  const [owmApiKey, setOwmApiKey] = useState(() => localStorage.getItem('nte_owm_key') || '');
+  const [firmsApiKey, setFirmsApiKey] = useState(() => import.meta.env.VITE_FIRMS_KEY || localStorage.getItem('nte_firms_key') || '');
+  const [owmApiKey, setOwmApiKey] = useState(() => import.meta.env.VITE_OWM_KEY || localStorage.getItem('nte_owm_key') || '');
   const [showSettings, setShowSettings] = useState(false);
   const [lastUpdatedTime, setLastUpdatedTime] = useState(new Date().toTimeString().split(' ')[0]);
   const [isQuerying, setIsQuerying] = useState(false);
@@ -261,7 +261,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     layersRef.current.satGibs = satGibs;
 
     // Thermal Anomalies NASA GIBS / FIRMS
-    const firmsKey = localStorage.getItem('nte_firms_key');
+    const firmsKey = import.meta.env.VITE_FIRMS_KEY || localStorage.getItem('nte_firms_key');
     const thermalGibs = firmsKey
       ? L.tileLayer.wms(`https://firms.modaps.eosdis.nasa.gov/mapserver/wms/fires/${firmsKey}/`, {
           layers: 'fires_modis_24,fires_viirs_24',
@@ -283,7 +283,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     layersRef.current.thermalGibs = thermalGibs;
 
     // OpenWeatherMap Layers (Temp, Wind, Clouds)
-    const owmKey = localStorage.getItem('nte_owm_key');
+    const owmKey = import.meta.env.VITE_OWM_KEY || localStorage.getItem('nte_owm_key');
     if (owmKey) {
       const owmTemp = L.tileLayer(
         `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${owmKey}`,
