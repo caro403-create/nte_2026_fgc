@@ -1093,6 +1093,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
               </div>
             </div>
 
+          </div>
         )}
 
         {/* 3.1 LAYER LEGEND */}
