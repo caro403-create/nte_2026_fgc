@@ -1318,44 +1318,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
         ) : null;
       })()}
 
-      {/* 5. FLOATING BOTTOM TIMELINE (MSN Weather Style Interactive Timeline) */}
-      {rainViewerFrames.current.length > 0 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 w-[90%] max-w-4xl pointer-events-auto">
-          <div className="bg-[#1C1C1C]/90 backdrop-blur-md border border-white/10 shadow-2xl rounded-2xl p-3 flex items-center gap-4 text-white transition-all">
-            <button
-              onClick={() => setIsRainViewerPlaying(!isRainViewerPlaying)}
-              className="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-400 text-black flex items-center justify-center shrink-0 transition-colors shadow-lg shadow-amber-500/20"
-            >
-              {isRainViewerPlaying ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current ml-1" />}
-            </button>
 
-            <div className="flex-1 flex flex-col gap-1.5 px-2">
-              <div className="flex justify-between items-center text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                <span>{new Date(rainViewerFrames.current[0].time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                
-                <span className="bg-amber-500/20 text-amber-400 px-3 py-0.5 rounded-full border border-amber-500/30">
-                  {new Date(rainViewerFrames.current[rainViewerIndex]?.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-                
-                <span>{new Date(rainViewerFrames.current[rainViewerFrames.current.length - 1].time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-              
-              <input
-                type="range"
-                min="0"
-                max={rainViewerFrames.current.length - 1}
-                value={rainViewerIndex}
-                onChange={(e) => {
-                  setIsRainViewerPlaying(false);
-                  setRainViewerIndex(parseInt(e.target.value));
-                }}
-                className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-500 hover:h-2 transition-all"
-                title="Deslizar para interactuar con datos en el tiempo"
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
 
       {/* HELP MODAL */}

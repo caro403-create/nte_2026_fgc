@@ -9,8 +9,7 @@ export default function Header({
   onLogout, 
   onOpenLogin,
   isDashboard = false,
-  onEnterDashboard,
-  activeTab
+  onEnterDashboard
 }) {
   const t = translations[lang || 'es'];
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,7 +26,7 @@ export default function Header({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isDashboard]);
 
-  const isLightTheme = (isDashboard && activeTab !== 'observatorio') || (isScrolled && !isDashboard);
+  const isLightTheme = isDashboard || isScrolled;
 
   const handleNavClick = (sectionId, tabName) => {
     if (isDashboard) {
@@ -78,16 +77,13 @@ export default function Header({
   return (
     <header 
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
-        activeTab === 'observatorio' ? 'bg-[#121418] border-b border-white/10 py-3.5 px-6 shadow-lg text-white' :
         isLightTheme 
           ? 'py-0 px-0' 
           : 'py-4 px-4 md:px-8'
       }`}
     >
       <div 
-        className={activeTab === 'observatorio' 
-          ? 'max-w-full flex flex-col lg:flex-row items-center justify-between'
-          : `max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between transition-all duration-500 ease-in-out ${
+        className={`max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between transition-all duration-500 ease-in-out ${
           isLightTheme 
             ? 'max-w-full bg-[#F8FAF5]/90 md:bg-white/85 backdrop-blur-md border-b border-slate-200/80 py-3.5 px-6 md:px-12 rounded-none shadow-sm text-slate-800' 
             : 'bg-brand-darkgreen/40 backdrop-blur-xl border border-white/10 rounded-3xl lg:rounded-full py-3 px-6 md:px-8 shadow-2xl text-white'

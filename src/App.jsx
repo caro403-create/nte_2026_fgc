@@ -288,7 +288,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col antialiased transition-colors duration-500 ${activeTab === 'observatorio' ? 'bg-[#121418] text-white' : 'bg-[#F8FAF5] text-[#2D3436]'}`}>
+    <div className="min-h-screen bg-[#F8FAF5] text-[#2D3436] flex flex-col antialiased">
       {/* Header bar */}
       <Header 
         onBackToLanding={() => setView('landing')} 
@@ -298,7 +298,6 @@ export default function App() {
         onLogout={handleLogout} 
         onOpenLogin={() => setView('login')} 
         isDashboard={true}
-        activeTab={activeTab}
         onEnterDashboard={(tab) => {
           setView('dashboard');
           setActiveTab(tab === 'comunidad' ? 'comunidad' : tab === 'observatorio' ? 'observatorio' : 'monitoreo');
