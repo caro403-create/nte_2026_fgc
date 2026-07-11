@@ -224,7 +224,7 @@ export default function Header({
             <div 
               className={`flex items-center gap-2 rounded-full pl-3 pr-1 py-1 border font-sans transition-all duration-300 ${
                 isLightTheme 
-                  ? 'bg-[#EEF5E9] border-[#EEF5E9] text-[#2D6A4F]' 
+                  ? 'bg-white/80 border-slate-200 text-[#2D6A4F]' 
                   : 'bg-white/10 border-white/15 text-white'
               }`}
             >
@@ -233,7 +233,11 @@ export default function Header({
               </span>
               <button 
                 onClick={onLogout} 
-                className="bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white px-2.5 py-1 rounded-full text-[9px] uppercase font-bold transition-all duration-200 cursor-pointer"
+                className={`px-2.5 py-1 rounded-full text-[9px] uppercase font-bold transition-all duration-200 cursor-pointer ${
+                  isLightTheme
+                    ? 'bg-slate-200 hover:bg-slate-700 text-slate-600 hover:text-white'
+                    : 'bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white'
+                }`}
               >
                 {t.logoutButton}
               </button>
