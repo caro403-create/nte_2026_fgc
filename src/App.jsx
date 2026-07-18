@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MapSimulator from './components/MapSimulator';
 import SensorPanel from './components/SensorPanel';
-import AlertsAndActions from './components/AlertsAndActions';
 import { Shield, Wifi, Database, Clock, RefreshCw } from 'lucide-react';
-import EmergencyPanel from './components/EmergencyPanel';
 import Chatbot from './components/Chatbot';
 import LandingPage from './components/LandingPage';
-import SupabaseTodos from './components/SupabaseTodos';
 import LoginPage from './components/LoginPage';
 import PublicReportModal from './components/PublicReportModal';
+import NodesSummary from './components/NodesSummary';
+import TimeSeriesPanel from './components/TimeSeriesPanel';
+import NodeComparisonTable from './components/NodeComparisonTable';
 import CommunityForum from './components/CommunityForum';
 import ObservatorioPanel from './components/ObservatorioPanel';
 import { supabase } from './utils/supabase';
@@ -59,11 +59,10 @@ export default function App() {
 
   // Nodes list (stateful so they can adapt to score changes)
   const [nodes, setNodes] = useState([
-    { id: 1, x: 120, y: 180, status: 'normal', temp: 24.5, hum: 62, co: 12, voc: 110, windSpeed: 8, windDir: 'NE', windAngle: 45, ndvi: 0.72 },
-    { id: 2, x: 280, y: 110, status: 'normal', temp: 26.2, hum: 58, co: 18, voc: 140, windSpeed: 9, windDir: 'ENE', windAngle: 60, ndvi: 0.68 },
-    { id: 3, x: 480, y: 240, status: 'alarm', temp: 48.9, hum: 14, co: 112, voc: 540, windSpeed: 28, windDir: 'WNW', windAngle: 285, ndvi: 0.22 },
-    { id: 4, x: 410, y: 320, status: 'warning', temp: 35.1, hum: 28, co: 45, voc: 290, windSpeed: 19, windDir: 'WSW', windAngle: 240, ndvi: 0.41 },
-    { id: 5, x: 620, y: 160, status: 'normal', temp: 23.8, hum: 65, co: 10, voc: 95, windSpeed: 6, windDir: 'E', windAngle: 90, ndvi: 0.75 }
+    { id: 1, id_nodo: 'BST-01', name: 'P.N.R. El Vínculo', location: 'Buga, Valle del Cauca', sentidos: { olfato: { co_ppm: 12, voc_ppb: 110, pm25: 15.0, pm10: 24 }, tacto: { temp_aire: 36.5, humedad: 50, viento_vel: 12, viento_dir: 'NE', viento_angle: 45, presion_atm: 1014, humedad_suelo: 34, temp_contacto: 41.3 }, intuicion: { ndvi: 0.32 }, oido: { nivel_db: 40 }, vista: { iluminacion_lux: 4.0 } }, fusion: { status: 'alarm', riesgo: 0.85, nivel: 'rojo' } },
+    { id: 2, id_nodo: 'BST-02', name: 'R.F. Bosque de Yotoco', location: 'Yotoco, Valle del Cauca', sentidos: { olfato: { co_ppm: 18, voc_ppb: 140, pm25: 18.2, pm10: 26 }, tacto: { temp_aire: 28.2, humedad: 55, viento_vel: 9, viento_dir: 'ENE', viento_angle: 60, presion_atm: 1012, humedad_suelo: 42, temp_contacto: 30.1 }, intuicion: { ndvi: 0.68 }, oido: { nivel_db: 42 }, vista: { iluminacion_lux: 2.2 } }, fusion: { status: 'warning', riesgo: 0.65, nivel: 'naranja' } },
+    { id: 3, id_nodo: 'BST-03', name: 'R.N. Chimbilaco', location: 'Yotoco / La Virginia', sentidos: { olfato: { co_ppm: 115, voc_ppb: 545, pm25: 150.5, pm10: 210 }, tacto: { temp_aire: 32.5, humedad: 52, viento_vel: 28, viento_dir: 'WNW', viento_angle: 285, presion_atm: 1008, humedad_suelo: 18, temp_contacto: 45.4 }, intuicion: { ndvi: 0.22 }, oido: { nivel_db: 78 }, vista: { iluminacion_lux: 0.8 } }, fusion: { status: 'alarm', riesgo: 0.88, nivel: 'rojo' } },
+    { id: 4, id_nodo: 'BST-04', name: 'Hacienda El Medio', location: 'Zarzal, Valle del Cauca', sentidos: { olfato: { co_ppm: 45, voc_ppb: 290, pm25: 45.0, pm10: 60 }, tacto: { temp_aire: 25.1, humedad: 62, viento_vel: 19, viento_dir: 'WSW', viento_angle: 240, presion_atm: 1010, humedad_suelo: 52, temp_contacto: 28.5 }, intuicion: { ndvi: 0.81 }, oido: { nivel_db: 65 }, vista: { iluminacion_lux: 1.5 } }, fusion: { status: 'normal', riesgo: 0.15, nivel: 'verde' } }
   ]);
 
   // Satellite hotspots (NASA FIRMS)
@@ -126,40 +125,39 @@ export default function App() {
     // 1. Update nodes based on risk score
     setNodes(prevNodes => {
       return prevNodes.map(node => {
-        if (node.id === 3) {
+        let n = JSON.parse(JSON.stringify(node)); // Deep clone
+        if (n.id === 3) {
           // Critical alarm node
           if (score < 0.2) {
-            return { ...node, status: 'normal', temp: 23.4, hum: 65, co: 8, voc: 85, windSpeed: 6, ndvi: 0.69 };
+            n.fusion.status = 'normal'; n.sentidos.tacto.temp_aire = 23.4; n.sentidos.tacto.humedad = 65; n.sentidos.olfato.co_ppm = 8; n.sentidos.olfato.voc_ppb = 85; n.sentidos.tacto.viento_vel = 6; n.sentidos.intuicion.ndvi = 0.69; n.sentidos.tacto.humedad_suelo = 55; n.sentidos.olfato.pm25 = 10;
           } else if (score < 0.5) {
-            return { ...node, status: 'warning', temp: 34.2, hum: 32, co: 42, voc: 220, windSpeed: 14, ndvi: 0.42 };
+            n.fusion.status = 'warning'; n.sentidos.tacto.temp_aire = 34.2; n.sentidos.tacto.humedad = 32; n.sentidos.olfato.co_ppm = 42; n.sentidos.olfato.voc_ppb = 220; n.sentidos.tacto.viento_vel = 14; n.sentidos.intuicion.ndvi = 0.42; n.sentidos.tacto.humedad_suelo = 28; n.sentidos.olfato.pm25 = 35;
           } else if (score < 0.8) {
-            return { ...node, status: 'alarm', temp: 48.9, hum: 14, co: 112, voc: 540, windSpeed: 28, ndvi: 0.22 };
+            n.fusion.status = 'alarm'; n.sentidos.tacto.temp_aire = 49.5; n.sentidos.tacto.humedad = 12; n.sentidos.olfato.co_ppm = 115; n.sentidos.olfato.voc_ppb = 545; n.sentidos.tacto.viento_vel = 28; n.sentidos.intuicion.ndvi = 0.22; n.sentidos.tacto.humedad_suelo = 8; n.sentidos.olfato.pm25 = 150.5;
           } else {
-            return { ...node, status: 'alarm', temp: 64.2, hum: 5, co: 185, voc: 720, windSpeed: 38, ndvi: 0.12 };
+            n.fusion.status = 'alarm'; n.sentidos.tacto.temp_aire = 64.2; n.sentidos.tacto.humedad = 5; n.sentidos.olfato.co_ppm = 185; n.sentidos.olfato.voc_ppb = 720; n.sentidos.tacto.viento_vel = 38; n.sentidos.intuicion.ndvi = 0.12; n.sentidos.tacto.humedad_suelo = 2; n.sentidos.olfato.pm25 = 300;
           }
-        }
-        if (node.id === 4) {
+        } else if (n.id === 4) {
           // Warning/alarm neighbor node
           if (score < 0.3) {
-            return { ...node, status: 'normal', temp: 24.1, hum: 61, co: 11, voc: 112, windSpeed: 8, ndvi: 0.65 };
+            n.fusion.status = 'normal'; n.sentidos.tacto.temp_aire = 24.1; n.sentidos.tacto.humedad = 61; n.sentidos.olfato.co_ppm = 11; n.sentidos.olfato.voc_ppb = 112; n.sentidos.tacto.viento_vel = 8; n.sentidos.intuicion.ndvi = 0.65; n.sentidos.tacto.humedad_suelo = 50; n.sentidos.olfato.pm25 = 12;
           } else if (score < 0.6) {
-            return { ...node, status: 'warning', temp: 35.1, hum: 28, co: 45, voc: 290, windSpeed: 19, ndvi: 0.41 };
+            n.fusion.status = 'warning'; n.sentidos.tacto.temp_aire = 35.1; n.sentidos.tacto.humedad = 28; n.sentidos.olfato.co_ppm = 45; n.sentidos.olfato.voc_ppb = 290; n.sentidos.tacto.viento_vel = 19; n.sentidos.intuicion.ndvi = 0.41; n.sentidos.tacto.humedad_suelo = 22; n.sentidos.olfato.pm25 = 45;
           } else if (score < 0.8) {
-            return { ...node, status: 'warning', temp: 39.8, hum: 20, co: 62, voc: 340, windSpeed: 24, ndvi: 0.35 };
+            n.fusion.status = 'warning'; n.sentidos.tacto.temp_aire = 39.8; n.sentidos.tacto.humedad = 20; n.sentidos.olfato.co_ppm = 62; n.sentidos.olfato.voc_ppb = 340; n.sentidos.tacto.viento_vel = 24; n.sentidos.intuicion.ndvi = 0.35; n.sentidos.tacto.humedad_suelo = 15; n.sentidos.olfato.pm25 = 65;
           } else {
-            return { ...node, status: 'alarm', temp: 53.4, hum: 9, co: 104, voc: 490, windSpeed: 32, ndvi: 0.18 };
+            n.fusion.status = 'alarm'; n.sentidos.tacto.temp_aire = 53.4; n.sentidos.tacto.humedad = 9; n.sentidos.olfato.co_ppm = 104; n.sentidos.olfato.voc_ppb = 490; n.sentidos.tacto.viento_vel = 32; n.sentidos.intuicion.ndvi = 0.18; n.sentidos.tacto.humedad_suelo = 5; n.sentidos.olfato.pm25 = 180;
           }
+        } else {
+          // Other nodes get slightly dryer/windier as score increases, but remain stable
+          const dryFactor = score * 15;
+          const tempFactor = score * 8;
+          const windFactor = score * 12;
+          n.sentidos.tacto.temp_aire = parseFloat((n.id === 1 ? 22.1 : n.id === 2 ? 23.5 : 21.8) + tempFactor).toFixed(1);
+          n.sentidos.tacto.humedad = Math.max(10, Math.round((n.id === 1 ? 68 : n.id === 2 ? 64 : 72) - dryFactor));
+          n.sentidos.tacto.viento_vel = Math.round((n.id === 1 ? 5 : n.id === 2 ? 6 : 4) + windFactor);
         }
-        // Other nodes get slightly dryer/windier as score increases, but remain stable
-        const dryFactor = score * 15;
-        const tempFactor = score * 8;
-        const windFactor = score * 12;
-        return {
-          ...node,
-          temp: parseFloat((node.id === 1 ? 22.1 : node.id === 2 ? 23.5 : 21.8) + tempFactor).toFixed(1),
-          hum: Math.max(10, Math.round((node.id === 1 ? 68 : node.id === 2 ? 64 : 72) - dryFactor)),
-          windSpeed: Math.round((node.id === 1 ? 5 : node.id === 2 ? 6 : 4) + windFactor)
-        };
+        return n;
       });
     });
 
@@ -392,6 +390,7 @@ export default function App() {
           </div>
 
           <main className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto">
+            <NodesSummary nodes={nodes} lang={lang} />
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 shrink-0">
               {/* Left/Middle Column (Map & Alerts) - Takes 7/12 cols on desktop */}
               <div className="xl:col-span-7 flex flex-col gap-6 h-full">
@@ -408,31 +407,19 @@ export default function App() {
                   />
                 </div>
 
-                {/* Alerts Timeline & Action Buttons Section */}
-                <div className="shrink-0">
-                  <AlertsAndActions
-                    alerts={alerts}
-                    clearAlerts={clearAlerts}
-                    onTriggerSimulatedAlert={triggerSimulatedAnomaly}
-                    isLoggedIn={!!user}
-                    isBrigadista={isBrigadista}
-                    onOpenLogin={() => setView('login')}
-                    onOpenReport={() => setReportModalOpen(true)}
-                    lang={lang}
-                  />
-                </div>
+                {/* El bloque de MapSimulator ocupa todo el alto de la columna izquierda */}
               </div>
 
-              {/* Right Column (Sensor metrics panel & Supabase Tasks) - Takes 5/12 cols on desktop */}
+              {/* Right Column (Sensor metrics panel) - Takes 5/12 cols on desktop */}
               <div className="xl:col-span-5 flex flex-col gap-6 h-full">
                 <SensorPanel node={selectedNode} globalScore={score} lang={lang} />
-                <SupabaseTodos lang={lang} isLoggedIn={!!user} isBrigadista={isBrigadista} />
               </div>
             </div>
             
-            {/* Emergency Panel */}
-            <div className="shrink-0">
-              <EmergencyPanel globalScore={score} />
+            {/* New Real-time Monitoring Sections */}
+            <div className="flex flex-col gap-6 shrink-0 w-full mt-2">
+              <TimeSeriesPanel node={selectedNode} lang={lang} />
+              <NodeComparisonTable nodes={nodes} lang={lang} />
             </div>
           </main>
         </>
