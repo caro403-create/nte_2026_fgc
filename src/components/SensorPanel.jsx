@@ -3,6 +3,37 @@ import { Thermometer, Droplet, Wind, Eye, Compass, Activity, Cloud, HelpCircle }
 import { translations } from '../utils/translations';
 
 export default function SensorPanel({ node, globalScore, lang }) {
+  const nId = node?.id_nodo || `0${node?.id}`;
+  const status = node?.fusion?.status || node?.status;
+  const temp = node?.sentidos?.tacto?.temp_aire ?? node?.temp;
+  const hum = node?.sentidos?.tacto?.humedad ?? node?.hum;
+  const co = node?.sentidos?.olfato?.co_ppm ?? node?.co;
+  const voc = node?.sentidos?.olfato?.voc_ppb ?? node?.voc;
+  const windSpeed = node?.sentidos?.tacto?.viento_vel ?? node?.windSpeed;
+  const windDir = node?.sentidos?.tacto?.viento_dir ?? node?.windDir;
+  const windAngle = node?.sentidos?.tacto?.viento_angle ?? node?.windAngle;
+  const ndvi = node?.sentidos?.intuicion?.ndvi ?? node?.ndvi;
+
+  const presionAtm = node?.sentidos?.tacto?.presion_atm ?? 1012;
+  const iluminacion = node?.sentidos?.vista?.iluminacion_lux ?? 2.0;
+  const humedadSuelo = node?.sentidos?.tacto?.humedad_suelo ?? 44;
+  const tempContacto = node?.sentidos?.tacto?.temp_contacto ?? 31.3;
+  const pm25 = node?.sentidos?.olfato?.pm25 ?? 15.0;
+  const pm10 = node?.sentidos?.olfato?.pm10 ?? 24;
+
+  const getVPD = (t, hr) => {
+    const pvs = 0.61078 * Math.exp((17.27 * t) / (t + 237.3));
+    const pva = pvs * (hr / 100);
+    return (pvs - pva).toFixed(2);
+  };
+  const vpd = parseFloat(getVPD(temp, hum));
+
+  let vpdStatus = "ÓPTIMO";
+  let vpdColor = "text-[#2D6A4F]";
+  let vpdBg = "bg-[#52B788]";
+  if (vpd > 2.0) { vpdStatus = "EXTREMO"; vpdColor = "text-[#E63946]"; vpdBg = "bg-[#E63946]"; }
+  else if (vpd > 1.2) { vpdStatus = "ALTO"; vpdColor = "text-[#F4A261]"; vpdBg = "bg-[#F4A261]"; }
+
   const [acousticData, setAcousticData] = useState([30, 45, 60, 35, 70, 85, 40, 50, 65, 55]);
   const canvasRef = useRef(null);
   const t = translations[lang || 'es'];
@@ -12,8 +43,8 @@ export default function SensorPanel({ node, globalScore, lang }) {
       setAcousticData(prev => 
         prev.map(val => {
           const baseChange = Math.floor(Math.random() * 21) - 10;
-          const limit = node.status === 'alarm' ? 95 : node.status === 'warning' ? 70 : 40;
-          const min = node.status === 'alarm' ? 55 : 20;
+          const limit = status === 'alarm' ? 95 : status === 'warning' ? 70 : 40;
+          const min = status === 'alarm' ? 55 : 20;
           let newVal = val + baseChange;
           if (newVal > limit) newVal = limit - 10;
           if (newVal < min) newVal = min + 10;
@@ -52,7 +83,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
       ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(30, h - 50); ctx.lineTo(70, h); ctx.fill();
       ctx.beginPath(); ctx.moveTo(w - 80, h); ctx.lineTo(w - 40, h - 70); ctx.lineTo(w, h); ctx.fill();
 
-      if (node.status === 'alarm') {
+      if (status === 'alarm') {
         const flameCenterX = w / 2 + Math.sin(frame * 0.1) * 5;
         const flameCenterY = h / 2 + 10;
         const radius = 22 + Math.sin(frame * 0.3) * 5;
@@ -83,7 +114,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
         ctx.fillStyle = '#E63946';
         ctx.font = 'bold 8px sans-serif';
         ctx.fillText(lang === 'en' ? `ACTIVE FLAME (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)` : `LLAMA ACTIVA (${Math.floor(92 + Math.sin(frame*0.05)*6)}%)`, flameCenterX - radius - 9, flameCenterY - radius - 35);
-      } else if (node.status === 'warning') {
+      } else if (status === 'warning') {
         const smokeX = w / 2 - 15 + Math.sin(frame * 0.05) * 12;
         const smokeY = h / 2 - 8;
         
@@ -112,7 +143,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx.font = '9px sans-serif';
-      ctx.fillText(lang === 'en' ? `CAMERA // NODE 0${node.id}` : `CÁMARA // NODO 0${node.id}`, 8, 16);
+      ctx.fillText(lang === 'en' ? `CAMERA // NODE ` : `CÁMARA // NODO `, 8, 16);
       
       if (Math.floor(frame / 12) % 2 === 0) {
         ctx.fillStyle = '#52B788';
@@ -183,155 +214,132 @@ export default function SensorPanel({ node, globalScore, lang }) {
     <div className="bg-white border border-[#EEF5E9] rounded-2xl p-6 flex flex-col gap-6 h-full shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
       
       {/* Sensor Title Header */}
-      <div className="flex items-center justify-between border-b border-[#EEF5E9] pb-4">
+      <div className="flex items-center justify-between border-b border-[#EEF5E9] pb-4 shrink-0">
         <div className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-[#2D6A4F]" />
           <h2 className="text-lg font-bold text-[#2D3436]">
-            {t.sensorNodeTitle}{node.id}
+            {t.sensorNodeTitle} {nId}
           </h2>
         </div>
         
-        <div className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(node.status)} flex items-center gap-2 transition-all`}>
-          <span className={`w-2 h-2 rounded-full ${node.status === 'alarm' ? 'bg-[#E63946]' : node.status === 'warning' ? 'bg-[#F4A261]' : 'bg-[#52B788]'}`}></span>
-          <span>{t.sensorStatus} {node.status === 'alarm' ? t.sensorCritical : node.status === 'warning' ? t.sensorWarning : t.sensorNormal}</span>
+        <div className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(status)} flex items-center gap-2 transition-all`}>
+          <span className={`w-2 h-2 rounded-full ${status === 'alarm' ? 'bg-[#E63946]' : status === 'warning' ? 'bg-[#F4A261]' : 'bg-[#52B788]'}`}></span>
+          <span>{t.sensorStatus} {status === 'alarm' ? t.sensorCritical : status === 'warning' ? t.sensorWarning : t.sensorNormal}</span>
         </div>
       </div>
 
-      {/* Grid of the Senses */}
-      <div className="grid grid-cols-2 gap-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-6">
         
-        {/* Card 1: Temperature */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-[#636E72]">{t.sensorTemp}</span>
-            <Thermometer className={`h-5 w-5 ${getTempColor(node.temp)}`} />
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className={`text-3xl font-extrabold ${getTempColor(node.temp)}`}>{node.temp}°C</span>
+        {/* Main VPD Card */}
+        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-5 rounded-2xl flex flex-col justify-between">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <span className="text-sm font-bold text-[#636E72] flex items-center gap-2">
+                <Thermometer className="h-4 w-4 text-[#2D6A4F]" /> ÍNDICE VPD
+              </span>
+              <span className="text-xs text-[#636E72] mt-1 block">Déficit de Presión de Vapor calculado</span>
             </div>
-            <div className="text-xs font-medium text-[#636E72] mt-1">{getTempText(node.temp)}</div>
-            <div className="w-full bg-[#EEF5E9] rounded-full h-1.5 mt-3 overflow-hidden">
-              <div className={`h-full rounded-full ${getTempBgColor(node.temp)} transition-all duration-500`} style={{ width: `${Math.min(100, (node.temp / 60) * 100)}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Humidity */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-[#636E72]">{t.sensorHum}</span>
-            <Droplet className={`h-5 w-5 ${getHumColor(node.hum)}`} />
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className={`text-3xl font-extrabold ${getHumColor(node.hum)}`}>{node.hum}%</span>
-            </div>
-            <div className="text-xs font-medium text-[#636E72] mt-1">{getHumText(node.hum)}</div>
-            <div className="w-full bg-[#EEF5E9] rounded-full h-1.5 mt-3 overflow-hidden">
-              <div className={`h-full rounded-full ${getHumBgColor(node.hum)} transition-all duration-500`} style={{ width: `${node.hum}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: CO */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Carbon Monoxide: Toxic gas that indicates presence of invisible smoke.' : 'Monóxido de carbono: Gas tóxico que indica presencia de humo invisible.'}>
-              <span className="text-sm font-bold text-[#636E72]">{t.sensorCo}</span>
-              <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
-            </div>
-            <Cloud className={`h-5 w-5 ${getCoColor(node.co)}`} />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-[#2D3436]">{node.co} <span className="text-sm font-medium text-[#636E72]">ppm</span></span>
-            <div className="text-xs font-medium text-[#636E72] mt-1">{getCoText(node.co)}</div>
-            <div className="w-full bg-[#EEF5E9] rounded-full h-1.5 mt-3 overflow-hidden">
-              <div className={`h-full rounded-full ${getCoBgColor(node.co)} transition-all duration-500`} style={{ width: `${Math.min(100, (node.co / 150) * 100)}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: VOC */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Organic gases emitted by burning leaves or resin.' : 'Gases de compuestos orgánicos emitidos por hojas quemándose o resinas.'}>
-              <span className="text-sm font-bold text-[#636E72]">{t.sensorVoc}</span>
-              <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
-            </div>
-            <Cloud className={`h-5 w-5 ${getVocColor(node.voc)}`} />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-[#2D3436]">{node.voc} <span className="text-sm font-medium text-[#636E72]">ppm</span></span>
-            <div className="text-xs font-medium text-[#636E72] mt-1">{getVocText(node.voc)}</div>
-            <div className="w-full bg-[#EEF5E9] rounded-full h-1.5 mt-3 overflow-hidden">
-              <div className={`h-full rounded-full ${getVocBgColor(node.voc)} transition-all duration-500`} style={{ width: `${Math.min(100, (node.voc / 800) * 100)}%` }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Card 5: Audio Spectrum */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold text-[#636E72]">{t.sensorMic}</span>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${node.status === 'alarm' ? 'bg-[#E63946]/10 text-[#E63946]' : 'bg-[#EEF5E9] text-[#2D6A4F]'}`}>
-              {node.status === 'alarm' ? t.sensorMicAlarm : t.sensorMicNormal}
+            <span className={`text-[10px] font-bold px-2 py-1 rounded-md bg-white border border-[#EEF5E9] ${vpdColor}`}>
+              Estado: {vpdStatus}
             </span>
           </div>
-          <div className="flex items-end justify-between h-12 bg-white p-2 rounded-xl border border-[#EEF5E9] gap-1">
-            {acousticData.map((val, idx) => (
-              <div key={idx} className="flex-1 bg-[#F8FAF5] rounded-t-md overflow-hidden h-full flex items-end">
-                <div 
-                  className={`w-full transition-all duration-150 rounded-t-md ${
-                    node.status === 'alarm' ? 'bg-[#E63946]' : node.status === 'warning' ? 'bg-[#F4A261]' : 'bg-[#52B788]'
-                  }`}
-                  style={{ height: `${val}%` }}
-                />
-              </div>
-            ))}
+          <div className="mt-2 flex items-baseline">
+            <span className={`text-5xl font-extrabold ${vpdColor}`}>{vpd}</span>
+            <span className="text-lg font-bold text-[#636E72] ml-1">kPa</span>
+          </div>
+          <div className="w-full bg-[#EEF5E9] rounded-full h-1.5 mt-4 overflow-hidden flex relative">
+            <div className={`absolute top-0 left-0 h-full ${vpdBg} transition-all duration-500`} style={{ width: `${Math.min(100, (vpd / 4) * 100)}%` }} />
+          </div>
+          <div className="flex justify-between mt-1 text-[9px] font-bold text-[#636E72] px-1">
+            <span>0.4</span>
+            <span>0.8</span>
+            <span>1.2</span>
+            <span>1.6</span>
+            <span>2.0+</span>
           </div>
         </div>
 
-        {/* Card 6: Environment */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-bold text-[#636E72]">{t.sensorContext}</span>
-            <Compass className="h-5 w-5 text-[#636E72]" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="border-r border-[#EEF5E9] pr-4">
-              <span className="text-xs text-[#636E72] font-bold">{t.sensorWind}</span>
-              <span className="text-xl font-bold text-[#2D3436] block mt-1">{node.windSpeed} km/h</span>
-              <span className="text-xs text-[#636E72] flex items-center gap-1 mt-1">
-                <Wind className="h-4 w-4 text-[#52B788] shrink-0" style={{ transform: `rotate(${node.windAngle}deg)` }} />
-                Dir: {node.windDir}
-              </span>
+        {/* Grid for small metrics */}
+        <div className="grid grid-cols-2 gap-4">
+          
+          {/* Temperatura */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Temperatura aire</span>
+              <Thermometer className={`h-4 w-4 ${getTempColor(temp)}`} />
             </div>
-            <div className="pl-2">
-              <div className="flex items-center gap-1 cursor-help group" title={lang === 'en' ? 'Vegetation Index. Low values = extremely dry vegetation prone to fire.' : 'Índice de Vegetación. Valores bajos = vegetación extremadamente seca y propensa al fuego.'}>
-                <span className="text-xs text-[#636E72] font-bold">{t.sensorNdvi}</span>
-                <HelpCircle className="h-3 w-3 text-[#636E72] opacity-50 group-hover:opacity-100" />
-              </div>
-              <span className={`text-xl font-bold block mt-1 ${node.ndvi < 0.35 ? 'text-[#E63946]' : node.ndvi < 0.55 ? 'text-[#F4A261]' : 'text-[#2D6A4F]'}`}>
-                {node.ndvi.toFixed(2)}
-              </span>
-              <span className="text-xs text-[#636E72] font-medium block mt-1">
-                {getNdviText(node.ndvi)}
-              </span>
-            </div>
+            <span className={`text-2xl font-extrabold ${getTempColor(temp)}`}>{temp} <span className="text-xs text-[#636E72]">°C</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">MKR ENV SHIELD</span>
           </div>
-        </div>
 
-        {/* Card 7: Camera */}
-        <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl col-span-2 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold text-[#636E72]">{t.sensorCamera}</span>
-            <div className="flex items-center gap-1.5">
+          {/* Humedad */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Humedad aire</span>
+              <Droplet className={`h-4 w-4 ${getHumColor(hum)}`} />
+            </div>
+            <span className={`text-2xl font-extrabold ${getHumColor(hum)}`}>{hum} <span className="text-xs text-[#636E72]">%</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">MKR ENV SHIELD</span>
+          </div>
+
+          {/* Presión Atm */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Presión atm.</span>
+              <Cloud className="h-4 w-4 text-[#2D6A4F]" />
+            </div>
+            <span className="text-2xl font-extrabold text-[#2D3436]">{presionAtm} <span className="text-xs text-[#636E72]">hPa</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">MKR ENV SHIELD</span>
+          </div>
+
+          {/* Iluminación */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Iluminación</span>
               <Eye className="h-4 w-4 text-[#2D6A4F]" />
             </div>
+            <span className="text-2xl font-extrabold text-[#2D3436]">{iluminacion} <span className="text-xs text-[#636E72]">klux</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">MKR ENV SHIELD</span>
           </div>
-          <div className="border border-[#EEF5E9] rounded-xl overflow-hidden aspect-video bg-slate-900 flex items-center justify-center relative">
-            <canvas ref={canvasRef} width={380} height={190} className="w-full h-full object-cover block" />
+
+          {/* Humedad Suelo */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Humedad suelo</span>
+              <Droplet className={`h-4 w-4 ${humedadSuelo < 20 ? 'text-[#E63946]' : 'text-[#2D6A4F]'}`} />
+            </div>
+            <span className={`text-2xl font-extrabold ${humedadSuelo < 20 ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>{humedadSuelo} <span className="text-xs text-[#636E72]">%</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">HD38</span>
+          </div>
+
+          {/* Temp Contacto */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">Temp. contacto</span>
+              <Thermometer className={`h-4 w-4 ${tempContacto > 40 ? 'text-[#E63946]' : 'text-[#2D6A4F]'}`} />
+            </div>
+            <span className={`text-2xl font-extrabold ${tempContacto > 40 ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>{tempContacto} <span className="text-xs text-[#636E72]">°C</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">DS18B20</span>
+          </div>
+
+          {/* CO2 */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">CO₂ estimado</span>
+              <Cloud className={`h-4 w-4 ${getCoColor(co)}`} />
+            </div>
+            <span className={`text-2xl font-extrabold ${getCoColor(co)}`}>{co} <span className="text-xs text-[#636E72]">ppm</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">MQ135</span>
+          </div>
+
+          {/* PM2.5/PM10 */}
+          <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-[#636E72]">PM2.5 / PM10</span>
+              <Cloud className={`h-4 w-4 ${pm25 > 50 ? 'text-[#E63946]' : 'text-[#2D6A4F]'}`} />
+            </div>
+            <span className={`text-2xl font-extrabold ${pm25 > 50 ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>{pm25} <span className="text-sm font-bold text-[#636E72]">· {pm10}</span> <span className="text-xs text-[#636E72]">μg/m³</span></span>
+            <span className="text-[10px] text-[#636E72] mt-1 font-mono uppercase">HM3301</span>
           </div>
         </div>
 
