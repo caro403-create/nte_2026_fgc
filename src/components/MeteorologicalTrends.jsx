@@ -17,44 +17,52 @@ const MOCK_TREND_DATA = [
   { name: 'Ago.', min: 15, max: 27, avg: 21, rainMin: 20, rainMax: 130, humMin: 50, humMax: 80, windMin: 10, windMax: 30 },
 ];
 
-export default function MeteorologicalTrends() {
+import { translations } from '../utils/translations';
+
+export default function MeteorologicalTrends({ lang = 'es' }) {
   const [activeTab, setActiveTab] = useState('temp');
   const [timeRange, setTimeRange] = useState('12m'); // '12m' o 'all'
+  const t = translations[lang];
 
   const getDataKeys = () => {
     switch(activeTab) {
-      case 'rain': return { max: 'rainMax', min: 'rainMin', colorMax: '#3b82f6', colorMin: '#60a5fa', maxLabel: 'Máxima lluvia', minLabel: 'Mínima lluvia' };
-      case 'hum': return { max: 'humMax', min: 'humMin', colorMax: '#06b6d4', colorMin: '#22d3ee', maxLabel: 'Máxima humedad', minLabel: 'Mínima humedad' };
-      case 'wind': return { max: 'windMax', min: 'windMin', colorMax: '#14b8a6', colorMin: '#2dd4bf', maxLabel: 'Ráfagas max', minLabel: 'Viento min' };
+      case 'rain': return { max: 'rainMax', min: 'rainMin', colorMax: '#3b82f6', colorMin: '#60a5fa', maxLabel: t.trendsMaxRain, minLabel: t.trendsMinRain };
+      case 'hum': return { max: 'humMax', min: 'humMin', colorMax: '#06b6d4', colorMin: '#22d3ee', maxLabel: t.trendsMaxHum, minLabel: t.trendsMinHum };
+      case 'wind': return { max: 'windMax', min: 'windMin', colorMax: '#14b8a6', colorMin: '#2dd4bf', maxLabel: t.trendsMaxWind, minLabel: t.trendsMinWind };
       case 'temp':
-      default: return { max: 'max', min: 'min', colorMax: '#ef4444', colorMin: '#3b82f6', maxLabel: 'Máxima diaria', minLabel: 'Mínima diaria' };
+      default: return { max: 'max', min: 'min', colorMax: '#ef4444', colorMin: '#3b82f6', maxLabel: t.trendsMaxDaily, minLabel: t.trendsMinDaily };
     }
   };
 
   const { max: maxKey, min: minKey, colorMax, colorMin, maxLabel, minLabel } = getDataKeys();
   
-  // Si es 'Todos los meses', simulamos un ligero cambio en la gráfica para que se note la interacción
+  const translateMonth = (m) => {
+    if (lang === 'es') return m;
+    const map = { 'Dic.': 'Dec.', 'Ene.': 'Jan.', 'Abr.': 'Apr.', 'Mayo': 'May', 'Ago.': 'Aug.' };
+    return map[m] || m;
+  };
+
   const displayData = timeRange === 'all' 
-    ? [...MOCK_TREND_DATA].reverse().map(d => ({ ...d, name: `2024 ${d.name}` })) 
-    : MOCK_TREND_DATA;
+    ? [...MOCK_TREND_DATA].reverse().map(d => ({ ...d, name: `2024 ${translateMonth(d.name)}` })) 
+    : MOCK_TREND_DATA.map(d => ({ ...d, name: translateMonth(d.name) }));
 
   return (
     <div className="w-full max-w-6xl mx-auto bg-[#1C1C1C] rounded-3xl p-6 border border-white/10 shadow-2xl text-white mt-8 mb-12">
       {/* Header */}
       <div className="flex flex-wrap items-center gap-6 border-b border-white/10 pb-4 mb-6">
-        <h3 className="text-lg font-bold">Tendencias meteorológicas</h3>
+        <h3 className="text-lg font-bold">{t.trendsTitle}</h3>
         <div className="flex gap-4 text-sm font-semibold">
           <button 
             onClick={() => setTimeRange('12m')} 
             className={`pb-1 transition-colors ${timeRange === '12m' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white'}`}
           >
-            Últimos 12 meses
+            {t.trends12m}
           </button>
           <button 
             onClick={() => setTimeRange('all')} 
             className={`pb-1 transition-colors ${timeRange === 'all' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white'}`}
           >
-            Todos los meses
+            {t.trendsAll}
           </button>
         </div>
       </div>
@@ -65,25 +73,25 @@ export default function MeteorologicalTrends() {
           onClick={() => setActiveTab('temp')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${activeTab === 'temp' ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-white/5 text-white/60 border-transparent hover:bg-white/10'}`}
         >
-          <Thermometer className="w-4 h-4" /> Temperatura
+          <Thermometer className="w-4 h-4" /> {t.obsTemp || 'Temperatura'}
         </button>
         <button 
           onClick={() => setActiveTab('rain')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${activeTab === 'rain' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-white/5 text-white/60 border-transparent hover:bg-white/10'}`}
         >
-          <Droplets className="w-4 h-4" /> Precipitaciones
+          <Droplets className="w-4 h-4" /> {t.obsLluvia || 'Precipitaciones'}
         </button>
         <button 
           onClick={() => setActiveTab('hum')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${activeTab === 'hum' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' : 'bg-white/5 text-white/60 border-transparent hover:bg-white/10'}`}
         >
-          <Droplets className="w-4 h-4" /> Humedad
+          <Droplets className="w-4 h-4" /> {t.obsHumedad || 'Humedad'}
         </button>
         <button 
           onClick={() => setActiveTab('wind')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${activeTab === 'wind' ? 'bg-teal-500/20 text-teal-400 border-teal-500/50' : 'bg-white/5 text-white/60 border-transparent hover:bg-white/10'}`}
         >
-          <Wind className="w-4 h-4" /> Viento
+          <Wind className="w-4 h-4" /> {t.obsViento || 'Viento'}
         </button>
       </div>
 
@@ -91,11 +99,11 @@ export default function MeteorologicalTrends() {
       <div className="h-80 w-full mb-6 relative">
         {/* Info overlay (like MSN) */}
         <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-sm p-3 rounded-lg border border-white/10 text-[10px]">
-          <div className="text-white font-bold mb-1">{timeRange === 'all' ? 'Resumen Histórico' : '7 de septiembre de 2025'}</div>
+          <div className="text-white font-bold mb-1">{timeRange === 'all' ? t.trendsHistSummary : '7 de septiembre de 2025'}</div>
           <div className="flex items-center gap-2" style={{ color: colorMax }}><div className="w-2 h-2 rounded-full" style={{ backgroundColor: colorMax }}/> {maxLabel}: {displayData[0][maxKey]}</div>
-          <div className="flex items-center gap-2 text-white/70"><div className="w-2 h-2 rounded-full bg-white/40"/> Historial de máximas diarias: {displayData[0][maxKey] - 3}</div>
+          <div className="flex items-center gap-2 text-white/70"><div className="w-2 h-2 rounded-full bg-white/40"/> {t.trendsHistMax} {displayData[0][maxKey] - 3}</div>
           <div className="flex items-center gap-2 mt-1" style={{ color: colorMin }}><div className="w-2 h-2 rounded-full" style={{ backgroundColor: colorMin }}/> {minLabel}: {displayData[0][minKey]}</div>
-          <div className="flex items-center gap-2 text-white/70"><div className="w-2 h-2 rounded-full bg-white/40"/> Historial de mínimas diarias: {displayData[0][minKey] + 3}</div>
+          <div className="flex items-center gap-2 text-white/70"><div className="w-2 h-2 rounded-full bg-white/40"/> {t.trendsHistMin} {displayData[0][minKey] + 3}</div>
         </div>
 
         <ResponsiveContainer width="100%" height="100%">
@@ -123,8 +131,8 @@ export default function MeteorologicalTrends() {
         <div className="flex justify-center gap-6 mt-2 text-[10px] text-white/50 font-semibold">
           <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-sm" style={{ backgroundColor: colorMin }} /> {minLabel}</div>
           <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-sm" style={{ backgroundColor: colorMax }} /> {maxLabel}</div>
-          <div className="flex items-center gap-1"><div className="w-3 h-[2px] bg-white/50 rounded-sm" /> Pronóstico de 30 días</div>
-          <div className="flex items-center gap-1"><div className="w-3 h-[2px] bg-white/20 rounded-sm" /> Historial de {activeTab === 'temp' ? 'temperaturas' : 'datos'}</div>
+          <div className="flex items-center gap-1"><div className="w-3 h-[2px] bg-white/50 rounded-sm" /> {t.trendsForecast30d}</div>
+          <div className="flex items-center gap-1"><div className="w-3 h-[2px] bg-white/20 rounded-sm" /> {activeTab === 'temp' ? t.trendsHistTemp : t.trendsHistData}</div>
         </div>
       </div>
 
@@ -134,56 +142,56 @@ export default function MeteorologicalTrends() {
         {/* Left Table */}
         <div className="text-xs">
           <div className="grid grid-cols-3 text-white/50 font-bold border-b border-white/10 pb-2 mb-2">
-            <div>Información sobre el tiempo</div>
-            <div>Últimos 12 meses</div>
-            <div>Todos los años</div>
+            <div>{t.trendsWeatherInfo}</div>
+            <div>{t.trends12m}</div>
+            <div>{t.trendsAllYears}</div>
           </div>
           <div className="grid grid-cols-3 py-2 items-center">
-            <div className="flex items-center gap-2 text-red-400 font-bold"><Thermometer className="w-4 h-4"/> Mes más caluroso</div>
-            <div>septiembre</div>
-            <div>agosto</div>
+            <div className="flex items-center gap-2 text-red-400 font-bold"><Thermometer className="w-4 h-4"/> {t.trendsHotMonth}</div>
+            <div>{lang === 'en' ? 'september' : 'septiembre'}</div>
+            <div>{lang === 'en' ? 'august' : 'agosto'}</div>
           </div>
           <div className="grid grid-cols-3 py-2 items-center">
-            <div className="flex items-center gap-2 text-blue-400 font-bold"><Thermometer className="w-4 h-4"/> Mes más frío</div>
-            <div>diciembre</div>
-            <div>enero</div>
+            <div className="flex items-center gap-2 text-blue-400 font-bold"><Thermometer className="w-4 h-4"/> {t.trendsColdMonth}</div>
+            <div>{lang === 'en' ? 'december' : 'diciembre'}</div>
+            <div>{lang === 'en' ? 'january' : 'enero'}</div>
           </div>
           <div className="grid grid-cols-3 py-2 items-center">
-            <div className="flex items-center gap-2 text-cyan-400 font-bold"><Droplets className="w-4 h-4"/> Mes con mayor humedad</div>
-            <div>septiembre</div>
-            <div>marzo</div>
+            <div className="flex items-center gap-2 text-cyan-400 font-bold"><Droplets className="w-4 h-4"/> {t.trendsHumidMonth}</div>
+            <div>{lang === 'en' ? 'september' : 'septiembre'}</div>
+            <div>{lang === 'en' ? 'march' : 'marzo'}</div>
           </div>
           <div className="grid grid-cols-3 py-2 items-center border-b border-white/10 pb-3">
-            <div className="flex items-center gap-2 text-teal-400 font-bold"><Wind className="w-4 h-4"/> Mes con más viento</div>
-            <div>julio</div>
-            <div>abril</div>
+            <div className="flex items-center gap-2 text-teal-400 font-bold"><Wind className="w-4 h-4"/> {t.trendsWindyMonth}</div>
+            <div>{lang === 'en' ? 'july' : 'julio'}</div>
+            <div>{lang === 'en' ? 'april' : 'abril'}</div>
           </div>
         </div>
 
         {/* Right Table */}
         <div className="text-xs">
           <div className="grid grid-cols-4 text-white/50 font-bold border-b border-white/10 pb-2 mb-2">
-            <div className="col-span-2">Resumen diario (Últimos 12 meses)</div>
-            <div className="text-right">Máx</div>
-            <div className="text-right">Mín</div>
+            <div className="col-span-2">{t.trendsDailySummary}</div>
+            <div className="text-right">{t.obsMax}</div>
+            <div className="text-right">{t.obsMin}</div>
           </div>
           <div className="grid grid-cols-4 py-2">
-            <div className="col-span-2 text-white/80">Temperatura alta (°C)</div>
+            <div className="col-span-2 text-white/80">{t.trendsHighTemp}</div>
             <div className="text-right font-bold text-red-400">33</div>
             <div className="text-right font-bold text-slate-300">14</div>
           </div>
           <div className="grid grid-cols-4 py-2">
-            <div className="col-span-2 text-white/80">Temperatura baja (°C)</div>
+            <div className="col-span-2 text-white/80">{t.trendsLowTemp}</div>
             <div className="text-right font-bold text-slate-300">20</div>
             <div className="text-right font-bold text-blue-400">5</div>
           </div>
           <div className="grid grid-cols-4 py-2">
-            <div className="col-span-2 text-white/80">Precipitación (mm)</div>
+            <div className="col-span-2 text-white/80">{t.trendsPrecipMm}</div>
             <div className="text-right font-bold text-blue-400">24.92</div>
             <div className="text-right font-bold text-slate-300">0</div>
           </div>
           <div className="grid grid-cols-4 py-2 border-b border-white/10 pb-3">
-            <div className="col-span-2 text-white/80">Viento (km/h)</div>
+            <div className="col-span-2 text-white/80">{t.trendsWindKmh}</div>
             <div className="text-right font-bold text-teal-400">19</div>
             <div className="text-right font-bold text-slate-300">4.7</div>
           </div>
