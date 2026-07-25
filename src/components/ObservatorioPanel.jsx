@@ -19,7 +19,7 @@ const CITIES_BAR_DATA = [
   { name: 'Cúcuta', lat: 7.8939, lng: -72.5078, temp: 34, icon: '☀️' }
 ];
 
-const CitiesBar = ({ onCityClick, currentCityName }) => {
+const CitiesBar = ({ onCityClick, currentCityName, t }) => {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -31,8 +31,8 @@ const CitiesBar = ({ onCityClick, currentCityName }) => {
 
   return (
     <div className="w-full max-w-6xl mx-auto mb-6 flex items-center bg-[#1C1C1C]/90 p-3 rounded-xl border border-white/10 shadow-lg text-white">
-      <div className="px-4 py-2 text-white/50 border-r border-white/10 mr-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider shrink-0">
-        <MapPin className="w-4 h-4 text-amber-500"/> Capitales
+      <div className="px-4 py-2 border-r border-white/10 mr-2 flex items-center gap-2 font-bold text-xs text-amber-500 shrink-0">
+        <MapPin className="w-4 h-4 text-amber-500"/> {t.obsCapitals || 'CAPITALES'}
       </div>
       
       <button onClick={() => scroll('left')} className="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-colors shrink-0 mx-1">
@@ -333,10 +333,16 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
 
 
     // Copernicus EFFIS Fire Danger Forecast (FWI)
+    // The WMS requires a `time` parameter — without it, defaults to 2019-01-01 (empty tiles).
+    const today = new Date();
+    const effisDate = today.toISOString().split('T')[0]; // e.g. '2026-07-18'
     const effisBurned = L.tileLayer.wms('https://ies-ows.jrc.ec.europa.eu/effis', {
-      layers: 'ecmwf.fwi.danger_index',
+      layers: 'ecmwf007.danger_index',
       format: 'image/png',
       transparent: true,
+      version: '1.1.1',
+      srs: 'EPSG:4326',
+      time: effisDate,
       attribution: 'Copernicus EFFIS FWI',
       opacity: opacities.effisBurned,
       className: 'effis-layer-style'
@@ -1126,7 +1132,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
         )}
         {layersState.owmTemp && (
           <div className="bg-[#1C1C1C]/90 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white shadow-xl text-xs w-60">
-            <span className="font-bold text-[10px] opacity-80 mb-1 block">Temperatura (°C)</span>
+            <span className="font-bold text-[10px] opacity-80 mb-1 block">{t.obsTemp || 'TEMPERATURA'} (°C)</span>
             <div className="h-1.5 rounded-full w-full" style={{ background: 'linear-gradient(90deg,#2b83ba,#abdda4,#ffffbf,#fdae61,#d7191c)' }} />
             <div className="flex justify-between text-[8px] opacity-60 mt-1"><span>-10°</span><span>15°</span><span>40°</span></div>
           </div>
@@ -1192,7 +1198,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                     <span className="block text-xs font-bold text-amber-400 mt-0.5">{displayPoint.sensorType}</span>
                   </div>
                   <div className="bg-black/40 p-2 rounded-lg border border-white/10">
-                    <span className="text-[8px] font-bold text-white/50 uppercase">Temperatura</span>
+                    <span className="text-[8px] font-bold text-white/50 uppercase">{t.obsTemp || 'TEMPERATURA'}</span>
                     <span className="block text-xs font-bold text-red-500 mt-0.5">{displayPoint.temp} K</span>
                   </div>
                 </div>
@@ -1316,7 +1322,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
 
               <div className={`p-3 rounded-xl border ${layersState.owmTemp ? 'bg-amber-500/10 border-amber-500/50' : 'bg-white/5 border-transparent'}`}>
                 <p className="font-bold flex items-center justify-between mb-1">
-                  <span className="flex items-center gap-2"><ThermometerSun className="w-4 h-4 text-amber-400"/> Temperatura</span>
+                  <span className="flex items-center gap-2"><ThermometerSun className="w-4 h-4 text-amber-400"/> {t.obsTemp || 'TEMPERATURA'}</span>
                   {layersState.owmTemp && <CheckCircle2 className="w-4 h-4 text-amber-400" />}
                 </p>
                 <p className="text-white/60 text-xs">Mapa de calor del aire en superficie (OpenWeatherMap).</p>
@@ -1450,11 +1456,11 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
 
       {/* DASHBOARD COMPONENT */}
       <div className="p-4 md:p-6 lg:p-8">
-        <CitiesBar onCityClick={handleMapClick} currentCityName={selectedPoint?.name} />
+        <CitiesBar onCityClick={handleMapClick} currentCityName={selectedPoint?.name} t={t} />
         {selectedPoint && selectedPoint.type === 'coordinate' && selectedPoint.daily && (
            <>
-             <WeatherDashboard point={selectedPoint} />
-             <MeteorologicalTrends />
+             <WeatherDashboard point={selectedPoint} lang={lang} />
+             <MeteorologicalTrends lang={lang} />
            </>
         )}
       </div>

@@ -50,8 +50,11 @@ const CustomTooltip = ({ active, payload, label, activeTab }) => {
   return null;
 };
 
-export default function HourlyForecastChart({ baseTemp }) {
+import { translations } from '../utils/translations';
+
+export default function HourlyForecastChart({ baseTemp, lang = 'es' }) {
   const [activeTab, setActiveTab] = useState('hourly'); // hourly, general, precip, wind
+  const t = translations[lang];
 
   // Adjust mock data to base temp
   const data = mockHourlyData.map(d => ({
@@ -89,10 +92,10 @@ export default function HourlyForecastChart({ baseTemp }) {
     <div className="bg-[#1C1C1C] rounded-3xl p-6 border border-white/10 shadow-2xl overflow-hidden relative">
       {/* Header Tabs */}
       <div className="flex gap-4 mb-6 border-b border-white/10 pb-2 overflow-x-auto text-sm font-bold" style={{ scrollbarWidth: 'none' }}>
-        <button onClick={() => setActiveTab('hourly')} className={`${activeTab === 'hourly' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>Por hora</button>
-        <button onClick={() => setActiveTab('general')} className={`${activeTab === 'general' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>Información general</button>
-        <button onClick={() => setActiveTab('precip')} className={`${activeTab === 'precip' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>Precipitación</button>
-        <button onClick={() => setActiveTab('wind')} className={`${activeTab === 'wind' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>Viento</button>
+        <button onClick={() => setActiveTab('hourly')} className={`${activeTab === 'hourly' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>{t.obsTabHourly}</button>
+        <button onClick={() => setActiveTab('general')} className={`${activeTab === 'general' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>{t.obsTabGeneral}</button>
+        <button onClick={() => setActiveTab('precip')} className={`${activeTab === 'precip' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>{t.obsTabPrecip}</button>
+        <button onClick={() => setActiveTab('wind')} className={`${activeTab === 'wind' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-white/50 hover:text-white transition-colors'} pb-2 px-1 whitespace-nowrap`}>{t.obsTabWind}</button>
       </div>
 
       <div className="h-48 w-full relative">
@@ -134,7 +137,7 @@ export default function HourlyForecastChart({ baseTemp }) {
       {/* Solar/Lunar Phase Bar (Simulated) */}
       <div className="flex items-center justify-between text-[10px] text-white/40 font-bold border-t border-white/10 pt-4 mt-4">
         <div className="flex items-center gap-2 text-indigo-300">
-          <Moon className="w-3 h-3" /> Fase lunar: Luna menguante
+          <Moon className="w-3 h-3" /> {t.obsLunarPhase}
         </div>
       </div>
     </div>
