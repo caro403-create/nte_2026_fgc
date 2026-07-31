@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Layers, MapPin, Wind, Thermometer, Droplets, Flame, RefreshCw, Play, Pause, ChevronLeft, ChevronRight, Settings, Info, CloudRain, Search, X, ShieldAlert, Cpu, ThermometerSun, CloudFog, HelpCircle, Users, Cloud, MessageSquare, CheckCircle2 } from 'lucide-react';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import { 
+  Layers, MapPin, Wind, Thermometer, Droplets, Flame, RefreshCw, Play, Pause, 
+  ChevronLeft, ChevronRight, Settings, Info, CloudRain, Search, X, ShieldAlert, 
+  Cpu, ThermometerSun, CloudFog, HelpCircle, Users, Cloud, MessageSquare, 
+  CheckCircle2, Mountain, Trees, SunDim, Eye, EyeOff, ExternalLink, Pencil, 
+  Trash2, ChevronDown, ChevronUp, Sliders
+} from 'lucide-react';
 import { translations } from '../utils/translations';
 import WeatherDashboard from './WeatherDashboard';
 import MeteorologicalTrends from './MeteorologicalTrends';
@@ -18,6 +26,147 @@ const CITIES_BAR_DATA = [
   { name: 'Pasto', lat: 1.2136, lng: -77.2811, temp: 13, icon: '🌧️' },
   { name: 'Cúcuta', lat: 7.8939, lng: -72.5078, temp: 34, icon: '☀️' }
 ];
+
+const LAYER_METADATA = {
+  geeBurned: {
+    id: 'geeBurned',
+    name: 'Áreas quemadas (ΔNBR)',
+    category: 'GEE',
+    icon: Flame,
+    iconColor: 'text-red-400',
+    resolution: '30m (Sentinel-2 / GEE)',
+    source: 'Google Earth Engine',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '0,2 Quema ligera',
+    maxLabel: '0,7 Quema grave',
+    gradient: 'from-amber-500 via-red-600 to-black',
+    description: 'Muestra cicatrices de incendios y áreas recién quemadas mediante el Índice NBR (imágenes satelitales Sentinel-2).\n\nLos círculos con números (ej. 3.2k) representan "Focos de Calor" detectados en las últimas 24 horas. Estos NO son incendios completos, sino alertas satelitales (NASA FIRMS) que indican puntos con temperaturas inusualmente altas en la superficie (posibles incendios activos). A medida que te acercas al mapa, estos grupos se dividen para mostrar la ubicación exacta de cada alerta.'
+  },
+  geeAridity: {
+    id: 'geeAridity',
+    name: 'Índice de Aridez (PDSI)',
+    category: 'GEE',
+    icon: SunDim,
+    iconColor: 'text-amber-400',
+    resolution: '4.6 km (TerraClimate / GEE)',
+    source: 'Google Earth Engine / IDAHO',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '-5.0 Seco severo',
+    maxLabel: '+5.0 Húmedo',
+    gradient: 'from-red-600 via-yellow-400 to-blue-600',
+    description: 'Calcula el Índice de Sequía de Palmer (PDSI) derivado del balance hídrico mensual entre precipitación y evapotranspiración. Identifica deficiencias de humedad acumulada en la biomasa que incrementan la vulnerabilidad del terreno.'
+  },
+  geeDrought: {
+    id: 'geeDrought',
+    name: 'Humedad del Suelo y Sequía',
+    category: 'GEE',
+    icon: Thermometer,
+    iconColor: 'text-orange-400',
+    resolution: '4.6 km (TerraClimate / GEE)',
+    source: 'Google Earth Engine',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '0 mm (Déficit crítico)',
+    maxLabel: '1000 mm (Saturación)',
+    gradient: 'from-red-500 via-yellow-400 to-emerald-500',
+    description: 'Mide el nivel de almacenamiento de humedad en el perfil edáfico arable (0-2 metros). Un déficit hídrico prolongado acelera la desecación del sotobosque y convierte la hojarasca en combustible altamente inflamable.'
+  },
+  geeErosion: {
+    id: 'geeErosion',
+    name: 'Riesgo de Erosión por Pendiente',
+    category: 'GEE',
+    icon: Mountain,
+    iconColor: 'text-stone-300',
+    resolution: '30m (SRTM DEM / GEE)',
+    source: 'NASA SRTM / Google Earth Engine',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '0° Plano / Seguro',
+    maxLabel: '45°+ Pendiente crítica',
+    gradient: 'from-emerald-500 via-yellow-400 to-red-600',
+    description: 'Modelado fisiográfico digital derivado de la Misión de Topografía Radar SRTM. Identifica laderas de alta pendiente propensas a deslizamientos, pérdida de suelo fértil y escorrentía errosiva post-incendio.'
+  },
+  geeDryForest: {
+    id: 'geeDryForest',
+    name: 'Cobertura de Bosque Seco Tropical',
+    category: 'GEE',
+    icon: Trees,
+    iconColor: 'text-emerald-400',
+    resolution: '30m (Hansen GFC / GEE)',
+    source: 'UMD Hansen / GEE',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '10% Cobertura dispersa',
+    maxLabel: '100% Dosel denso',
+    gradient: 'from-emerald-950 via-emerald-700 to-emerald-400',
+    description: 'Mapeo satelital continuo del bioma prioritario de Bosque Seco Tropical (BST). Permite monitorear la deforestación, la pérdida de densidad foliar y la conectividad de corredores biológicos.'
+  },
+  thermalGibs: {
+    id: 'thermalGibs',
+    name: 'Focos Activos / Anomalías Térmicas',
+    category: 'Satelital',
+    icon: Flame,
+    iconColor: 'text-orange-500',
+    resolution: '375m - 1km (VIIRS/MODIS)',
+    source: 'NASA FIRMS / GIBS',
+    sourceUrl: 'https://firms.modaps.eosdis.nasa.gov/',
+    minLabel: 'Anomalía leve',
+    maxLabel: 'Incendio confirmado',
+    gradient: 'from-yellow-400 via-orange-500 to-red-600',
+    description: 'Detección satelital continua de puntos calientes en superficie mediante los espectrorradiómetros MODIS y VIIRS. Capta frentes de fuego activos y quemas controladas en tiempo real.'
+  },
+  rainRadar: {
+    id: 'rainRadar',
+    name: 'Radar de Lluvia en Tiempo Real',
+    category: 'Clima',
+    icon: CloudRain,
+    iconColor: 'text-cyan-400',
+    resolution: 'Regional (RainViewer Radar)',
+    source: 'RainViewer Radar Network',
+    sourceUrl: 'https://www.rainviewer.com/',
+    gradient: 'from-cyan-400 via-blue-600 to-purple-600',
+    description: 'Compuesto radar meteorológico Doppler que procesa bandas de precipitación activa cada 5 minutos. Esencial para anticipar lluvia mitigadora sobre zonas con focos de calor activos.'
+  },
+  satGibs: {
+    id: 'satGibs',
+    name: 'Satélite Color Real (MODIS)',
+    category: 'Satelital',
+    icon: Layers,
+    iconColor: 'text-indigo-400',
+    resolution: '250m (NASA GIBS)',
+    source: 'NASA EOSDIS GIBS',
+    sourceUrl: 'https://gibs.earthdata.nasa.gov/',
+    gradient: 'from-blue-900 via-emerald-800 to-amber-700',
+    description: 'Imágenes satelitales ópticas en espectro visible (RGB) libre de nubes captadas por el satélite Terra en las últimas 24 horas.'
+  },
+  owmTemp: {
+    id: 'owmTemp',
+    name: 'Temperatura del Aire',
+    category: 'Clima',
+    icon: ThermometerSun,
+    iconColor: 'text-amber-400',
+    resolution: '10 km (OpenWeatherMap)',
+    source: 'OpenWeatherMap',
+    sourceUrl: 'https://openweathermap.org/',
+    minLabel: '0°C Templado',
+    maxLabel: '40°C+ Extremo',
+    gradient: 'from-blue-500 via-yellow-400 to-red-600',
+    description: 'Capa térmica atmosférica interpolada en superficie a 2 metros de altura para la evaluación del riesgo de choque térmico y evaporación.'
+  },
+  owmWind: {
+    id: 'owmWind',
+    name: 'Viento en Superficie',
+    category: 'Clima',
+    icon: Wind,
+    iconColor: 'text-teal-400',
+    resolution: '10 km (OpenWeatherMap)',
+    source: 'OpenWeatherMap',
+    sourceUrl: 'https://openweathermap.org/',
+    minLabel: '0 km/h Calma',
+    maxLabel: '60+ km/h Ventarrón',
+    gradient: 'from-teal-400 to-indigo-600',
+    description: 'Vectores de velocidad y ráfaga de viento en superficie. Factor crítico para modelar la velocidad de avance y propagación de plumas de humo y fuegos de copa.'
+  }
+};
+
+
 
 const CitiesBar = ({ onCityClick, currentCityName, t }) => {
   const scrollRef = useRef(null);
@@ -89,6 +238,22 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   // Help Modal
   const [showHelpModal, setShowHelpModal] = useState(false);
 
+  // Side Drawer Restor Style
+  const [isLayerDrawerOpen, setIsLayerDrawerOpen] = useState(true);
+  const [layerSearchQuery, setLayerSearchQuery] = useState('');
+  const [expandedMetadataLayers, setExpandedMetadataLayers] = useState({ geeBurned: true });
+  const fireClusterGroupRef = useRef(null);
+  const fireHotspotsLoadedRef = useRef(false);
+
+  // Area Delimitation (Polygon Tool)
+  const [isDrawingArea, setIsDrawingArea] = useState(false);
+  const isDrawingAreaRef = useRef(false);
+  useEffect(() => { isDrawingAreaRef.current = isDrawingArea; }, [isDrawingArea]);
+
+  const [drawnPolygonPoints, setDrawnPolygonPoints] = useState([]);
+  const drawnPolygonRef = useRef(null);
+  const [areaStats, setAreaStats] = useState(null);
+
   // Community Reports State
   const [isReportingMode, setIsReportingMode] = useState(false);
   const isReportingModeRef = useRef(false);
@@ -141,17 +306,27 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   // Layer Visibility & Opacity (Windy style)
   const [layersState, setLayersState] = useState({
     baseOsm: true,
-    satGibs: false,
-    rainRadar: true,
-    hotspotsFirms: true,
-    thermalGibs: false,
+    baseLabels: true,
+    rainRadar: false,
+    thermalGibs: false, // FIRMS active fires
+    satGibs: false, // True color
     owmTemp: false,
-    effisBurned: false,
     owmWind: false,
     owmClouds: false,
     owmHumidity: false,
     owmPrecip: false,
+    effisBurned: false,
+    geeBurned: false,
+    geeAridity: false,
+    geeDrought: false,
+    geeErosion: false,
+    geeDryForest: false,
   });
+  
+  const layersStateRef = useRef(layersState);
+  useEffect(() => {
+    layersStateRef.current = layersState;
+  }, [layersState]);
 
   const [opacities, setOpacities] = useState({
     satGibs: 0.8,
@@ -163,10 +338,20 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     owmClouds: 0.6,
     owmHumidity: 0.6,
     owmPrecip: 0.8,
+    geeBurned: 0.7,
+    geeAridity: 0.7,
+    geeDrought: 0.7,
+    geeErosion: 0.7,
+    geeDryForest: 0.7,
   });
 
   const toggleLayer = (layerName) => {
     setLayersState(prev => {
+      const isTurningOn = !prev[layerName];
+      if (isTurningOn) {
+        setExpandedMetadataLayers(exp => ({ ...exp, [layerName]: true }));
+      }
+      
       if (isMultiSelectMode) {
         return { ...prev, [layerName]: !prev[layerName] };
       } else {
@@ -191,9 +376,168 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   // City Markers and Hover State
   const [cityWeatherData, setCityWeatherData] = useState({});
   const cityMarkersRef = useRef(null);
-  const [hoverData, setHoverData] = useState(null);
   const hoverTimeoutRef = useRef(null);
+  const [hoverData, setHoverData] = useState(null);
   const [mapZoom, setMapZoom] = useState(6);
+
+  const loadGeeLayer = async (layerName, type) => {
+    try {
+      console.log(`[GEE] Loading layer: ${layerName} (type: ${type})...`);
+      const response = await fetch(`http://localhost:3001/api/gee/layer/${type}`);
+      if (!response.ok) {
+        console.error(`[GEE] Server returned ${response.status} for ${type}`);
+        return;
+      }
+      const data = await response.json();
+      if (data.url) {
+        console.log(`[GEE] Got tile URL for ${layerName}:`, data.url.substring(0, 80) + '...');
+        const tileLayer = L.tileLayer(data.url, {
+          attribution: 'Google Earth Engine',
+          opacity: opacities[layerName] || 0.7,
+          maxZoom: 18,
+          tileSize: 256,
+        });
+        
+        tileLayer.on('tileerror', (err) => {
+          console.warn(`[GEE] Tile load error for ${layerName}:`, err);
+        });
+        tileLayer.on('load', () => {
+          console.log(`[GEE] All tiles loaded for ${layerName}`);
+        });
+        
+        // Clear previous layers in the group and add new ones
+        layersRef.current[layerName].clearLayers();
+        tileLayer.addTo(layersRef.current[layerName]);
+        console.log(`[GEE] Layer ${layerName} added to map successfully`);
+      } else {
+        console.error(`[GEE] No URL returned for ${layerName}`);
+      }
+    } catch (error) {
+      console.error(`[GEE] Error loading layer ${layerName}:`, error);
+    }
+  };
+
+  // Load NASA FIRMS fire hotspots with dynamic clustering
+  const loadFireHotspots = async () => {
+    const map = mapRef.current;
+    if (!map || fireHotspotsLoadedRef.current) return;
+    fireHotspotsLoadedRef.current = true;
+    const currentLangT = translations[lang || 'es'];
+
+    try {
+      console.log('[FIRMS] Loading fire hotspots...');
+      const response = await fetch('http://localhost:3001/api/firms/hotspots');
+      if (!response.ok) { fireHotspotsLoadedRef.current = false; return; }
+      const data = await response.json();
+      if (!data.hotspots || data.hotspots.length === 0) { fireHotspotsLoadedRef.current = false; return; }
+
+      console.log(`[FIRMS] Received ${data.hotspots.length} hotspots, creating cluster group...`);
+
+      // Remove old cluster group if exists
+      if (fireClusterGroupRef.current && map.hasLayer(fireClusterGroupRef.current)) {
+        map.removeLayer(fireClusterGroupRef.current);
+      }
+
+      // Fix for leaflet.markercluster in Vite/ESM
+      if (!window.L) window.L = L;
+      await import('leaflet.markercluster');
+
+      // Create markerClusterGroup with custom Restor-style icons
+      const clusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 60,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        disableClusteringAtZoom: 14,
+        iconCreateFunction: function(cluster) {
+          const count = cluster.getChildCount();
+          let displayCount = count >= 1000 ? `${(count/1000).toFixed(1)}k` : `${count}`;
+          let size = count > 500 ? 50 : count > 100 ? 42 : count > 20 ? 36 : 30;
+          let borderColor = count > 500 ? '#dc2626' : count > 100 ? '#f97316' : count > 20 ? '#f59e0b' : '#eab308';
+
+          return L.divIcon({
+            html: `<div style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 5px;
+              width: ${size}px;
+              height: ${size}px;
+              background: rgba(10, 10, 10, 0.88);
+              backdrop-filter: blur(10px);
+              border: 2px solid ${borderColor};
+              color: white;
+              border-radius: 50%;
+              box-shadow: 0 4px 14px rgba(0,0,0,0.5), 0 0 15px ${borderColor}40;
+              font-family: system-ui, -apple-system, sans-serif;
+              font-weight: 800;
+              font-size: ${size > 42 ? 13 : 11}px;
+              letter-spacing: 0.3px;
+              cursor: pointer;
+            ">
+              <span>${displayCount}</span>
+            </div>`,
+            className: 'fire-cluster-icon',
+            iconSize: L.point(size, size),
+            iconAnchor: L.point(size/2, size/2)
+          });
+        }
+      });
+
+      // Add individual fire point markers
+      data.hotspots.forEach(pt => {
+        const marker = L.circleMarker([pt.lat, pt.lng], {
+          radius: 4,
+          fillColor: pt.confidence >= 80 ? '#ef4444' : pt.confidence >= 50 ? '#f97316' : '#eab308',
+          fillOpacity: 0.9,
+          color: '#fff',
+          weight: 1,
+          opacity: 0.8
+        });
+        marker.bindPopup(`
+          <div style="font-family: system-ui; font-size: 13px; min-width: 220px; color: #111;">
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 8px; color: #dc2626; border-bottom: 1px solid #eee; padding-bottom: 4px;">
+              ${currentLangT.obsFirmsPopupTitle}
+            </div>
+            <p style="margin: 0 0 8px 0; font-size: 11px; color: #444; line-height: 1.4;">
+              ${currentLangT.obsFirmsPopupDesc}
+            </p>
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 8px; font-size: 12px;">
+              <span style="color: #666;">${currentLangT.obsFirmsConfianza}</span>
+              <span style="font-weight: 600; color: ${pt.confidence >= 80 ? '#dc2626' : pt.confidence >= 50 ? '#d97706' : '#16a34a'}">
+                ${pt.confidence}% ${pt.confidence >= 80 ? currentLangT.obsFirmsAlta : pt.confidence >= 50 ? currentLangT.obsFirmsMedia : currentLangT.obsFirmsBaja}
+              </span>
+              
+              <span style="color: #666;">${currentLangT.obsFirmsIntensidad}</span>
+              <span style="font-weight: 600;">${pt.frp.toFixed(1)} MW</span>
+              
+              <span style="color: #666;">${currentLangT.obsFirmsDetectado}</span>
+              <span style="font-weight: 600;">${pt.date} ${pt.time}</span>
+            </div>
+            <div style="margin-top: 8px; font-size: 10px; color: #888; text-align: right;">
+              ${currentLangT.obsFirmsFuente}
+            </div>
+          </div>
+        `);
+        clusterGroup.addLayer(marker);
+      });
+
+      fireClusterGroupRef.current = clusterGroup;
+      clusterGroup.addTo(map);
+      console.log(`[FIRMS] Cluster group added with ${data.hotspots.length} points`);
+    } catch (error) {
+      console.error('[FIRMS] Error loading hotspots:', error);
+      fireHotspotsLoadedRef.current = false;
+    }
+  };
+
+  // Remove fire cluster group from map
+  const removeFireHotspots = () => {
+    const map = mapRef.current;
+    if (map && fireClusterGroupRef.current && map.hasLayer(fireClusterGroupRef.current)) {
+      map.removeLayer(fireClusterGroupRef.current);
+    }
+  };
 
   const COLOMBIA_CITIES = [
     { name: 'Bogotá', lat: 4.6097, lng: -74.0817, rank: 1 },
@@ -237,15 +581,112 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       zoomControl: false,
     });
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-    mapRef.current = map;
+    // Interpretation Helper
+    const getLayerInterpretation = (layerType, val) => {
+      let color = '#6b7280';
+      let text = 'Desconocido';
+      let desc = '';
 
-    // Base OSM Layer (Standard OSM for intense sea color)
-    const baseOsm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 20
+      if (layerType === 'geeAridity') {
+        if (val < -400) { color = '#dc2626'; text = 'Sequía Extrema'; desc = 'Riesgo crítico de incendio y rápida propagación.'; }
+        else if (val < -200) { color = '#ea580c'; text = 'Sequía Severa'; desc = 'Alta vulnerabilidad, vegetación muy seca.'; }
+        else if (val < -100) { color = '#f59e0b'; text = 'Sequía Moderada'; desc = 'Déficit hídrico, precaución.'; }
+        else if (val < 100) { color = '#10b981'; text = 'Normal'; desc = 'Condiciones de humedad estables.'; }
+        else { color = '#3b82f6'; text = 'Húmedo'; desc = 'Terreno húmedo. Bajo riesgo de ignición.'; }
+      } 
+      else if (layerType === 'geeDrought') {
+        if (val < 100) { color = '#990000'; text = 'Suelo Árido'; desc = 'Déficit crítico profundo (0-2m). Combustible altamente inflamable.'; }
+        else if (val < 300) { color = '#ef4444'; text = 'Suelo Muy Seco'; desc = 'Poca retención de agua en subsuelo. Alto riesgo.'; }
+        else if (val < 500) { color = '#f97316'; text = 'Suelo Seco'; desc = 'Reducción de humedad en raíces.'; }
+        else { color = '#10b981'; text = 'Suelo Húmedo'; desc = 'Humedad adecuada en el subsuelo. Bajo riesgo.'; }
+      }
+      else if (layerType === 'geeErosion') {
+        if (val > 30) { color = '#dc2626'; text = 'Pendiente Crítica'; desc = `Inclinación severa (${Math.round(val)}°). El fuego avanza mucho más rápido hacia arriba.`; }
+        else if (val > 15) { color = '#ea580c'; text = 'Pendiente Moderada'; desc = `Inclinación media (${Math.round(val)}°). Riesgo de rápida propagación.`; }
+        else { color = '#10b981'; text = 'Terreno Plano'; desc = `Inclinación suave (${Math.round(val)}°). Avance de fuego predecible.`; }
+      }
+      else if (layerType === 'geeDryForest') {
+        if (val > 70) { color = '#064e3b'; text = 'Bosque Denso'; desc = 'Alta biomasa y dosel cerrado. En época seca, es alto combustible.'; }
+        else if (val > 25) { color = '#059669'; text = 'Bosque Disperso'; desc = 'Cobertura forestal fragmentada o en transición.'; }
+        else { color = '#9ca3af'; text = 'Sin Cobertura'; desc = 'Zonas deforestadas, sabana o agricultura.'; }
+      }
+      else if (layerType === 'geeBurned') {
+        color = '#dc2626'; text = 'Área Quemada'; desc = `Fuego detectado en el día ${Math.round(val)} del año.`;
+      }
+
+      return `
+        <div style="margin-top: 6px; text-align: left;">
+          <span style="display: inline-block; padding: 3px 6px; background-color: ${color}; color: white; border-radius: 6px; font-size: 10px; font-weight: 900; letter-spacing: 0.5px;">
+            ${text}
+          </span>
+          <div style="font-size: 10px; color: #6b7280; margin-top: 6px; line-height: 1.3; font-weight: 500;">
+            ${desc}
+          </div>
+        </div>
+      `;
+    };
+
+    // Map Click for Point Inspection (GEE)
+    map.on('click', async (e) => {
+      // Do not trigger if drawing
+      if (isDrawingAreaRef.current) return;
+      
+      const { lat, lng } = e.latlng;
+      const currentLayers = layersStateRef.current;
+      
+      // Find the first active GEE layer
+      const geeLayers = ['geeBurned', 'geeAridity', 'geeDrought', 'geeErosion', 'geeDryForest'];
+      const activeGeeLayer = geeLayers.find(l => currentLayers[l]);
+      
+      if (activeGeeLayer) {
+        const popup = L.popup({ closeButton: false, autoPanPadding: [50, 50] })
+          .setLatLng(e.latlng)
+          .setContent('<div class="p-2 text-xs font-sans text-center min-w-[120px]"><div class="animate-spin w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-2"></div><span class="text-gray-600">Consultando...</span></div>')
+          .openOn(map);
+          
+        try {
+          const res = await fetch(`http://localhost:3001/api/gee/point?lat=${lat}&lng=${lng}&layerType=${activeGeeLayer}`);
+          const data = await res.json();
+          
+          if (data.value !== null && data.value !== undefined) {
+             const layerMeta = LAYER_METADATA[activeGeeLayer];
+             const displayValue = Number(data.value).toFixed(2);
+             const interpretationHtml = getLayerInterpretation(activeGeeLayer, Number(data.value));
+             
+             popup.setContent(`
+               <div class="p-2.5 font-sans min-w-[170px]">
+                 <div class="text-[9px] uppercase tracking-wider font-extrabold text-amber-500 mb-1 leading-tight">${layerMeta.name}</div>
+                 <div class="flex items-baseline gap-2">
+                   <span class="text-xl font-black text-[#1C1C1C]">${displayValue}</span>
+                 </div>
+                 ${interpretationHtml}
+                 <div class="text-[9px] font-mono text-gray-400 mt-2 pt-2 border-t border-gray-100">
+                   Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}
+                 </div>
+               </div>
+             `);
+          } else {
+             popup.setContent('<div class="p-2.5 text-xs font-sans font-bold text-center text-gray-500">Sin datos en esta coordenada</div>');
+          }
+        } catch (error) {
+          popup.setContent('<div class="p-2.5 text-xs font-sans font-bold text-center text-red-500">Error de conexión</div>');
+        }
+      }
+    });
+
+    // Base Satellite Layer (Esri World Imagery)
+    const baseSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye',
+      maxZoom: 19
     }).addTo(map);
-    layersRef.current.baseOsm = baseOsm;
+    layersRef.current.baseOsm = baseSatellite;
+
+    // Boundaries & Place Labels overlay
+    const baseLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      opacity: 0.95
+    }).addTo(map);
+    layersRef.current.baseLabels = baseLabels;
 
     // Base Sat NASA GIBS (True Color MODIS Terra)
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -318,6 +759,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       );
       layersRef.current.owmClouds = owmClouds;
 
+      const owmHumidity = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmKey}`);
+      layersRef.current.owmHumidity = owmHumidity;
+
       const owmPrecip = L.tileLayer(
         `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmKey}`,
         {
@@ -330,7 +774,12 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       layersRef.current.owmPrecip = owmPrecip;
     }
 
-
+    // Mock GEE layers until backend auth is set up
+    layersRef.current.geeBurned = L.layerGroup();
+    layersRef.current.geeAridity = L.layerGroup();
+    layersRef.current.geeDrought = L.layerGroup();
+    layersRef.current.geeErosion = L.layerGroup();
+    layersRef.current.geeDryForest = L.layerGroup();
 
     // Copernicus EFFIS Fire Danger Forecast (FWI)
     // The WMS requires a `time` parameter — without it, defaults to 2019-01-01 (empty tiles).
@@ -390,7 +839,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     // Map click handler
     map.on('click', (e) => {
       const { lat, lng } = e.latlng;
-      if (isReportingModeRef.current) {
+      if (isDrawingAreaRef.current) {
+        setDrawnPolygonPoints(prev => [...prev, { lat, lng }]);
+      } else if (isReportingModeRef.current) {
         setReportFormPos({ lat, lng });
       } else {
         handleMapClick(lat, lng);
@@ -518,43 +969,120 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       if (layersRef.current.rainRadar && map.hasLayer(layersRef.current.rainRadar)) map.removeLayer(layersRef.current.rainRadar);
     }
 
+    if (layersState.geeBurned) {
+      if (layersRef.current.geeBurned && !map.hasLayer(layersRef.current.geeBurned)) {
+        layersRef.current.geeBurned.addTo(map);
+        if (layersRef.current.geeBurned.getLayers().length === 0) loadGeeLayer('geeBurned', 'burned');
+        loadFireHotspots(); // Load dynamic FIRMS fire clusters
+      }
+    } else {
+      if (layersRef.current.geeBurned && map.hasLayer(layersRef.current.geeBurned)) map.removeLayer(layersRef.current.geeBurned);
+      removeFireHotspots();
+    }
+    
+    if (layersState.geeAridity) {
+      if (layersRef.current.geeAridity && !map.hasLayer(layersRef.current.geeAridity)) {
+        layersRef.current.geeAridity.addTo(map);
+        if (layersRef.current.geeAridity.getLayers().length === 0) loadGeeLayer('geeAridity', 'aridity');
+      }
+    } else {
+      if (layersRef.current.geeAridity && map.hasLayer(layersRef.current.geeAridity)) map.removeLayer(layersRef.current.geeAridity);
+    }
+    
+    if (layersState.geeDrought) {
+      if (layersRef.current.geeDrought && !map.hasLayer(layersRef.current.geeDrought)) {
+        layersRef.current.geeDrought.addTo(map);
+        if (layersRef.current.geeDrought.getLayers().length === 0) loadGeeLayer('geeDrought', 'drought');
+      }
+    } else {
+      if (layersRef.current.geeDrought && map.hasLayer(layersRef.current.geeDrought)) map.removeLayer(layersRef.current.geeDrought);
+    }
+    
+    if (layersState.geeErosion) {
+      if (layersRef.current.geeErosion && !map.hasLayer(layersRef.current.geeErosion)) {
+        layersRef.current.geeErosion.addTo(map);
+        if (layersRef.current.geeErosion.getLayers().length === 0) loadGeeLayer('geeErosion', 'erosion');
+      }
+    } else {
+      if (layersRef.current.geeErosion && map.hasLayer(layersRef.current.geeErosion)) map.removeLayer(layersRef.current.geeErosion);
+    }
+
+    if (layersState.geeDryForest) {
+      if (layersRef.current.geeDryForest && !map.hasLayer(layersRef.current.geeDryForest)) {
+        layersRef.current.geeDryForest.addTo(map);
+        if (layersRef.current.geeDryForest.getLayers().length === 0) loadGeeLayer('geeDryForest', 'dryForest');
+      }
+    } else {
+      if (layersRef.current.geeDryForest && map.hasLayer(layersRef.current.geeDryForest)) map.removeLayer(layersRef.current.geeDryForest);
+    }
+
     drawMarkers();
   }, [layersState, rainViewerIndex]);
 
-  // Adjust Opacity on Change
+  // Handle Language changes for Hotspots
   useEffect(() => {
-    if (layersRef.current.satGibs) layersRef.current.satGibs.setOpacity(opacities.satGibs);
-  }, [opacities.satGibs]);
+    if (layersState.geeBurned && fireHotspotsLoadedRef.current) {
+      fireHotspotsLoadedRef.current = false;
+      loadFireHotspots();
+    }
+  }, [lang]);
 
+  // Unified Opacity adjustment
   useEffect(() => {
-    if (layersRef.current.rainRadar) layersRef.current.rainRadar.setOpacity(opacities.rainRadar);
-  }, [opacities.rainRadar]);
+    Object.keys(opacities).forEach(layerKey => {
+      const layerGroup = layersRef.current[layerKey];
+      if (layerGroup) {
+        if (typeof layerGroup.setOpacity === 'function') {
+          layerGroup.setOpacity(opacities[layerKey]);
+        } else if (typeof layerGroup.eachLayer === 'function') {
+          layerGroup.eachLayer(l => {
+            if (typeof l.setOpacity === 'function') l.setOpacity(opacities[layerKey]);
+          });
+        }
+      }
+    });
+  }, [opacities]);
 
+  // Area Delimitation Polygon render effect
   useEffect(() => {
-    if (layersRef.current.thermalGibs) layersRef.current.thermalGibs.setOpacity(opacities.thermalGibs);
-  }, [opacities.thermalGibs]);
+    const map = mapRef.current;
+    if (!map) return;
 
-  useEffect(() => {
-    if (layersRef.current.owmTemp) layersRef.current.owmTemp.setOpacity(opacities.owmTemp);
-  }, [opacities.owmTemp]);
+    if (drawnPolygonRef.current) {
+      map.removeLayer(drawnPolygonRef.current);
+      drawnPolygonRef.current = null;
+    }
 
+    if (drawnPolygonPoints.length > 0) {
+      const latlngs = drawnPolygonPoints.map(p => [p.lat, p.lng]);
+      if (drawnPolygonPoints.length === 1) {
+        drawnPolygonRef.current = L.circleMarker(latlngs[0], { radius: 6, color: '#f59e0b', fillColor: '#fbbf24', fillOpacity: 0.9 }).addTo(map);
+        setAreaStats(null);
+      } else if (drawnPolygonPoints.length === 2) {
+        drawnPolygonRef.current = L.polyline(latlngs, { color: '#f59e0b', weight: 3, dashArray: '6,6' }).addTo(map);
+        setAreaStats(null);
+      } else {
+        drawnPolygonRef.current = L.polygon(latlngs, { color: '#f59e0b', weight: 3, fillColor: '#f59e0b', fillOpacity: 0.3 }).addTo(map);
+        
+        // Approximate area calculation in m² and hectares
+        let areaM2 = 0;
+        const R = 6378137;
+        for (let i = 0; i < latlngs.length; i++) {
+          const p1 = latlngs[i];
+          const p2 = latlngs[(i + 1) % latlngs.length];
+          areaM2 += (p2[1] * Math.PI / 180 - p1[1] * Math.PI / 180) *
+                    (2 + Math.sin(p1[0] * Math.PI / 180) + Math.sin(p2[0] * Math.PI / 180));
+        }
+        areaM2 = Math.abs(areaM2 * R * R / 2);
+        const hectares = Math.round(areaM2 / 10000);
+        const km2 = (areaM2 / 1000000).toFixed(2);
 
-
-  useEffect(() => {
-    if (layersRef.current.effisBurned) layersRef.current.effisBurned.setOpacity(opacities.effisBurned);
-  }, [opacities.effisBurned]);
-
-  useEffect(() => {
-    if (layersRef.current.owmWind) layersRef.current.owmWind.setOpacity(opacities.owmWind);
-  }, [opacities.owmWind]);
-
-  useEffect(() => {
-    if (layersRef.current.owmClouds) layersRef.current.owmClouds.setOpacity(opacities.owmClouds);
-  }, [opacities.owmClouds]);
-
-  useEffect(() => {
-    if (layersRef.current.owmPrecip) layersRef.current.owmPrecip.setOpacity(opacities.owmPrecip);
-  }, [opacities.owmPrecip]);
+        setAreaStats({ hectares, km2, pointsCount: drawnPolygonPoints.length });
+      }
+    } else {
+      setAreaStats(null);
+    }
+  }, [drawnPolygonPoints]);
 
   // RainViewer Playing Effect
   useEffect(() => {
@@ -671,11 +1199,12 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       const pinMarker = L.marker([selectedPoint.lat, selectedPoint.lng], { icon: pinIcon });
       markersGroup.addLayer(pinMarker);
     }
+
   };
 
   useEffect(() => {
     drawMarkers();
-  }, [selectedNodeId, selectedPoint]);
+  }, [selectedNodeId, selectedPoint, communityReports]);
 
   // Handle map click
   const handleMapClick = async (lat, lng, isDefault = false) => {
@@ -929,142 +1458,302 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           className="absolute inset-0 z-0 bg-[#1E1E1E]" 
         />
 
-      {/* 2. FLOATING TOP-RIGHT SEARCH BAR (Windy Style) */}
-      <div className="absolute top-4 right-4 z-10 w-80 max-w-sm pointer-events-auto">
-        <form onSubmit={handleLocationSearch} className="flex items-center bg-white/95 backdrop-blur-md px-3 py-2 rounded-full border border-slate-200 shadow-lg gap-2">
-          <Search className="h-4 w-4 text-emerald-800 shrink-0 ml-1" />
+      {/* 2. FLOATING TOP-RIGHT SEARCH BAR */}
+      <div className="absolute top-4 right-4 z-20 w-80 max-w-sm pointer-events-auto">
+        <form onSubmit={handleLocationSearch} className="flex items-center bg-[#10171D]/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shadow-2xl gap-2">
+          <Search className="h-4 w-4 text-amber-500 shrink-0 ml-1" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={lang === 'es' ? 'Buscar ciudad o lugar...' : 'Search city or place...'}
-            className="flex-1 bg-transparent text-xs text-slate-800 outline-none border-none placeholder-slate-400 font-sans"
+            placeholder={lang === 'es' ? 'Buscar municipio o lugar...' : 'Search city or place...'}
+            className="flex-1 bg-transparent text-xs text-white outline-none border-none placeholder-white/40 font-sans"
           />
           {searchQuery && (
-            <button type="button" onClick={() => setSearchQuery('')} className="text-slate-400 hover:text-slate-600">
+            <button type="button" onClick={() => setSearchQuery('')} className="text-white/40 hover:text-white">
               <X className="h-3.5 w-3.5" />
             </button>
           )}
           <button
             type="submit"
-            className="bg-brand-darkgreen hover:bg-emerald-800 text-white text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200"
+            className="bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-xl cursor-pointer transition-all duration-200"
           >
             {lang === 'es' ? 'Buscar' : 'Search'}
           </button>
         </form>
       </div>
 
-      {/* 3. TOP HORIZONTAL TOOLBAR (MSN Weather Style) */}
-      <div className="absolute top-4 left-4 z-10 pointer-events-auto flex flex-col gap-2">
-        <div className="bg-[#1C1C1C]/90 backdrop-blur-md rounded-xl p-1.5 flex items-center shadow-2xl border border-white/10 text-white/80">
-          <button 
-            onClick={() => toggleLayer('rainRadar')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.rainRadar ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Radar Lluvia (RainViewer)"
-          >
-            <CloudRain className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('thermalGibs')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.thermalGibs ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Focos Activos / Anomalías (NASA FIRMS / GIBS)"
-          >
-            <Flame className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('owmTemp')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmTemp ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Temperatura (OpenWeatherMap)"
-          >
-            <ThermometerSun className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('owmHumidity')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmHumidity ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Humedad (Open-Meteo / Interpolada)"
-          >
-            <Droplets className="w-5 h-5" />
-          </button>
+      {/* 3. TOP CONTROL BAR (Restor / Modern Map Style) */}
+      <div className="absolute top-4 left-4 z-20 pointer-events-auto flex items-center gap-2">
+        <button
+          onClick={() => setIsLayerDrawerOpen(!isLayerDrawerOpen)}
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-xl border transition-all duration-200 cursor-pointer ${
+            isLayerDrawerOpen 
+              ? 'bg-amber-500 text-black border-amber-400' 
+              : 'bg-[#10171D]/90 hover:bg-[#1A232C] text-white border-white/10'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>{t.obsDataLayer || 'Capa de datos'}</span>
+          <span className="bg-black/30 px-1.5 py-0.5 rounded-full text-[10px] ml-0.5 font-mono">
+            {Object.values(layersState).filter(Boolean).length}
+          </span>
+        </button>
 
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('effisBurned')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.effisBurned ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Áreas Quemadas (Copernicus EFFIS)"
-          >
-            <ShieldAlert className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('satGibs')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.satGibs ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Satélite (NASA GIBS True Color)"
-          >
-            <Layers className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('owmWind')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmWind ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Viento (OpenWeatherMap)"
-          >
-            <Wind className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('owmClouds')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmClouds ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Nubosidad (OpenWeatherMap)"
-          >
-            <Cloud className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => toggleLayer('owmPrecip')}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${layersState.owmPrecip ? 'bg-amber-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Precipitación / Tormenta (OpenWeatherMap)"
-          >
-            <CloudRain className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-2"></div>
-          <button 
-            onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${isMultiSelectMode ? 'bg-emerald-500 text-black' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Modo Selección Múltiple (Apilar Capas)"
-          >
-            <div className="relative">
-              <Layers className="w-5 h-5" />
-              {isMultiSelectMode && <div className="absolute -top-1 -right-1 w-2 h-2 bg-black rounded-full"></div>}
+        <button
+          onClick={() => {
+            setIsDrawingArea(!isDrawingArea);
+            if (isDrawingArea) setDrawnPolygonPoints([]);
+          }}
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold shadow-xl border transition-all duration-200 cursor-pointer ${
+            isDrawingArea 
+              ? 'bg-emerald-500 text-black border-emerald-400 animate-pulse' 
+              : 'bg-[#10171D]/90 hover:bg-[#1A232C] text-white border-white/10'
+          }`}
+        >
+          <Pencil className="w-4 h-4" />
+          <span>{isDrawingArea ? 'Dibujando Zona...' : t.obsDrawArea || 'Delimitar Área'}</span>
+        </button>
+
+        <button
+          onClick={() => setIsReportingMode(!isReportingMode)}
+          className={`p-2.5 rounded-xl text-xs font-bold shadow-xl border transition-all duration-200 cursor-pointer ${
+            isReportingMode 
+              ? 'bg-purple-600 text-white border-purple-500 animate-pulse' 
+              : 'bg-[#10171D]/90 hover:bg-[#1A232C] text-white/80 border-white/10 hover:text-white'
+          }`}
+          title="Reportes comunitarios"
+        >
+          <Users className="w-4 h-4" />
+        </button>
+
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className={`p-2.5 rounded-xl text-xs font-bold shadow-xl border transition-all duration-200 cursor-pointer ${
+            showSettings 
+              ? 'bg-white/20 text-white border-white/30' 
+              : 'bg-[#10171D]/90 hover:bg-[#1A232C] text-white/80 border-white/10 hover:text-white'
+          }`}
+          title="Ajustes de API"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* AREA DELIMITATION FLOATING BANNER */}
+      {isDrawingArea && (
+        <div className="absolute top-16 left-4 z-20 pointer-events-auto bg-[#10171D]/95 backdrop-blur-md p-3.5 rounded-2xl border border-emerald-500/40 shadow-2xl text-xs text-white max-w-sm font-sans flex flex-col gap-2">
+          <div className="flex items-center justify-between font-bold text-emerald-400">
+            <span className="flex items-center gap-1.5"><Pencil className="w-4 h-4" /> {t.obsDrawArea || 'Delimitar Área'}</span>
+            <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-md font-mono">{drawnPolygonPoints.length} Vértices</span>
+          </div>
+          <p className="text-white/70 text-[11px]">
+            Haz clic sobre el mapa para agregar puntos marcando los límites de la zona que deseas analizar.
+          </p>
+
+          {areaStats && (
+            <div className="bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl my-1 flex justify-between items-center">
+              <div>
+                <span className="text-[9px] uppercase font-extrabold text-emerald-400/80 block">Superficie Delimitada</span>
+                <span className="text-sm font-black text-emerald-300 font-mono">
+                  {areaStats.hectares.toLocaleString()} ha <span className="text-xs text-white/60">({areaStats.km2} km²)</span>
+                </span>
+              </div>
             </div>
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => setIsReportingMode(!isReportingMode)}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${isReportingMode ? 'bg-purple-500 text-white animate-pulse' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Reportes de la comunidad"
-          >
-            <Users className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => setShowHelpModal(true)}
-            className="p-2 rounded-lg transition-all flex items-center justify-center hover:bg-white/10 hover:text-white"
-            title="Ayuda y Leyendas"
-          >
-            <HelpCircle className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-white/20 mx-1"></div>
-          <button 
-            onClick={() => setShowSettings(!showSettings)}
-            className={`p-2 rounded-lg transition-all flex items-center justify-center ${showSettings ? 'bg-white/20 text-white' : 'hover:bg-white/10 hover:text-white'}`}
-            title="Configuración de Sistema"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
+          )}
+
+          <div className="flex gap-2 mt-1">
+            {drawnPolygonPoints.length > 0 && (
+              <button
+                onClick={() => setDrawnPolygonPoints([])}
+                className="flex-1 bg-red-950/50 hover:bg-red-900/60 text-red-200 border border-red-500/30 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1"
+              >
+                <Trash2 className="w-3 h-3" /> Limpiar Puntos
+              </button>
+            )}
+            <button
+              onClick={() => setIsDrawingArea(false)}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-black text-[10px] font-bold py-1.5 rounded-lg transition-colors"
+            >
+              Finalizar
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* RESTOR-STYLE SIDE DRAWER ("CAPA DE DATOS") */}
+      {isLayerDrawerOpen && (
+        <div className="absolute top-0 right-0 bottom-0 z-30 w-96 max-w-full bg-[#10171D]/95 backdrop-blur-xl border-l border-white/10 text-white shadow-2xl flex flex-col pointer-events-auto font-sans">
+          
+          {/* Drawer Header */}
+          <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#151D24]">
+            <div className="flex items-center gap-2">
+              <Layers className="w-5 h-5 text-amber-500" />
+              <h3 className="font-extrabold text-base tracking-tight text-white">{t.obsDataLayer || 'Capa de datos'}</h3>
+            </div>
+            <button 
+              onClick={() => setIsLayerDrawerOpen(false)} 
+              className="text-white/50 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Drawer Search Bar */}
+          <div className="p-3 border-b border-white/10 bg-[#121920]">
+            <div className="relative flex items-center">
+              <Search className="w-4 h-4 text-white/40 absolute left-3 pointer-events-none" />
+              <input
+                type="text"
+                value={layerSearchQuery}
+                onChange={(e) => setLayerSearchQuery(e.target.value)}
+                placeholder={t.obsSearchLayers || "Buscar capas de datos..."}
+                className="w-full bg-[#1A232C] text-xs text-white pl-9 pr-8 py-2 rounded-xl border border-white/10 outline-none focus:border-amber-500/50 placeholder-white/40"
+              />
+              {layerSearchQuery && (
+                <button onClick={() => setLayerSearchQuery('')} className="absolute right-2 text-white/40 hover:text-white">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Drawer Layer Cards (Scrollable List) */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-white/40 px-1 block mb-1">
+              {t.obsAvailableLayers || 'Capas Disponibles'} ({Object.keys(LAYER_METADATA).length})
+            </span>
+
+            {Object.keys(LAYER_METADATA)
+              .filter(key => {
+                const meta = LAYER_METADATA[key];
+                return meta.name.toLowerCase().includes(layerSearchQuery.toLowerCase()) ||
+                       meta.category.toLowerCase().includes(layerSearchQuery.toLowerCase());
+              })
+              .map(key => {
+                const meta = LAYER_METADATA[key];
+                const displayName = t['obs' + key.charAt(0).toUpperCase() + key.slice(1) + 'Name'] || meta.name;
+                const displayDesc = t['obs' + key.charAt(0).toUpperCase() + key.slice(1) + 'Desc'] || meta.description;
+                const isActive = !!layersState[key];
+                const IconComponent = meta.icon || Layers;
+                const isExpanded = !!expandedMetadataLayers[key];
+
+                return (
+                  <div 
+                    key={key} 
+                    className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                      isActive 
+                        ? 'bg-[#18222B] border-amber-500/40 shadow-lg' 
+                        : 'bg-[#131B22] border-white/5 hover:border-white/15'
+                    }`}
+                  >
+                    {/* Layer Header */}
+                    <div className="p-3.5 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className={`p-2 rounded-xl bg-white/5 shrink-0 ${meta.iconColor || 'text-white'}`}>
+                          <IconComponent className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-xs text-white truncate">{displayName}</h4>
+                          <span className="text-[9px] text-white/40 font-mono block">{meta.resolution}</span>
+                        </div>
+                      </div>
+
+                      {/* Toggle Active Button (Mostrar / Ocultar) */}
+                      <button
+                        onClick={() => toggleLayer(key)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
+                          isActive 
+                            ? 'bg-white text-black hover:bg-white/90 shadow-md' 
+                            : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                        }`}
+                      >
+                        {isActive ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5 text-black" />
+                            <span>{t.obsHide || 'Ocultar'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5 text-white/70" />
+                            <span>{t.obsShow || 'Mostrar'}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Active Layer Controls & Legend */}
+                    {isActive && (
+                      <div className="px-3.5 pb-3.5 border-t border-white/10 pt-3 space-y-3 bg-[#141C23]">
+                        {/* Gradient Legend */}
+                        {meta.gradient && (
+                          <div>
+                            <div className={`h-2 rounded-full w-full bg-gradient-to-r ${meta.gradient}`} />
+                            <div className="flex justify-between text-[9px] text-white/60 mt-1 font-mono">
+                              <span>{meta.minLabel}</span>
+                              <span>{meta.maxLabel}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Opacity Slider */}
+                        <div>
+                          <div className="flex items-center justify-between text-[11px] text-white/70 mb-1">
+                            <span>{t.obsOpacity || 'Opacidad'} ({Math.round((opacities[key] || 0.7) * 100)}%)</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value={opacities[key] || 0.7}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value);
+                              setOpacities(prev => ({ ...prev, [key]: val }));
+                            }}
+                            className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                          />
+                        </div>
+
+                        {/* Details Toggle Accordion */}
+                        <button
+                          onClick={() => setExpandedMetadataLayers(prev => ({ ...prev, [key]: !prev[key] }))}
+                          className="w-full flex items-center justify-between text-[10px] text-amber-400 font-bold hover:text-amber-300 pt-1"
+                        >
+                          <span>{isExpanded ? (t.obsMethodologyHide || 'Ocultar Metodología') : (t.obsMethodologyShow || 'Ver Fuente y Metodología')}</span>
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        </button>
+
+                        {/* Expanded Metadata */}
+                        {isExpanded && (
+                          <div className="bg-black/30 p-2.5 rounded-xl border border-white/10 text-[10px] space-y-2 font-sans">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/50 uppercase font-bold">{t.obsSource || 'Fuente:'}</span>
+                              <a
+                                href={meta.sourceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-amber-400 hover:underline font-bold flex items-center gap-1"
+                              >
+                                {meta.source} <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                            <div>
+                              <span className="text-white/50 uppercase font-bold block mb-0.5">{t.obsDescCalc || 'Descripción & Cálculo:'}</span>
+                              <p className="text-white/80 leading-relaxed text-[10px] whitespace-pre-wrap">
+                                {displayDesc}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
         {/* Floating Settings Drawer */}
         {showSettings && (
@@ -1369,7 +2058,53 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                 </p>
                 <p className="text-white/60 text-xs">Visión de cámara satelital real del terreno (NASA GIBS).</p>
               </div>
+            </div>
 
+            <h4 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4 mt-6">Capas Ecológicas y de Riesgo (GEE)</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 cursor-pointer">
+              <div onClick={() => toggleLayer('geeBurned')} className={`p-3 rounded-xl border transition-colors ${layersState.geeBurned ? 'bg-red-500/10 border-red-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-red-400"><Flame className="w-4 h-4"/> Áreas Quemadas (NBR)</span>
+                  {layersState.geeBurned && <CheckCircle2 className="w-4 h-4 text-red-400" />}
+                </p>
+                <p className="text-white/60 text-xs">Tasa de Quema Normalizada, diferencia entre vegetación normal y quemada.</p>
+              </div>
+
+              <div onClick={() => toggleLayer('geeAridity')} className={`p-3 rounded-xl border transition-colors ${layersState.geeAridity ? 'bg-amber-500/10 border-amber-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-amber-500"><SunDim className="w-4 h-4"/> Índice de Aridez (AI)</span>
+                  {layersState.geeAridity && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
+                </p>
+                <p className="text-white/60 text-xs">Métrica de sequedad (Zomer et al. 2008).</p>
+              </div>
+
+              <div onClick={() => toggleLayer('geeDrought')} className={`p-3 rounded-xl border transition-colors ${layersState.geeDrought ? 'bg-orange-500/10 border-orange-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-orange-500"><Droplets className="w-4 h-4"/> Riesgo de Sequía</span>
+                  {layersState.geeDrought && <CheckCircle2 className="w-4 h-4 text-orange-500" />}
+                </p>
+                <p className="text-white/60 text-xs">Riesgo relativo de estrés hídrico (Carrão et al. 2016).</p>
+              </div>
+
+              <div onClick={() => toggleLayer('geeErosion')} className={`p-3 rounded-xl border transition-colors ${layersState.geeErosion ? 'bg-stone-500/10 border-stone-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-stone-400"><Mountain className="w-4 h-4"/> Riesgo de Erosión</span>
+                  {layersState.geeErosion && <CheckCircle2 className="w-4 h-4 text-stone-400" />}
+                </p>
+                <p className="text-white/60 text-xs">Erosividad global de las precipitaciones (Panagos et al. 2017).</p>
+              </div>
+
+              <div onClick={() => toggleLayer('geeDryForest')} className={`p-3 rounded-xl border transition-colors ${layersState.geeDryForest ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-emerald-400"><Trees className="w-4 h-4"/> Bosque Seco</span>
+                  {layersState.geeDryForest && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                </p>
+                <p className="text-white/60 text-xs">Cobertura y extensión del bioma de Bosque Seco Tropical.</p>
+              </div>
+            </div>
+
+            <h4 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4 mt-6">Configuraciones de la Comunidad</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 cursor-pointer">
               <div className={`p-3 rounded-xl border ${isMultiSelectMode ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent'}`}>
                 <p className="font-bold flex items-center justify-between mb-1">
                   <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-emerald-400"/> Selección Múltiple</span>
@@ -1451,8 +2186,6 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           <div className="text-white/50 text-[10px] font-semibold">{hoverData.dateStr}, {hoverData.timeStr}</div>
         </div>
       )}
-
-      </div> {/* End of map relative wrapper */}
 
       {/* DASHBOARD COMPONENT */}
       <div className="p-4 md:p-6 lg:p-8">
