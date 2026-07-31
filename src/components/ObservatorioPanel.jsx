@@ -571,6 +571,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   // Initialize Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
+    if (mapRef.current) return; // Prevent double initialization in StrictMode
 
     // Centered in Colombia
     const map = L.map(mapContainerRef.current, {
@@ -580,6 +581,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       maxZoom: 18,
       zoomControl: false,
     });
+    
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    mapRef.current = map;
 
     // Interpretation Helper
     const getLayerInterpretation = (layerType, val) => {
