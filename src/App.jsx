@@ -197,7 +197,7 @@ export default function App() {
   }, [score]);
 
   // Trigger simulated anomaly button
-  const triggerSimulatedAnomaly = () => {
+  const triggerSimulatedAnomaly = async () => {
     const time = new Date().toTimeString().split(' ')[0];
     const randomNode = Math.floor(Math.random() * 5) + 1;
     
@@ -205,16 +205,41 @@ export default function App() {
     setScore(0.85);
     setSelectedNodeId(randomNode);
     
+    const anomalyMessage = `SIMULACIÓN: Anomalía crítica simulada. Sensores reportan picos térmicos y reducción de humedad en tiempo récord. Viento arreciando.`;
+    
     setAlerts(prev => [
       {
         id: Date.now(),
         type: 'danger',
         source: `NODO IoT 0${randomNode}`,
-        message: `SIMULACIÓN: Anomalía crítica simulada. Sensores reportan picos térmicos y reducción de humedad en tiempo récord. Viento arreciando.`,
+        message: anomalyMessage,
         time
       },
       ...prev
     ]);
+
+    // Send to Supabase so the Telegram Bot picks it up
+    try {
+      const { error } = await supabase.from('alerts').insert([{
+        type: 'danger',
+        source: `NODO IoT 0${randomNode}`,
+        message: anomalyMessage,
+        location: 'Sistema Central'
+      }]);
+      
+      if (error) {
+        console.error('Error enviando alerta a Supabase:', error);
+        if (error.code === '42501') {
+          alert('Error: No tienes permisos para enviar la alerta (Debes iniciar sesión primero).');
+        } else {
+          alert(`Error de Supabase: ${error.message}`);
+        }
+      } else {
+        console.log('Alerta insertada en Supabase correctamente.');
+      }
+    } catch (err) {
+      console.error('Excepción de red:', err);
+    }
   };
 
   const clearAlerts = () => {
@@ -385,6 +410,14 @@ export default function App() {
               >
                 <RefreshCw className="h-3 w-3" />
                 {t.dbReset}
+              </button>
+              
+              <button 
+                onClick={triggerSimulatedAnomaly} 
+                className="flex items-center gap-1 hover:bg-red-700 transition-colors duration-200 border border-red-500 rounded-full px-3 py-1.5 bg-red-600 cursor-pointer text-white font-mono text-[10px] shrink-0 font-semibold shadow-sm"
+                title="Probar integración con Telegram"
+              >
+                🔥 Simular Anomalía
               </button>
             </div>
           </div>
