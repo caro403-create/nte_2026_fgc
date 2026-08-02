@@ -30,17 +30,17 @@ const CITIES_BAR_DATA = [
 const LAYER_METADATA = {
   geeBurned: {
     id: 'geeBurned',
-    name: 'Áreas quemadas (ΔNBR)',
+    name: 'Áreas quemadas (MCD64A1)',
     category: 'GEE',
     icon: Flame,
     iconColor: 'text-red-400',
-    resolution: '30m (Sentinel-2 / GEE)',
-    source: 'Google Earth Engine',
+    resolution: '500m (MODIS / GEE)',
+    source: 'NASA MODIS / Google Earth Engine',
     sourceUrl: 'https://earthengine.google.com/',
-    minLabel: '0,2 Quema ligera',
-    maxLabel: '0,7 Quema grave',
+    minLabel: 'Enero (Quema antigua)',
+    maxLabel: 'Diciembre (Quema reciente)',
     gradient: 'from-amber-500 via-red-600 to-black',
-    description: 'Muestra cicatrices de incendios y áreas recién quemadas mediante el Índice NBR (imágenes satelitales Sentinel-2).\n\nLos círculos con números (ej. 3.2k) representan "Focos de Calor" detectados en las últimas 24 horas. Estos NO son incendios completos, sino alertas satelitales (NASA FIRMS) que indican puntos con temperaturas inusualmente altas en la superficie (posibles incendios activos). A medida que te acercas al mapa, estos grupos se dividen para mostrar la ubicación exacta de cada alerta.'
+    description: '**¿Qué mide?** Muestra cicatrices de incendios ocurridos durante el último año.\n\n**¿Cómo se calcula?** Utiliza el producto MCD64A1 del satélite MODIS, que analiza cambios bruscos en la reflectancia de la superficie (índices de vegetación que caen repentinamente) combinados con anomalías térmicas. Los valores indican el "Día del Año" (1 a 365) en el que ocurrió el incendio.\n\n**¿Cómo se interpreta?** El mapa colorea de naranja a rojo oscuro las zonas quemadas. Puedes hacer clic en una zona quemada para ver el día exacto en que el algoritmo detectó que el área se quemó por primera vez en el año.'
   },
   geeAridity: {
     id: 'geeAridity',
@@ -49,30 +49,30 @@ const LAYER_METADATA = {
     icon: SunDim,
     iconColor: 'text-amber-400',
     resolution: '4.6 km (TerraClimate / GEE)',
-    source: 'Google Earth Engine / IDAHO',
+    source: 'Universidad de Idaho / GEE',
     sourceUrl: 'https://earthengine.google.com/',
     minLabel: '-5.0 Seco severo',
     maxLabel: '+5.0 Húmedo',
     gradient: 'from-red-600 via-yellow-400 to-blue-600',
-    description: 'Calcula el Índice de Sequía de Palmer (PDSI) derivado del balance hídrico mensual entre precipitación y evapotranspiración. Identifica deficiencias de humedad acumulada en la biomasa que incrementan la vulnerabilidad del terreno.'
+    description: '**¿Qué mide?** El Índice de Severidad de Sequía de Palmer (PDSI). Indica qué tan seca está una región en comparación con su clima histórico normal.\n\n**¿Cómo se calcula?** Es un modelo matemático complejo (TerraClimate) que hace un balance entre la precipitación (lluvia que entra) y la evapotranspiración (agua que se evapora por el calor). Toma parámetros históricos y actuales de temperatura y lluvia.\n\n**¿Cómo se interpreta?** Valores negativos (rojo/naranja) indican sequía meteorológica (falta de lluvia prolongada). Valores alrededor de 0 (verde) son condiciones normales. Valores positivos (azul) indican exceso de humedad. Las zonas rojas son altamente susceptibles a incendios.'
   },
   geeDrought: {
     id: 'geeDrought',
-    name: 'Humedad del Suelo y Sequía',
+    name: 'Humedad del Suelo',
     category: 'GEE',
     icon: Thermometer,
     iconColor: 'text-orange-400',
     resolution: '4.6 km (TerraClimate / GEE)',
-    source: 'Google Earth Engine',
+    source: 'Universidad de Idaho / GEE',
     sourceUrl: 'https://earthengine.google.com/',
     minLabel: '0 mm (Déficit crítico)',
     maxLabel: '1000 mm (Saturación)',
     gradient: 'from-red-500 via-yellow-400 to-emerald-500',
-    description: 'Mide el nivel de almacenamiento de humedad en el perfil edáfico arable (0-2 metros). Un déficit hídrico prolongado acelera la desecación del sotobosque y convierte la hojarasca en combustible altamente inflamable.'
+    description: '**¿Qué mide?** La cantidad total de agua almacenada en el perfil del suelo (la capa donde crecen las raíces).\n\n**¿Cómo se calcula?** Modelo TerraClimate que simula cómo el agua de lluvia se filtra y se retiene en la tierra, restando el agua que las plantas consumen. Se mide en milímetros (mm).\n\n**¿Cómo se interpreta?** Zonas en rojo intenso (cerca a 0 mm) tienen los suelos completamente secos. En estas condiciones, la vegetación baja (hojarasca, pastos) muere y se convierte en un combustible perfecto y altamente inflamable para los incendios forestales.'
   },
   geeErosion: {
     id: 'geeErosion',
-    name: 'Riesgo de Erosión por Pendiente',
+    name: 'Riesgo de Erosión (Pendiente)',
     category: 'GEE',
     icon: Mountain,
     iconColor: 'text-stone-300',
@@ -82,21 +82,35 @@ const LAYER_METADATA = {
     minLabel: '0° Plano / Seguro',
     maxLabel: '45°+ Pendiente crítica',
     gradient: 'from-emerald-500 via-yellow-400 to-red-600',
-    description: 'Modelado fisiográfico digital derivado de la Misión de Topografía Radar SRTM. Identifica laderas de alta pendiente propensas a deslizamientos, pérdida de suelo fértil y escorrentía errosiva post-incendio.'
+    description: '**¿Qué mide?** La inclinación del terreno en grados. Ayuda a identificar zonas montañosas peligrosas.\n\n**¿Cómo se calcula?** Utiliza un Modelo de Elevación Digital (DEM) creado por la Misión Topográfica Radar del Transbordador Espacial de la NASA (SRTM). El algoritmo de GEE calcula el grado de inclinación entre cada píxel de 30 metros.\n\n**¿Cómo se interpreta?** Áreas en rojo (> 30°) son laderas empinadas. En un incendio, el fuego avanza mucho más rápido hacia arriba por laderas empinadas. Además, si llueve fuerte sobre una zona quemada y empinada, hay un riesgo altísimo de deslizamientos de tierra.'
   },
-  geeDryForest: {
-    id: 'geeDryForest',
-    name: 'Cobertura de Bosque Seco Tropical',
+  geeTreeCover: {
+    id: 'geeTreeCover',
+    name: 'Cobertura Arbórea General',
     category: 'GEE',
     icon: Trees,
     iconColor: 'text-emerald-400',
     resolution: '30m (Hansen GFC / GEE)',
     source: 'UMD Hansen / GEE',
     sourceUrl: 'https://earthengine.google.com/',
-    minLabel: '10% Cobertura dispersa',
+    minLabel: '25% Cobertura dispersa',
     maxLabel: '100% Dosel denso',
     gradient: 'from-emerald-950 via-emerald-700 to-emerald-400',
-    description: 'Mapeo satelital continuo del bioma prioritario de Bosque Seco Tropical (BST). Permite monitorear la deforestación, la pérdida de densidad foliar y la conectividad de corredores biológicos.'
+    description: '**¿Qué mide?** Muestra TODAS las áreas del mundo que están cubiertas por árboles (bosques de todo tipo, manglares, plantaciones maderables).\n\n**¿Cómo se calcula?** El equipo de la Universidad de Maryland analizó miles de imágenes del satélite Landsat para calcular qué porcentaje de cada cuadro de 30x30m está tapado por las copas de los árboles (canopy).\n\n**¿Cómo se interpreta?** En este mapa **se ha aplicado un filtro matemático** para ocultar cualquier zona que tenga menos del 25% de árboles. Todo lo que ves en verde es considerado "Bosque" según los estándares forestales, sin importar el clima o la especie.'
+  },
+  geeTropicalDryForest: {
+    id: 'geeTropicalDryForest',
+    name: 'Bosque Seco Tropical',
+    category: 'GEE',
+    icon: Trees,
+    iconColor: 'text-amber-600',
+    resolution: '30m (Hansen + RESOLVE)',
+    source: 'UMD Hansen & WWF / GEE',
+    sourceUrl: 'https://earthengine.google.com/',
+    minLabel: '25% Cobertura dispersa',
+    maxLabel: '100% Dosel denso',
+    gradient: 'from-amber-700 via-amber-600 to-yellow-600',
+    description: '**¿Qué mide?** Exclusivamente las áreas de Bosque Seco Tropical, uno de los ecosistemas más amenazados del mundo por su alta susceptibilidad a incendios y deforestación.\n\n**¿Cómo se calcula?** Cruza dos bases de datos enormes: 1. Toma la cobertura de árboles general de Hansen (>25%). 2. Aplica una "máscara matemática" usando el mapa global de Ecorregiones de RESOLVE/WWF. Solo muestra los árboles si caen geográficamente dentro del Bioma 2 ("Bosques secos de hoja ancha tropicales y subtropicales").\n\n**¿Cómo se interpreta?** Los tonos tierra (naranja/oliva) representan la densidad de estos bosques secos. Al usar este mapa, eliminas el ruido de los bosques húmedos (como la Amazonía o el Chocó) y te enfocas únicamente en el bioma seco, que es el más vulnerable en temporadas de El Niño.'
   },
   thermalGibs: {
     id: 'thermalGibs',
@@ -110,7 +124,7 @@ const LAYER_METADATA = {
     minLabel: 'Anomalía leve',
     maxLabel: 'Incendio confirmado',
     gradient: 'from-yellow-400 via-orange-500 to-red-600',
-    description: 'Detección satelital continua de puntos calientes en superficie mediante los espectrorradiómetros MODIS y VIIRS. Capta frentes de fuego activos y quemas controladas en tiempo real.'
+    description: '**¿Qué mide?** Los puntos exactos en la superficie terrestre que están emitiendo un calor inusualmente alto en las últimas 24 horas.\n\n**¿Cómo se calcula?** Satélites que orbitan la tierra (MODIS y VIIRS) tienen sensores infrarrojos que miden la radiación térmica. Un algoritmo compara el calor de un píxel con el de sus vecinos. Si la diferencia es muy alta, genera una "Alerta de Fuego".\n\n**¿Cómo se interpreta?** Los círculos que ves en el mapa agrupan estas alertas. Un foco térmico no siempre es un incendio forestal masivo; puede ser una quema agrícola controlada o una llamarada industrial, pero en zonas de bosque es el indicador número uno de un incendio activo.'
   },
   rainRadar: {
     id: 'rainRadar',
@@ -122,7 +136,7 @@ const LAYER_METADATA = {
     source: 'RainViewer Radar Network',
     sourceUrl: 'https://www.rainviewer.com/',
     gradient: 'from-cyan-400 via-blue-600 to-purple-600',
-    description: 'Compuesto radar meteorológico Doppler que procesa bandas de precipitación activa cada 5 minutos. Esencial para anticipar lluvia mitigadora sobre zonas con focos de calor activos.'
+    description: '**¿Qué mide?** La ubicación e intensidad de las precipitaciones (lluvia, granizo) en tiempo real en la atmósfera baja.\n\n**¿Cómo se calcula?** Radares Doppler en tierra emiten pulsos de microondas al cielo. Las gotas de agua rebotan estas ondas de vuelta al radar. Entre mayor sea el eco que rebota, más fuerte es la lluvia.\n\n**¿Cómo se interpreta?** Tonos azules y cian indican lloviznas o lluvias suaves. Tonos morados y rojos indican tormentas muy pesadas. Es crucial para monitorear si una tormenta se dirige hacia un incendio activo para ayudar a apagarlo.'
   },
   satGibs: {
     id: 'satGibs',
@@ -134,7 +148,7 @@ const LAYER_METADATA = {
     source: 'NASA EOSDIS GIBS',
     sourceUrl: 'https://gibs.earthdata.nasa.gov/',
     gradient: 'from-blue-900 via-emerald-800 to-amber-700',
-    description: 'Imágenes satelitales ópticas en espectro visible (RGB) libre de nubes captadas por el satélite Terra en las últimas 24 horas.'
+    description: '**¿Qué mide?** Una fotografía satelital a todo color de cómo se vio la Tierra el día de ayer, captada desde el espacio sin nubes superpuestas.\n\n**¿Cómo se calcula?** El satélite Terra de la NASA usa el sensor MODIS para captar la luz visible (los canales Rojo, Verde y Azul que ven nuestros ojos). NASA procesa la imagen para corregir el brillo atmosférico.\n\n**¿Cómo se interpreta?** Úsala como un mapa base realista. En días muy despejados, si hay un incendio forestal gigantesco, a veces es posible observar directamente el humo grisáceo o las enormes cicatrices negras dejadas por las quemas recientes.'
   },
   owmTemp: {
     id: 'owmTemp',
@@ -148,7 +162,7 @@ const LAYER_METADATA = {
     minLabel: '0°C Templado',
     maxLabel: '40°C+ Extremo',
     gradient: 'from-blue-500 via-yellow-400 to-red-600',
-    description: 'Capa térmica atmosférica interpolada en superficie a 2 metros de altura para la evaluación del riesgo de choque térmico y evaporación.'
+    description: '**¿Qué mide?** La temperatura pronosticada del aire a 2 metros de altura sobre el suelo.\n\n**¿Cómo se calcula?** OpenWeatherMap utiliza enormes supercomputadoras meteorológicas (modelos globales) que toman datos de estaciones meteorológicas terrestres y satélites, y los interpolan en una cuadrícula continua.\n\n**¿Cómo se interpreta?** Tonos amarillos y rojos indican altas temperaturas (ola de calor). Las altas temperaturas desecan rápidamente la vegetación (evapotranspiración), preparándola para que prenda fuego rápidamente ante cualquier chispa.'
   },
   owmWind: {
     id: 'owmWind',
@@ -162,11 +176,20 @@ const LAYER_METADATA = {
     minLabel: '0 km/h Calma',
     maxLabel: '60+ km/h Ventarrón',
     gradient: 'from-teal-400 to-indigo-600',
-    description: 'Vectores de velocidad y ráfaga de viento en superficie. Factor crítico para modelar la velocidad de avance y propagación de plumas de humo y fuegos de copa.'
+    description: '**¿Qué mide?** La velocidad y dirección pronosticada de los vientos que soplan cerca de la superficie terrestre.\n\n**¿Cómo se calcula?** Modelos meteorológicos numéricos globales asimilan datos de la presión atmosférica para calcular el flujo de aire.\n\n**¿Cómo se interpreta?** El viento es el factor más letal durante un incendio forestal. Aporta oxígeno constante a las llamas e inclina el fuego hacia adelante, calentando la vegetación no quemada. Zonas con colores intensos indican ráfagas fuertes que podrían hacer un incendio incontrolable.'
   }
 };
 
-
+const renderBoldText = (text) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="text-white font-black">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
 
 const CitiesBar = ({ onCityClick, currentCityName, t }) => {
   const scrollRef = useRef(null);
@@ -216,6 +239,12 @@ const CitiesBar = ({ onCityClick, currentCityName, t }) => {
 
 export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNodeId, setSelectedNodeId, setActiveTab }) {
   const t = translations[lang || 'es'];
+  const tRef = useRef(t);
+  const langRef = useRef(lang || 'es');
+  useEffect(() => {
+    tRef.current = t;
+    langRef.current = lang || 'es';
+  }, [t, lang]);
 
   // Map state
   const mapRef = useRef(null);
@@ -320,7 +349,8 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     geeAridity: false,
     geeDrought: false,
     geeErosion: false,
-    geeDryForest: false,
+    geeTreeCover: false,
+    geeTropicalDryForest: false,
   });
   
   const layersStateRef = useRef(layersState);
@@ -342,7 +372,8 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     geeAridity: 0.7,
     geeDrought: 0.7,
     geeErosion: 0.7,
-    geeDryForest: 0.7,
+    geeTreeCover: 0.7,
+    geeTropicalDryForest: 0.7,
   });
 
   const toggleLayer = (layerName) => {
@@ -588,34 +619,37 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     // Interpretation Helper
     const getLayerInterpretation = (layerType, val) => {
       let color = '#6b7280';
-      let text = 'Desconocido';
+      let text = tRef.current.popupUnknown || 'Desconocido';
       let desc = '';
 
       if (layerType === 'geeAridity') {
-        if (val < -400) { color = '#dc2626'; text = 'Sequía Extrema'; desc = 'Riesgo crítico de incendio y rápida propagación.'; }
-        else if (val < -200) { color = '#ea580c'; text = 'Sequía Severa'; desc = 'Alta vulnerabilidad, vegetación muy seca.'; }
-        else if (val < -100) { color = '#f59e0b'; text = 'Sequía Moderada'; desc = 'Déficit hídrico, precaución.'; }
-        else if (val < 100) { color = '#10b981'; text = 'Normal'; desc = 'Condiciones de humedad estables.'; }
-        else { color = '#3b82f6'; text = 'Húmedo'; desc = 'Terreno húmedo. Bajo riesgo de ignición.'; }
+        if (val < -400) { color = '#dc2626'; text = tRef.current.popupAridityExtreme; desc = tRef.current.popupAridityExtremeDesc; }
+        else if (val < -200) { color = '#ea580c'; text = tRef.current.popupAriditySevere; desc = tRef.current.popupAriditySevereDesc; }
+        else if (val < -100) { color = '#f59e0b'; text = tRef.current.popupAridityModerate; desc = tRef.current.popupAridityModerateDesc; }
+        else if (val < 100) { color = '#10b981'; text = tRef.current.popupAridityNormal; desc = tRef.current.popupAridityNormalDesc; }
+        else { color = '#3b82f6'; text = tRef.current.popupAridityWet; desc = tRef.current.popupAridityWetDesc; }
       } 
       else if (layerType === 'geeDrought') {
-        if (val < 100) { color = '#990000'; text = 'Suelo Árido'; desc = 'Déficit crítico profundo (0-2m). Combustible altamente inflamable.'; }
-        else if (val < 300) { color = '#ef4444'; text = 'Suelo Muy Seco'; desc = 'Poca retención de agua en subsuelo. Alto riesgo.'; }
-        else if (val < 500) { color = '#f97316'; text = 'Suelo Seco'; desc = 'Reducción de humedad en raíces.'; }
-        else { color = '#10b981'; text = 'Suelo Húmedo'; desc = 'Humedad adecuada en el subsuelo. Bajo riesgo.'; }
+        if (val < 100) { color = '#990000'; text = tRef.current.popupDroughtArid; desc = tRef.current.popupDroughtAridDesc; }
+        else if (val < 300) { color = '#ef4444'; text = tRef.current.popupDroughtVeryDry; desc = tRef.current.popupDroughtVeryDryDesc; }
+        else if (val < 500) { color = '#f97316'; text = tRef.current.popupDroughtDry; desc = tRef.current.popupDroughtDryDesc; }
+        else { color = '#10b981'; text = tRef.current.popupDroughtWet; desc = tRef.current.popupDroughtWetDesc; }
       }
       else if (layerType === 'geeErosion') {
-        if (val > 30) { color = '#dc2626'; text = 'Pendiente Crítica'; desc = `Inclinación severa (${Math.round(val)}°). El fuego avanza mucho más rápido hacia arriba.`; }
-        else if (val > 15) { color = '#ea580c'; text = 'Pendiente Moderada'; desc = `Inclinación media (${Math.round(val)}°). Riesgo de rápida propagación.`; }
-        else { color = '#10b981'; text = 'Terreno Plano'; desc = `Inclinación suave (${Math.round(val)}°). Avance de fuego predecible.`; }
+        if (val > 30) { color = '#dc2626'; text = tRef.current.popupErosionCritical; desc = (tRef.current.popupErosionCriticalDesc || '').replace('{val}', Math.round(val)); }
+        else if (val > 15) { color = '#ea580c'; text = tRef.current.popupErosionModerate; desc = (tRef.current.popupErosionModerateDesc || '').replace('{val}', Math.round(val)); }
+        else { color = '#10b981'; text = tRef.current.popupErosionFlat; desc = (tRef.current.popupErosionFlatDesc || '').replace('{val}', Math.round(val)); }
       }
-      else if (layerType === 'geeDryForest') {
-        if (val > 70) { color = '#064e3b'; text = 'Bosque Denso'; desc = 'Alta biomasa y dosel cerrado. En época seca, es alto combustible.'; }
-        else if (val > 25) { color = '#059669'; text = 'Bosque Disperso'; desc = 'Cobertura forestal fragmentada o en transición.'; }
-        else { color = '#9ca3af'; text = 'Sin Cobertura'; desc = 'Zonas deforestadas, sabana o agricultura.'; }
+      else if (layerType === 'geeTreeCover' || layerType === 'geeTropicalDryForest') {
+        if (val > 70) { color = '#064e3b'; text = tRef.current.popupForestDense; desc = tRef.current.popupForestDenseDesc; }
+        else if (val > 25) { color = '#059669'; text = tRef.current.popupForestSparse; desc = tRef.current.popupForestSparseDesc; }
+        else { color = '#9ca3af'; text = tRef.current.popupForestNone; desc = tRef.current.popupForestNoneDesc; }
       }
       else if (layerType === 'geeBurned') {
-        color = '#dc2626'; text = 'Área Quemada'; desc = `Fuego detectado en el día ${Math.round(val)} del año.`;
+        const d = new Date(2023, 0, Math.round(val));
+        const dateStr = d.toLocaleDateString(langRef.current === 'en' ? 'en-US' : 'es-ES', { month: 'long', day: 'numeric', year: 'numeric' });
+        color = '#dc2626'; text = tRef.current.popupBurnedScar; 
+        desc = (tRef.current.popupBurnedScarDesc || '').replace('{date}', dateStr).replace('{val}', Math.round(val));
       }
 
       return `
@@ -639,13 +673,13 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       const currentLayers = layersStateRef.current;
       
       // Find the first active GEE layer
-      const geeLayers = ['geeBurned', 'geeAridity', 'geeDrought', 'geeErosion', 'geeDryForest'];
+      const geeLayers = ['geeBurned', 'geeAridity', 'geeDrought', 'geeErosion', 'geeTreeCover', 'geeTropicalDryForest'];
       const activeGeeLayer = geeLayers.find(l => currentLayers[l]);
       
       if (activeGeeLayer) {
-        const popup = L.popup({ closeButton: false, autoPanPadding: [50, 50] })
+        const popup = L.popup({ closeButton: true, autoPanPadding: [50, 50] })
           .setLatLng(e.latlng)
-          .setContent('<div class="p-2 text-xs font-sans text-center min-w-[120px]"><div class="animate-spin w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-2"></div><span class="text-gray-600">Consultando...</span></div>')
+          .setContent(`<div class="p-2 text-xs font-sans text-center min-w-[120px]"><div class="animate-spin w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-2"></div><span class="text-gray-600">${tRef.current.popupConsulting || 'Consultando...'}</span></div>`)
           .openOn(map);
           
         try {
@@ -657,11 +691,17 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
              const displayValue = Number(data.value).toFixed(2);
              const interpretationHtml = getLayerInterpretation(activeGeeLayer, Number(data.value));
              
+             let unit = '';
+             if (activeGeeLayer === 'geeTreeCover' || activeGeeLayer === 'geeTropicalDryForest') unit = '<span class="text-xs text-gray-500 font-bold ml-1">%</span>';
+             else if (activeGeeLayer === 'geeErosion') unit = '<span class="text-xs text-gray-500 font-bold ml-1">°</span>';
+             else if (activeGeeLayer === 'geeDrought') unit = '<span class="text-xs text-gray-500 font-bold ml-1">mm</span>';
+             else if (activeGeeLayer === 'geeBurned') unit = '<span class="text-xs text-gray-500 font-bold ml-1">DOY</span>';
+
              popup.setContent(`
                <div class="p-2.5 font-sans min-w-[170px]">
-                 <div class="text-[9px] uppercase tracking-wider font-extrabold text-amber-500 mb-1 leading-tight">${layerMeta.name}</div>
-                 <div class="flex items-baseline gap-2">
-                   <span class="text-xl font-black text-[#1C1C1C]">${displayValue}</span>
+                 <div class="text-[9px] uppercase tracking-wider font-extrabold text-amber-500 mb-1 leading-tight">${tRef.current['obs' + activeGeeLayer.charAt(0).toUpperCase() + activeGeeLayer.slice(1) + 'Name'] || layerMeta.name}</div>
+                 <div class="flex items-baseline">
+                   <span class="text-xl font-black text-[#1C1C1C]">${displayValue}</span>${unit}
                  </div>
                  ${interpretationHtml}
                  <div class="text-[9px] font-mono text-gray-400 mt-2 pt-2 border-t border-gray-100">
@@ -670,10 +710,14 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                </div>
              `);
           } else {
-             popup.setContent('<div class="p-2.5 text-xs font-sans font-bold text-center text-gray-500">Sin datos en esta coordenada</div>');
+             let noDataText = tRef.current.popupNoDataGeneric || 'Sin datos en esta coordenada';
+             if (activeGeeLayer === 'geeBurned') noDataText = tRef.current.popupNoDataBurned;
+             else if (activeGeeLayer === 'geeTreeCover' || activeGeeLayer === 'geeTropicalDryForest') noDataText = tRef.current.popupNoDataForest;
+             
+             popup.setContent(`<div class="p-2.5 text-xs font-sans font-medium text-center text-gray-500 max-w-[200px] leading-snug">${noDataText}</div>`);
           }
         } catch (error) {
-          popup.setContent('<div class="p-2.5 text-xs font-sans font-bold text-center text-red-500">Error de conexión</div>');
+          popup.setContent(`<div class="p-2.5 text-xs font-sans font-bold text-center text-red-500">${tRef.current.popupConnectionError || 'Error de conexión'}</div>`);
         }
       }
     });
@@ -783,7 +827,8 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
     layersRef.current.geeAridity = L.layerGroup();
     layersRef.current.geeDrought = L.layerGroup();
     layersRef.current.geeErosion = L.layerGroup();
-    layersRef.current.geeDryForest = L.layerGroup();
+    layersRef.current.geeTreeCover = L.layerGroup();
+    layersRef.current.geeTropicalDryForest = L.layerGroup();
 
     // Copernicus EFFIS Fire Danger Forecast (FWI)
     // The WMS requires a `time` parameter — without it, defaults to 2019-01-01 (empty tiles).
@@ -1011,13 +1056,22 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       if (layersRef.current.geeErosion && map.hasLayer(layersRef.current.geeErosion)) map.removeLayer(layersRef.current.geeErosion);
     }
 
-    if (layersState.geeDryForest) {
-      if (layersRef.current.geeDryForest && !map.hasLayer(layersRef.current.geeDryForest)) {
-        layersRef.current.geeDryForest.addTo(map);
-        if (layersRef.current.geeDryForest.getLayers().length === 0) loadGeeLayer('geeDryForest', 'dryForest');
+    if (layersState.geeTreeCover) {
+      if (layersRef.current.geeTreeCover && !map.hasLayer(layersRef.current.geeTreeCover)) {
+        layersRef.current.geeTreeCover.addTo(map);
+        if (layersRef.current.geeTreeCover.getLayers().length === 0) loadGeeLayer('geeTreeCover', 'treeCover');
       }
     } else {
-      if (layersRef.current.geeDryForest && map.hasLayer(layersRef.current.geeDryForest)) map.removeLayer(layersRef.current.geeDryForest);
+      if (layersRef.current.geeTreeCover && map.hasLayer(layersRef.current.geeTreeCover)) map.removeLayer(layersRef.current.geeTreeCover);
+    }
+
+    if (layersState.geeTropicalDryForest) {
+      if (layersRef.current.geeTropicalDryForest && !map.hasLayer(layersRef.current.geeTropicalDryForest)) {
+        layersRef.current.geeTropicalDryForest.addTo(map);
+        if (layersRef.current.geeTropicalDryForest.getLayers().length === 0) loadGeeLayer('geeTropicalDryForest', 'tropicalDryForest');
+      }
+    } else {
+      if (layersRef.current.geeTropicalDryForest && map.hasLayer(layersRef.current.geeTropicalDryForest)) map.removeLayer(layersRef.current.geeTropicalDryForest);
     }
 
     drawMarkers();
@@ -1545,15 +1599,18 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
       </div>
 
       {/* AREA DELIMITATION FLOATING BANNER */}
-      {isDrawingArea && (
+      {(isDrawingArea || drawnPolygonPoints.length > 0) && (
         <div className="absolute top-16 left-4 z-20 pointer-events-auto bg-[#10171D]/95 backdrop-blur-md p-3.5 rounded-2xl border border-emerald-500/40 shadow-2xl text-xs text-white max-w-sm font-sans flex flex-col gap-2">
           <div className="flex items-center justify-between font-bold text-emerald-400">
-            <span className="flex items-center gap-1.5"><Pencil className="w-4 h-4" /> {t.obsDrawArea || 'Delimitar Área'}</span>
+            <span className="flex items-center gap-1.5"><Pencil className="w-4 h-4" /> {isDrawingArea ? (t.obsDrawArea || 'Delimitar Área') : 'Área Delimitada'}</span>
             <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-md font-mono">{drawnPolygonPoints.length} Vértices</span>
           </div>
-          <p className="text-white/70 text-[11px]">
-            Haz clic sobre el mapa para agregar puntos marcando los límites de la zona que deseas analizar.
-          </p>
+          
+          {isDrawingArea && (
+            <p className="text-white/70 text-[11px]">
+              Haz clic sobre el mapa para agregar puntos marcando los límites de la zona que deseas analizar.
+            </p>
+          )}
 
           {areaStats && (
             <div className="bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl my-1 flex justify-between items-center">
@@ -1569,18 +1626,37 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           <div className="flex gap-2 mt-1">
             {drawnPolygonPoints.length > 0 && (
               <button
-                onClick={() => setDrawnPolygonPoints([])}
+                onClick={() => { setDrawnPolygonPoints([]); setIsDrawingArea(false); }}
                 className="flex-1 bg-red-950/50 hover:bg-red-900/60 text-red-200 border border-red-500/30 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1"
               >
-                <Trash2 className="w-3 h-3" /> Limpiar Puntos
+                <Trash2 className="w-3 h-3" /> Limpiar
               </button>
             )}
-            <button
-              onClick={() => setIsDrawingArea(false)}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-black text-[10px] font-bold py-1.5 rounded-lg transition-colors"
-            >
-              Finalizar
-            </button>
+            
+            {isDrawingArea && (
+              <button
+                onClick={() => {
+                  setIsDrawingArea(false);
+                  if (mapRef.current && drawnPolygonRef.current && drawnPolygonPoints.length >= 3) {
+                    try {
+                      mapRef.current.fitBounds(drawnPolygonRef.current.getBounds(), { padding: [50, 50], maxZoom: 14 });
+                    } catch (e) {}
+                  }
+                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-black text-[10px] font-bold py-1.5 rounded-lg transition-colors"
+              >
+                Finalizar
+              </button>
+            )}
+            
+            {!isDrawingArea && drawnPolygonPoints.length > 0 && (
+              <button
+                onClick={() => setIsDrawingArea(true)}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-[10px] font-bold py-1.5 rounded-lg transition-colors"
+              >
+                Editar Puntos
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -1744,9 +1820,9 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                             </div>
                             <div>
                               <span className="text-white/50 uppercase font-bold block mb-0.5">{t.obsDescCalc || 'Descripción & Cálculo:'}</span>
-                              <p className="text-white/80 leading-relaxed text-[10px] whitespace-pre-wrap">
-                                {displayDesc}
-                              </p>
+                              <div className="text-white/80 leading-relaxed text-[10px] whitespace-pre-wrap">
+                                {renderBoldText(displayDesc)}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -2098,12 +2174,20 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
                 <p className="text-white/60 text-xs">Erosividad global de las precipitaciones (Panagos et al. 2017).</p>
               </div>
 
-              <div onClick={() => toggleLayer('geeDryForest')} className={`p-3 rounded-xl border transition-colors ${layersState.geeDryForest ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+              <div onClick={() => toggleLayer('geeTreeCover')} className={`p-3 rounded-xl border transition-colors ${layersState.geeTreeCover ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
                 <p className="font-bold flex items-center justify-between mb-1">
-                  <span className="flex items-center gap-2 text-emerald-400"><Trees className="w-4 h-4"/> Bosque Seco</span>
-                  {layersState.geeDryForest && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                  <span className="flex items-center gap-2 text-emerald-400"><Trees className="w-4 h-4"/> Cobertura Arbórea</span>
+                  {layersState.geeTreeCover && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
                 </p>
-                <p className="text-white/60 text-xs">Cobertura y extensión del bioma de Bosque Seco Tropical.</p>
+                <p className="text-white/60 text-xs">Muestra toda la cobertura de árboles general (Hansen).</p>
+              </div>
+
+              <div onClick={() => toggleLayer('geeTropicalDryForest')} className={`p-3 rounded-xl border transition-colors ${layersState.geeTropicalDryForest ? 'bg-amber-500/10 border-amber-500/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
+                <p className="font-bold flex items-center justify-between mb-1">
+                  <span className="flex items-center gap-2 text-amber-500"><Trees className="w-4 h-4"/> Bosque Seco</span>
+                  {layersState.geeTropicalDryForest && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
+                </p>
+                <p className="text-white/60 text-xs">Filtra y muestra exclusivamente el bioma de Bosque Seco Tropical.</p>
               </div>
             </div>
 

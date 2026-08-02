@@ -80,7 +80,7 @@ app.get('/api/gee/layer/:type', async (req, res) => {
       };
       url = await getMapId(masked, visParams);
     } 
-    else if (layerType === 'dryForest') {
+    else if (layerType === 'treeCover') {
       // Hansen Global Forest Cover - Masked for canopy > 25%
       const dataset = ee.Image('UMD/hansen/global_forest_change_2023_v1_11');
       const treeCover = dataset.select(['treecover2000']);
@@ -89,6 +89,24 @@ app.get('/api/gee/layer/:type', async (req, res) => {
         min: 25,
         max: 100,
         palette: ['10b981', '059669', '047857', '064e3b']
+      };
+      url = await getMapId(masked, visParams);
+    } else if (layerType === 'tropicalDryForest') {
+      // Hansen Global Forest Cover masked by RESOLVE Ecoregions (Biome 2 = Tropical Dry Broadleaf Forests)
+      const dataset = ee.Image('UMD/hansen/global_forest_change_2023_v1_11');
+      const treeCover = dataset.select(['treecover2000']);
+      
+      const ecoregions = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
+      const dryForestEcoregions = ecoregions.filter(ee.Filter.eq('BIOME_NUM', 2));
+      const biomeMask = ee.Image().paint(dryForestEcoregions, 1);
+      
+      // Mask by canopy > 25% AND being inside Biome 2
+      const masked = treeCover.updateMask(treeCover.gt(25)).updateMask(biomeMask);
+      
+      const visParams = {
+        min: 25,
+        max: 100,
+        palette: ['d97706', 'b45309', '92400e', '78350f'] // Warm terracotta/brown/olive gradient for dry forest
       };
       url = await getMapId(masked, visParams);
     } else if (layerType === 'aridity') {
@@ -169,9 +187,17 @@ app.get('/api/gee/point', async (req, res) => {
     } else if (layerType === 'geeErosion') {
       image = ee.Image('CGIAR/SRTM90_V4').select('elevation');
       image = ee.Terrain.slope(image);
-    } else if (layerType === 'geeDryForest') {
+    } else if (layerType === 'geeTreeCover') {
       image = ee.Image('UMD/hansen/global_forest_change_2023_v1_11')
                 .select('treecover2000');
+    } else if (layerType === 'geeTropicalDryForest') {
+      const ecoregions = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
+      const dryForestEcoregions = ecoregions.filter(ee.Filter.eq('BIOME_NUM', 2));
+      const biomeMask = ee.Image().paint(dryForestEcoregions, 1);
+      
+      image = ee.Image('UMD/hansen/global_forest_change_2023_v1_11')
+                .select('treecover2000')
+                .updateMask(biomeMask);
     } else {
       return res.status(400).json({ error: 'Layer type not supported for point inspection' });
     }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { translations } from '../utils/translations';
 
 export default function Header({ 
@@ -14,20 +14,43 @@ export default function Header({
 }) {
   const t = translations[lang || 'es'];
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hoveredNav, setHoveredNav] = useState(null);
+  const headerRef = useRef(null);
 
-  // Scroll listener for landing page
+  // Scroll listener. Capture phase, so it also catches scroll from an inner
+  // scrolling container (the dashboard panes) and not just the window.
   useEffect(() => {
-    if (isDashboard) return;
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+    const handleScroll = (e) => {
+      const target = e?.target;
+      const offset =
+        target && target !== document && target !== window && typeof target.scrollTop === 'number'
+          ? target.scrollTop
+          : window.scrollY;
+      setIsScrolled(offset > (isDashboard ? 16 : 40));
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
   }, [isDashboard]);
 
+  // Publish the real header height so fixed-offset layouts (and sticky filter
+  // bars that must park just below it) can track it instead of guessing.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const publish = () => {
+      document.documentElement.style.setProperty('--nte-header-h', `${el.offsetHeight}px`);
+    };
+    publish();
+    const ro = new ResizeObserver(publish);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const isLightTheme = isDashboard || isScrolled;
+  // On the dashboard the bar sits directly on top of charts and tables, so it
+  // is fully opaque — a translucent bar smears the content scrolling under it.
+  const isCompact = isDashboard && isScrolled;
 
   const handleNavClick = (sectionId, tabName) => {
     if (sectionId === 'home') {
@@ -69,27 +92,43 @@ export default function Header({
     onEnterDashboard('comunidad');
   };
 
-  const handleChatbotClick = () => {
-    if (isDashboard) {
-      const chatbotBtn = document.querySelector('button[aria-label="Abrir asistente de incendios"]') || document.querySelector('.chatbot-trigger');
-      if (chatbotBtn) chatbotBtn.click();
-    } else {
-      onEnterDashboard('chatbot');
-    }
-  };
+  // Un solo sitio para el menú: etiqueta, destino y —sobre todo— qué se
+  // encontrará dentro. `tab` marca los que resaltan cuando esa sección está
+  // abierta; los demás son saltos a la landing.
+  const navItems = [
+    {
+      key: 'home', label: t.menuHome, desc: t.menuHomeDesc, tab: null,
+      onClick: () => (isDashboard ? onBackToLanding() : window.scrollTo({ top: 0, behavior: 'smooth' }))
+    },
+    {
+      key: 'monitoreo', label: t.menuMonitoring, desc: t.menuMonitoringDesc, tab: 'monitoreo',
+      onClick: () => handleNavClick(null, 'monitoreo')
+    },
+    {
+      key: 'observatorio', label: t.menuObservatorio, desc: t.menuObservatorioDesc, tab: 'observatorio',
+      onClick: () => handleNavClick(null, 'observatorio')
+    },
+    {
+      key: 'colombia', label: t.menuColombia, desc: t.menuColombiaDesc, tab: 'colombia',
+      onClick: () => handleNavClick(null, 'colombia')
+    },
+    { key: 'ancestral', label: t.menuAncestral, desc: t.menuAncestralDesc, tab: null, onClick: handleAncestralClick },
+    { key: 'comunidad', label: t.menuCommunity, desc: t.menuCommunityDesc, tab: 'comunidad', onClick: handleCommunityClick }
+  ];
 
   return (
-    <header 
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
-        isLightTheme 
-          ? 'py-0 px-0' 
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out ${
+        isLightTheme
+          ? 'py-0 px-0'
           : 'py-4 px-4 md:px-8'
       }`}
     >
-      <div 
-        className={`max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between transition-all duration-500 ease-in-out ${
-          isLightTheme 
-            ? 'max-w-full bg-[#F8FAF5]/90 md:bg-white/85 backdrop-blur-md border-b border-slate-200/80 py-3.5 px-6 md:px-12 rounded-none shadow-sm text-slate-800' 
+      <div
+        className={`max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between transition-all duration-300 ease-in-out ${
+          isLightTheme
+            ? `max-w-full bg-white border-b border-slate-200 px-6 md:px-12 rounded-none text-slate-800 ${isCompact ? 'py-1.5' : 'py-2.5'}`
             : 'bg-brand-darkgreen/40 backdrop-blur-xl border border-white/10 rounded-3xl lg:rounded-full py-3 px-6 md:px-8 shadow-2xl text-white'
         }`}
       >
@@ -127,62 +166,45 @@ export default function Header({
           </div>
         </div>
 
-        {/* Navigation Menu in Center */}
-        <nav 
-          className={`flex flex-wrap items-center justify-center gap-1 md:gap-3 text-[11px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+        {/* Navigation Menu in Center.
+            Cada ítem lleva su descripción: al pasar el cursor aparece bajo la
+            barra, en posición absoluta para que el encabezado no dé un salto. */}
+        <nav
+          onMouseLeave={() => setHoveredNav(null)}
+          className={`relative flex flex-wrap items-center justify-center gap-1 md:gap-3 text-[11px] font-bold uppercase tracking-wider transition-colors duration-300 ${
             isLightTheme ? 'text-slate-500' : 'text-white/70'
           }`}
         >
-          <button 
-            onClick={() => isDashboard ? onBackToLanding() : window.scrollTo({ top: 0, behavior: 'smooth' })} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
-              isLightTheme ? 'hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'hover:text-white hover:bg-white/5'
-            }`}
-          >
-            {t.menuHome}
-          </button>
-          <button 
-            onClick={() => handleNavClick(null, 'monitoreo')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('monitoreo')}`}
-          >
-            {t.menuMonitoring}
-          </button>
-          <button 
-            onClick={() => handleNavClick(null, 'dashboard')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('dashboard')}`}
-          >
-            {t.menuDashboard}
-          </button>
-          <button 
-            onClick={() => handleNavClick(null, 'mapa')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('mapa')}`}
-          >
-            {t.menuMap}
-          </button>
-          <button 
-            onClick={() => handleNavClick(null, 'observatorio')} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('observatorio')}`}
-          >
-            {t.menuObservatorio}
-          </button>
-          <button 
-            onClick={handleAncestralClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${isLightTheme ? 'text-slate-500 hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
-          >
-            {t.menuAncestral}
-          </button>
-          <button 
-            onClick={handleCommunityClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('comunidad')}`}
-          >
-            {t.menuCommunity}
-          </button>
-          <button 
-            onClick={handleChatbotClick} 
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${getBtnClass('chatbot')}`}
-          >
-            {t.menuChatbot}
-          </button>
+          {hoveredNav && (
+            <div
+              className={`hidden lg:block absolute top-full left-1/2 -translate-x-1/2 mt-1.5 z-10 whitespace-nowrap rounded-lg px-3 py-1.5 text-[11px] font-medium normal-case tracking-normal shadow-lg pointer-events-none ${
+                isLightTheme
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-white text-slate-800'
+              }`}
+            >
+              {hoveredNav}
+            </div>
+          )}
+          {navItems.map(item => (
+            <button
+              key={item.key}
+              onClick={item.onClick}
+              onMouseEnter={() => setHoveredNav(item.desc)}
+              onFocus={() => setHoveredNav(item.desc)}
+              onBlur={() => setHoveredNav(null)}
+              title={item.desc}
+              className={`px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer font-sans ${
+                item.tab
+                  ? getBtnClass(item.tab)
+                  : isLightTheme
+                    ? 'text-slate-500 hover:text-[#2D6A4F] hover:bg-[#EEF5E9]'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </nav>
 
         {/* Action Button & Language selector */}

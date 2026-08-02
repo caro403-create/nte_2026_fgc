@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps, no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect, no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MapSimulator from './components/MapSimulator';
@@ -13,8 +13,24 @@ import TimeSeriesPanel from './components/TimeSeriesPanel';
 import NodeComparisonTable from './components/NodeComparisonTable';
 import CommunityForum from './components/CommunityForum';
 import ObservatorioPanel from './components/ObservatorioPanel';
+import ColombiaDashboard from './components/ColombiaDashboard';
 import { supabase } from './utils/supabase';
 import { translations } from './utils/translations';
+
+// Las cuatro secciones reales del tablero. Todo lo demás que llegue por hash,
+// por la landing o por un enlace viejo se traduce a una de estas.
+const VALID_TABS = ['monitoreo', 'observatorio', 'colombia', 'comunidad'];
+
+// Alias heredados: la landing y el menú despachaban a destinos que nunca
+// existieron como ruta ('dashboard', 'mapa') y terminaban abriendo el foro.
+const TAB_ALIASES = {
+  dashboard: 'monitoreo',   // "Una sola vista del territorio": sensores y alertas
+  mapa: 'observatorio',     // "Geografía predictiva": capas satelitales
+  chatbot: 'monitoreo'      // el asistente es un botón flotante, no una sección
+};
+
+const resolveTab = (tab) =>
+  VALID_TABS.includes(tab) ? tab : (TAB_ALIASES[tab] || 'monitoreo');
 
 export default function App() {
   // Language routing state
@@ -34,11 +50,73 @@ export default function App() {
 
   const t = translations[lang];
 
+  // La cabecera del documento vive fuera de React, así que el selector de
+  // idioma no la tocaba: la pestaña y la descripción se quedaban en español.
+  // El atributo lang del <html> importa más de lo que parece — de él salen la
+  // pronunciación de los lectores de pantalla y la oferta de traducir del
+  // navegador, que con "es" fijo aparecía sobre una página ya en inglés.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.title = t.docTitle;
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', t.docDescription);
+  }, [lang, t.docTitle, t.docDescription]);
+
+  const getInitialView = () => {
+    const hash = window.location.hash;
+    if (hash === '#dashboard' || hash.startsWith('#dashboard/')) return 'dashboard';
+    if (hash === '#login') return 'login';
+    return 'landing';
+  };
+
+  const getInitialTab = () => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#dashboard/')) return resolveTab(hash.split('/')[1]);
+    return 'monitoreo';
+  };
+
   // View routing state: 'landing', 'dashboard', or 'login'
-  const [view, setView] = useState('landing');
+  const [view, setView] = useState(getInitialView);
   
-  // Dashboard internal active sub-tab: 'monitoreo' or 'comunidad'
-  const [activeTab, setActiveTab] = useState('monitoreo');
+  // Dashboard internal active sub-tab: 'monitoreo', 'comunidad', or 'observatorio'
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  // Sync state to URL hash
+  useEffect(() => {
+    // Conservar el query string: ahí viven los filtros del Observatorio
+    // (?fy, ?fm, ?fd…). Escribir solo el hash los borraba, y con ellos se caía
+    // cualquier enlace compartido que llevara una selección.
+    const search = window.location.search;
+    if (view === 'dashboard') {
+      window.history.replaceState(null, null, `${search}#dashboard/${activeTab}`);
+    } else if (view === 'login') {
+      window.history.replaceState(null, null, `${search}#login`);
+    } else {
+      window.history.replaceState(null, null, search || ' ');
+    }
+  }, [view, activeTab]);
+
+  // Listen to hash changes (back/forward buttons)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#login') {
+        setView('login');
+      } else if (hash.startsWith('#dashboard')) {
+        setView('dashboard');
+        if (hash.startsWith('#dashboard/')) setActiveTab(resolveTab(hash.split('/')[1]));
+      } else {
+        setView('landing');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Authentication State
   const [user, setUser] = useState(null);
@@ -97,6 +175,22 @@ export default function App() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+  };
+
+  // Punto único de entrada al tablero. El asistente no es una sección: es el
+  // botón flotante, así que un enlace a 'chatbot' entra y lo abre.
+  const enterDashboard = (tab) => {
+    setView('dashboard');
+    setActiveTab(resolveTab(tab));
+    if (tab === 'chatbot') {
+      let tries = 0;
+      const openAssistant = () => {
+        const btn = document.querySelector('button[aria-label="Abrir asistente de incendios"]');
+        if (btn) btn.click();
+        else if (++tries < 40) requestAnimationFrame(openAssistant);
+      };
+      requestAnimationFrame(openAssistant);
+    }
   };
 
   const handleCitizenReport = ({ nodeId, type, desc }) => {
@@ -258,11 +352,8 @@ export default function App() {
 
   if (view === 'landing') {
     return (
-      <LandingPage 
-        onEnterDashboard={(tab) => {
-          setView('dashboard');
-          setActiveTab(tab === 'comunidad' ? 'comunidad' : tab === 'observatorio' ? 'observatorio' : 'monitoreo');
-        }} 
+      <LandingPage
+        onEnterDashboard={enterDashboard}
         lang={lang}
         setLang={setLang}
         user={user}
@@ -296,10 +387,8 @@ export default function App() {
         onLogout={handleLogout} 
         onOpenLogin={() => setView('login')} 
         isDashboard={true}
-        onEnterDashboard={(tab) => {
-          setView('dashboard');
-          setActiveTab(tab === 'comunidad' ? 'comunidad' : tab === 'observatorio' ? 'observatorio' : 'monitoreo');
-        }}
+        activeTab={activeTab}
+        onEnterDashboard={enterDashboard}
       />
 
       {/* Main Content Layout - Dynamic Tab Routing */}
@@ -423,6 +512,10 @@ export default function App() {
             </div>
           </main>
         </>
+      ) : activeTab === 'colombia' ? (
+        <main className="flex-1" style={{ marginTop: 'var(--nte-header-h, 72px)' }}>
+          <ColombiaDashboard lang={lang} />
+        </main>
       ) : (
         <main className="flex-1 overflow-y-auto pt-28">
           <CommunityForum user={user} isBrigadista={isBrigadista} lang={lang} />
@@ -430,7 +523,7 @@ export default function App() {
       )}
       
       {/* Footer copyright */}
-      <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-xs text-slate-400 font-mono shadow-xs">
+      <footer className="bg-white border-t border-gray-200 px-6 py-4 text-center text-xs text-slate-500 font-sans">
         {t.dbFooter}
       </footer>
 
@@ -442,7 +535,7 @@ export default function App() {
         lang={lang} 
       />
 
-      <Chatbot />
+      <Chatbot lang={lang} />
     </div>
   );
 }

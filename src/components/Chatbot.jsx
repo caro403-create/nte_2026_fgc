@@ -1,11 +1,51 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Flame } from 'lucide-react';
 
-export default function Chatbot() {
+const CHAT_ES = {
+  greeting: '¡Hola! Soy el asistente del Observatorio. ¿Tienes alguna pregunta sobre prevención de incendios o sobre cómo usar el tablero?',
+  title: 'Asistente Forestal',
+  subtitle: 'Guía y Prevención',
+  placeholder: 'Pregunta sobre prevención…',
+  openLabel: 'Abrir asistente de incendios',
+  hello: '¡Hola! ¿En qué te puedo ayudar hoy?',
+  fire: 'Si reportas un incendio, presiona el botón SOS en el Panel de Emergencia. Si estás cerca, aléjate rápidamente contra la dirección del viento y busca zonas despejadas.',
+  prevent: 'Para prevenir incendios forestales:\n1. No hagas fogatas en época seca.\n2. No arrojes vidrio ni colillas.\n3. Mantén limpios los terrenos de maleza seca.',
+  evacuate: 'En caso de evacuación, mantén la calma. Usa nuestro mapa para ver las «Rutas de Evacuación» (puntos verdes). Cúbrete boca y nariz con un paño húmedo.',
+  sensors: 'El sistema usa sensores IoT (miden calor y gases como CO/VOC) y satélites de la NASA. Si el nivel de riesgo sube mucho, se activan alertas automáticas.',
+  sos: 'Busca ayuda cerca o llama al 123, la línea de emergencias de Colombia.',
+  fallback: 'Es una pregunta interesante. Como soy un asistente de demostración, mis conocimientos son limitados. Prueba a preguntarme sobre prevención, evacuación o cómo funcionan los sensores.'
+};
+
+const CHAT_EN = {
+  greeting: 'Hi! I am the Observatory assistant. Do you have a question about fire prevention or about how to use the dashboard?',
+  title: 'Forest Assistant',
+  subtitle: 'Guidance and prevention',
+  placeholder: 'Ask about prevention…',
+  openLabel: 'Open fire assistant',
+  hello: 'Hi! How can I help you today?',
+  fire: 'To report a fire, press the SOS button on the Emergency Panel. If you are nearby, move away quickly against the wind direction and look for open ground.',
+  prevent: 'To prevent wildfires:\n1. Do not light campfires in the dry season.\n2. Do not throw glass or cigarette butts.\n3. Keep land clear of dry brush.',
+  evacuate: 'If you have to evacuate, stay calm. Use our map to see the “Evacuation Routes” (green points). Cover your mouth and nose with a damp cloth.',
+  sensors: 'The system uses IoT sensors (measuring heat and gases such as CO/VOC) and NASA satellites. If the risk level rises sharply, automatic alerts are triggered.',
+  sos: 'Look for help nearby or call 123, Colombia’s emergency line.',
+  fallback: 'That is an interesting question. As a demo assistant my knowledge is limited. Try asking me about prevention, evacuation or how the sensors work.'
+};
+
+// Palabras clave en los dos idiomas: quien escribe en inglés espera que
+// «fire» dispare la misma respuesta que «incendio».
+const KEYWORDS = {
+  hello: ['hola', 'saludos', 'hello', 'hi '],
+  fire: ['fuego', 'incendio', 'fire', 'wildfire'],
+  prevent: ['preven', 'evitar', 'prevent', 'avoid'],
+  evacuate: ['evacuar', 'escape', 'evacuat'],
+  sensors: ['sensor', 'funciona', 'dashboard', 'tablero', 'work'],
+  sos: ['sos', 'ayuda', 'help', 'emergency']
+};
+
+export default function Chatbot({ lang = 'es' }) {
+  const T = lang === 'en' ? CHAT_EN : CHAT_ES;
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, sender: 'bot', text: '¡Hola! Soy el asistente virtual del Sistema de Defensa Activa. ¿Tienes alguna pregunta sobre prevención de incendios o cómo usar el dashboard?' }
-  ]);
+  const [messages, setMessages] = useState(() => [{ id: 1, sender: 'bot', text: (lang === 'en' ? CHAT_EN : CHAT_ES).greeting }]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -22,28 +62,8 @@ export default function Chatbot() {
   // Mock response logic based on keywords
   const generateBotResponse = (userInput) => {
     const input = userInput.toLowerCase();
-
-    if (input.includes('hola') || input.includes('saludos')) {
-      return "¡Hola! ¿En qué te puedo ayudar hoy?";
-    }
-    if (input.includes('fuego') || input.includes('incendio')) {
-      return "Si reportas un incendio, presiona el botón SOS en el Panel de Emergencia. Si estás cerca, aléjate rápidamente contra la dirección del viento y busca zonas despejadas.";
-    }
-    if (input.includes('preven') || input.includes('evitar')) {
-      return "Para prevenir incendios forestales:\n1. No hagas fogatas en época seca.\n2. No arrojes vidrio ni colillas.\n3. Mantén limpios los terrenos de maleza seca.";
-    }
-    if (input.includes('evacuar') || input.includes('escape')) {
-      return "En caso de evacuación, mantén la calma. Usa nuestro mapa para ver las 'Rutas de Evacuación' (puntos verdes). Cúbrete boca y nariz con un paño húmedo.";
-    }
-    if (input.includes('sensor') || input.includes('funciona') || input.includes('dashboard')) {
-      return "El sistema usa sensores IoT (miden calor, gases como CO/VOC) y satélites de la NASA. Si el nivel de riesgo ('Score') sube mucho, se activan alertas automáticas.";
-    }
-    if (input.includes('sos') || input.includes('ayuda')) {
-      return "Busca ayuda en tu casa o llama el 123 red Colombia";
-    }
-
-    // Default fallback
-    return "Es una pregunta interesante. Como soy un asistente de demostración, mis conocimientos son limitados. Intenta preguntarme sobre prevención, evacuación o cómo funcionan los sensores.";
+    const hit = Object.keys(KEYWORDS).find(k => KEYWORDS[k].some(w => input.includes(w)));
+    return T[hit] || T.fallback;
   };
 
   const handleSendMessage = (e) => {
@@ -70,7 +90,7 @@ export default function Chatbot() {
       <button
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-6 right-6 z-50 p-4 rounded-full bg-[#2D6A4F] text-white shadow-[0_4px_16px_rgba(45,106,79,0.4)] hover:bg-[#1E4D3A] hover:scale-105 transition-all duration-300 ${isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}`}
-        aria-label="Abrir asistente de incendios"
+        aria-label={T.openLabel}
       >
         <MessageCircle className="h-7 w-7" />
 
@@ -92,8 +112,8 @@ export default function Chatbot() {
               <Flame className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">Asistente Forestal</h3>
-              <p className="text-xs text-white/80 font-medium">Guía y Prevención</p>
+              <h3 className="font-bold text-sm">{T.title}</h3>
+              <p className="text-xs text-white/80 font-medium">{T.subtitle}</p>
             </div>
           </div>
           <button
@@ -151,7 +171,7 @@ export default function Chatbot() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Pregunta sobre prevención..."
+            placeholder={T.placeholder}
             className="flex-1 bg-[#F8FAF5] border border-[#EEF5E9] rounded-xl px-4 py-2 text-sm text-[#2D3436] placeholder:text-[#636E72] focus:outline-none focus:border-[#52B788] focus:ring-1 focus:ring-[#52B788] transition-all"
           />
           <button

@@ -8,6 +8,25 @@
   --font-serif-editorial: "Cormorant Garamond", Georgia, serif;
 }
 
+/* Barra de desplazamiento discreta para las listas de ranking: la nativa de
+   Windows es tan ancha que se come una columna del gráfico. */
+.nte-thin-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.nte-thin-scroll::-webkit-scrollbar { width: 6px; }
+.nte-thin-scroll::-webkit-scrollbar-track { background: transparent; }
+.nte-thin-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 999px; }
+.nte-thin-scroll:hover::-webkit-scrollbar-thumb { background: #cbd5e1; }
+
+/* Entrada del glosario y de cualquier panel lateral. */
+@keyframes nte-slide-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.nte-slide-in { animation: nte-slide-in .22s cubic-bezier(.16,1,.3,1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nte-slide-in { animation: none; }
+}
+
 @layer base {
   :root {
     --color-bg: #F0F2F5;
