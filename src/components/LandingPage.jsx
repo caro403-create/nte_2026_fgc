@@ -321,7 +321,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   {t.docsScanHint}
                 </p>
                 <a
-                  href="/docs/NTE_Solucion_Completa_ES.pdf"
+                  href="https://qr.link/RMdsVw"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
@@ -353,7 +353,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   {t.docsScanHint}
                 </p>
                 <a
-                  href="/docs/NTE_Complete_Solution_EN.pdf"
+                  href="https://qr.link/TYc2Uy"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
