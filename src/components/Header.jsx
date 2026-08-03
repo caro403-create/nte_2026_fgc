@@ -131,14 +131,12 @@ export default function Header({
           className="flex items-center gap-3 cursor-pointer select-none" 
           onClick={() => isDashboard ? onBackToLanding() : window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <div 
-            className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors duration-300 ${
-              isLightTheme 
-                ? 'bg-[#EEF5E9] border-[#EEF5E9] text-[#2D6A4F]' 
-                : 'bg-brand-cream/10 border-white/20 text-brand-cream'
+          <div
+            className={`w-9 h-9 rounded-full overflow-hidden border transition-colors duration-300 ${
+              isLightTheme ? 'border-[#DCE7DA]' : 'border-white/25'
             }`}
           >
-            <Logo className="w-[22px] h-[22px]" />
+            <Logo className="w-full h-full" />
           </div>
           <div className="flex flex-col text-left">
             <span 

@@ -1,6 +1,6 @@
 # Instructivo para el Agente — Panel de Clima Detallado (debajo del mapa)
 
-**Plataforma NTE · Fundación Team Colombia**
+**Plataforma Kawsay · Fundación Team Colombia**
 **Base:** extiende `Plan_Observatorio_Monitoreo_NTE.md` y `Instructivo_Observatorio_Leyendas_Comunidad.md`. Usa las mismas fuentes ya aprobadas (Open-Meteo, sin clave).
 
 ## 0. Qué se pide

@@ -762,7 +762,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               </div>
             </div>
 
-            {/* Metric Comparison 3 — nodos NTE */}
+            {/* Metric Comparison 3 — nodos Kawsay */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-end border-b border-brand-sage/20 pb-2">
                 <span className="font-serif-editorial text-4xl md:text-5xl text-brand-cream">{t.timeVal3}</span>
@@ -939,8 +939,8 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
             {/* Column 1: Brand Info */}
             <div className="md:col-span-5 flex flex-col gap-6 text-left">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-brand-cream/10 border border-white/20 flex items-center justify-center text-brand-cream">
-                  <Logo className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-white/20">
+                  <Logo className="w-full h-full" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-serif-editorial text-2xl font-bold tracking-wide text-white leading-none">{t.brandName}</span>

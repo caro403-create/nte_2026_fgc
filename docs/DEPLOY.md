@@ -1,4 +1,4 @@
-# Desplegar NTE en Vercel
+# Desplegar Kawsay en Vercel
 
 Web y backend en un solo proyecto, gratis y con HTTPS. La rama de producción es
 **`branch_caro`**.
@@ -79,19 +79,25 @@ Queda en `https://<nombre-del-proyecto>.vercel.app`. Desde ahí, cada push a
 Si una capa no carga: **Vercel → Deployments → el despliegue → Functions**, ahí
 salen los errores de `api/gee/layer/[type]`.
 
-## Los QR y los PDF
+## Los QR de los documentos
 
-Los cuatro archivos van en `public/docs/` con estos nombres exactos, y se suben
-al repo como cualquier otro archivo:
+Los dos códigos viven en `public/docs/` como `qr-solucion-es.png` y
+`qr-solution-en.png`, y llevan enlaces cortos de **qr.link** que redirigen a los
+documentos alojados en Google Docs. Los mismos enlaces están en el botón de
+texto de cada tarjeta, en `LandingPage.jsx`.
 
-- `NTE_Solucion_Completa_ES.pdf`
-- `NTE_Complete_Solution_EN.pdf`
-- `qr-solucion-es.png`
-- `qr-solution-en.png`
+Para cambiar a qué documento apuntan no hay que tocar el repo: se edita el
+destino en el panel de qr.link y los códigos ya impresos siguen sirviendo.
 
-Los QR deben apuntar a la URL final, por ejemplo
-`https://<proyecto>.vercel.app/docs/NTE_Solucion_Completa_ES.pdf`. Conviene
-generarlos **después** del primer despliegue, cuando ya se sabe el dominio.
+> **Antes de imprimirlos, pruébalos desde un teléfono sin la cuenta de Google
+> del equipo iniciada.** Si el permiso del documento no está en «Cualquier
+> persona con el enlace», quien escanee verá una pantalla de «Solicitar acceso»
+> en vez del documento — y a la dueña del archivo siempre le va a funcionar, así
+> que el fallo pasa desapercibido.
+
+Si se prefiere no depender de Google, la alternativa es exportar los documentos
+a PDF, dejarlos en `public/docs/` y repuntar los enlaces de qr.link al propio
+dominio: `https://<proyecto>.vercel.app/docs/<archivo>.pdf`.
 
 ## Dominio propio (opcional)
 

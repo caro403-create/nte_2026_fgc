@@ -1,6 +1,6 @@
 # Instructivo para el Agente — Observatorio v2: Leyendas, Mapa Meteorológico Real y Capa Comunitaria
 
-**Plataforma NTE · Fundación Team Colombia**
+**Plataforma Kawsay · Fundación Team Colombia**
 **Base:** este documento extiende `Plan_Observatorio_Monitoreo_NTE.md`. No reemplaza la arquitectura ya definida (backend proxy, endpoints `/api/*`, grupos de capas); le agrega 3 mejoras concretas sobre la pestaña **Observatorio** ya construida.
 
 > Estado actual (según captura): la barra de capas ya tiene los botones (Lluvia, Incendios, Temp, Viento, Nubes, Aire, Todas las capas, Ajustes), el panel de punto seleccionado funciona, y hay nodos (Nodo 01–05) en el mapa. Falta: (1) explicar qué hace cada botón, (2) que las capas se vean como un mapa meteorológico real (colores, no solo puntos), (3) que la comunidad pueda aportar información.

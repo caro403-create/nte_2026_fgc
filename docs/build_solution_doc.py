@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Genera los dos documentos consolidados de la solución NTE (ES / EN).
+Genera los dos documentos consolidados de la solución Kawsay (ES / EN).
 
 Un solo árbol de contenido produce ambos archivos, así que las dos versiones
 tienen exactamente la misma estructura e información. Para regenerar:
@@ -8,8 +8,8 @@ tienen exactamente la misma estructura e información. Para regenerar:
     python3 docs/build_solution_doc.py
 
 Salida:
-    docs/NTE_Solucion_Completa_ES.docx
-    docs/NTE_Complete_Solution_EN.docx
+    docs/Kawsay_Solucion_Completa_ES.docx
+    docs/Kawsay_Complete_Solution_EN.docx
 """
 
 import os
@@ -396,13 +396,13 @@ L = {
         "cap_fig": "Figura",
         "cap_tab": "Tabla",
         "place": "ESPACIO RESERVADO PARA FOTOGRAFÍA",
-        "file": "NTE_Solucion_Completa_ES.docx",
+        "file": "Kawsay_Solucion_Completa_ES.docx",
     },
     "en": {
         "cap_fig": "Figure",
         "cap_tab": "Table",
         "place": "SPACE RESERVED FOR PHOTOGRAPH",
-        "file": "NTE_Complete_Solution_EN.docx",
+        "file": "Kawsay_Complete_Solution_EN.docx",
     },
 }
 
@@ -419,8 +419,8 @@ def build(lang):
     d.p(T("FIRST GLOBAL CHALLENGE 2026 · INCHEON · NEW TECHNOLOGY EXPERIENCE",
           "FIRST GLOBAL CHALLENGE 2026 · INCHEON · NEW TECHNOLOGY EXPERIENCE"),
         size=8.5, bold=True, color=GREEN_MID, space_after=4)
-    d.p(T("SISTEMA DE DEFENSA ACTIVA (NTE)",
-          "ACTIVE DEFENCE SYSTEM (NTE)"),
+    d.p(T("KAWSAY · SISTEMA DE DEFENSA ACTIVA",
+          "KAWSAY · ACTIVE DEFENCE SYSTEM"),
         size=26, bold=True, color=GREEN, space_after=2)
     d.p(T("Detección de incendios forestales con nodos sensores LoRaWAN e inteligencia artificial",
           "Detecting Wildfires With LoRaWAN Sensor Nodes and Artificial Intelligence"),
@@ -445,9 +445,9 @@ def build(lang):
         [
             [T("Nombre del equipo", "Team name"), "FIRST Global Team Colombia"],
             [T("Título del proyecto", "Project title"),
-             T("Sistema de Defensa Activa (NTE): detección de incendios forestales con nodos "
+             T("Kawsay — Sistema de Defensa Activa: detección de incendios forestales con nodos "
                "sensores LoRaWAN e IA",
-               "Active Defence System (NTE): Detecting Wildfires With LoRaWAN Sensor Nodes and AI")],
+               "Kawsay — Active Defence System: Detecting Wildfires With LoRaWAN Sensor Nodes and AI")],
             [T("Categoría", "Category"),
              T("**DETECTAR** (con prevención y recuperación post-incendio como extensiones integradas)",
                "**DETECT** (with prevention and post-fire recovery as integrated extensions)")],
@@ -487,9 +487,9 @@ def build(lang):
           "and the continuation. The appendix collects the project photographs."))
 
     d.image("landing.jpg",
-            T("Portada pública de la plataforma NTE. El sistema está construido y en "
+            T("Portada pública de la plataforma Kawsay. El sistema está construido y en "
               "funcionamiento; todas las capturas de este documento provienen de la aplicación real.",
-              "Public front page of the NTE platform. The system is built and running; every "
+              "Public front page of the Kawsay platform. The system is built and running; every "
               "screenshot in this document comes from the real application."))
 
     d.page_break()
@@ -2757,8 +2757,8 @@ GET   /api/plan?zona={id}         -> plan de recuperacion generado""",
     d.rule()
     d.p("FIRST Global Team Colombia", size=9.5, bold=True, color=GREEN,
         align=WD_ALIGN_PARAGRAPH.CENTER, space_after=1)
-    d.p(T("Sistema de Defensa Activa (NTE) · New Technology Experience 2026 · Categoría: Detectar",
-          "Active Defence System (NTE) · New Technology Experience 2026 · Category: Detect"),
+    d.p(T("Kawsay · Sistema de Defensa Activa · New Technology Experience 2026 · Categoría: Detectar",
+          "Kawsay · Active Defence System · New Technology Experience 2026 · Category: Detect"),
         size=8.5, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER)
 
     out = os.path.join(BASE, L[lang]["file"])

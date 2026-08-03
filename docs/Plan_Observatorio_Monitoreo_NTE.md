@@ -1,6 +1,6 @@
 # Pestaña "Observatorio" — Mapa de monitoreo en vivo (datos públicos)
 
-**Plataforma NTE · Fundación Team Colombia**
+**Plataforma Kawsay · Fundación Team Colombia**
 
 Mapa de Colombia (y el mundo) donde, a partir de **datos públicos satelitales recientes**, el usuario puede:
 - **ver capas de color** actualizadas (clima, lluvia, calor, incendios, humo, vegetación), y
@@ -79,7 +79,7 @@ Fuentes locales de tierra opcionales: **IDEAM**, **SIATA** (Medellín).
 
 ```
 ┌──────────────── Menú superior ────────────────┐
-│ NTE  Panel  Mapa de Riesgo  OBSERVATORIO  ...  │
+│ Kawsay  Panel  Mapa de Riesgo  OBSERVATORIO  ...  │
 ├────────────────────────────────────────────────┤
 │ Observatorio — datos públicos en vivo   Actualizado 14:20 │
 │ ┌──────────────────────────────┐ ┌───────────────────┐   │

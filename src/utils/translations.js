@@ -1,7 +1,7 @@
 export const translations = {
   es: {
     // Navigation / General
-    brandName: "NTE",
+    brandName: "Kawsay",
     // El nombre del proyecto. `brandSubtitle` es lo que va bajo la marca en el
     // encabezado; antes decía el equipo, que ya aparece en el pie.
     projectName: "SISTEMA DE DEFENSA ACTIVA",
@@ -17,11 +17,11 @@ export const translations = {
     menuCommunity: "Comunidad",
     // Cabecera del documento: título de la pestaña y descripción para
     // buscadores y tarjetas de enlace.
-    docTitle: "NTE · Sistema de Defensa Activa",
+    docTitle: "Kawsay · Sistema de Defensa Activa",
     docDescription: "Observatorio ciudadano de incendios forestales en Colombia: red de sensores en terreno, capas satelitales y el archivo histórico del IDEAM 2010–2025 con 14.985 focos. Datos abiertos, por Equipo Colombia.",
     // Qué encontrará el visitante detrás de cada ítem. Se muestra al pasar el
     // cursor: sin esto el menú son seis palabras y hay que entrar para saber.
-    menuHomeDesc: "La portada del proyecto: qué es NTE y por qué existe.",
+    menuHomeDesc: "La portada del proyecto: qué es Kawsay y por qué existe.",
     menuMonitoringDesc: "La red de sensores en terreno, en vivo: estado de los nodos y alertas activas.",
     menuObservatorioDesc: "Cómo está el país hoy: capas satelitales, clima y focos de las últimas 24 horas.",
     menuColombiaDesc: "El archivo histórico del IDEAM, 2010–2025: 14.985 focos con su ecosistema, clima y relieve.",
@@ -142,7 +142,7 @@ export const translations = {
     manifiestoTitle1: "Entre «nadie se ha dado cuenta todavía» y «un satélite ya puede verlo» hay una ventana de",
     manifiestoTitle2: "una a tres horas.",
     manifiestoTitle3: "Nuestros nodos están diseñados para vivir dentro de ella.",
-    manifiestoDesc: "En esa ventana un incendio forestal todavía es un evento pequeño, barato y superable, y ningún instrumento existente en Colombia la vigila de forma continua en terreno remoto: el reporte ciudadano exige que alguien ya vea el humo, los focos satelitales tienen ciclos de revisita de horas y un tamaño mínimo detectable de cientos de metros cuadrados, y las torres de vigilancia son escasas y ciegas de noche y con niebla. NTE pone dentro del bosque nodos multisensoriales que transmiten por LoRaWAN a un servidor local, sin depender de internet, y despachan la alarma automáticamente a la brigada.",
+    manifiestoDesc: "En esa ventana un incendio forestal todavía es un evento pequeño, barato y superable, y ningún instrumento existente en Colombia la vigila de forma continua en terreno remoto: el reporte ciudadano exige que alguien ya vea el humo, los focos satelitales tienen ciclos de revisita de horas y un tamaño mínimo detectable de cientos de metros cuadrados, y las torres de vigilancia son escasas y ciegas de noche y con niebla. Kawsay pone dentro del bosque nodos multisensoriales que transmiten por LoRaWAN a un servidor local, sin depender de internet, y despachan la alarma automáticamente a la brigada.",
 
     // Transition Banner
     bannerLabel: "Colombia · Bosque Seco Tropical",
@@ -194,13 +194,13 @@ export const translations = {
     timeComp2: "Nadie ha visto el humo y el satélite todavía no puede verlo",
     timeVal3: "Minutos",
     timeSub3: "objetivo del sistema",
-    timeComp3: "Nodos NTE con despacho automático a la brigada",
+    timeComp3: "Nodos Kawsay con despacho automático a la brigada",
 
     // Bomberos Section
     bomberosLabel: "Brigadas y Bomberos",
     bomberosTitle1: "La información correcta para los",
     bomberosTitle2: "bomberos forestales.",
-    bomberosDesc: "Las brigadas municipales nos dijeron que su factor limitante no es el valor ni el equipo: es el tiempo, porque se enteran tarde. Los cuerpos de bomberos voluntarios y las brigadas comunitarias son la última milla del sistema, y NTE les entrega coordenadas precisas y telemetría del nodo antes de salir al terreno.",
+    bomberosDesc: "Las brigadas municipales nos dijeron que su factor limitante no es el valor ni el equipo: es el tiempo, porque se enteran tarde. Los cuerpos de bomberos voluntarios y las brigadas comunitarias son la última milla del sistema, y Kawsay les entrega coordenadas precisas y telemetría del nodo antes de salir al terreno.",
 
     // Architecture Section
     archLabel: "04 — Arquitectura",
@@ -310,7 +310,7 @@ export const translations = {
     stat2Val: "407",
     stat2Title: "Puntos Recurrentes",
     stat2Desc: "Coordenadas exactas con igniciones repetidas. La más persistente, en Soacha (Cundinamarca), registra 133 igniciones en 8 años distintos entre 2010 y 2019.",
-    stat2Source: "IDEAM · procesado por NTE",
+    stat2Source: "IDEAM · procesado por Kawsay",
     stat3Val: "2.099",
     stat3Title: "Tolima, el más afectado",
     stat3Desc: "Le siguen Cundinamarca (1.592), Valle del Cauca (1.272), Meta (1.007) y Casanare (924). Ubicación derivada de la coordenada con fronteras del DANE, no de la atribución del reporte.",
@@ -322,7 +322,7 @@ export const translations = {
     stat5Val: "1–3 h",
     stat5Title: "La Ventana Ciega",
     stat5Desc: "Entre que nadie ha visto el humo y que un satélite ya puede verlo. Ningún instrumento en Colombia vigila esa ventana de forma continua en terreno remoto.",
-    stat5Source: "NASA FIRMS · análisis NTE",
+    stat5Source: "NASA FIRMS · análisis Kawsay",
     stat6Val: "8%",
     stat6Title: "Bosque Seco Restante",
     stat6Desc: "Remanente de Bosque Seco Tropical en Colombia: el ecosistema más transformado y amenazado del país.",
@@ -336,7 +336,7 @@ export const translations = {
     logoutButton: "Cerrar Sesión",
     loginError: "PIN o Contraseña incorrectos",
     roleBrigadista: "Brigadista Activo",
-    roleCoordinator: "Coordinador NTE",
+    roleCoordinator: "Coordinador Kawsay",
     roleGuest: "Invitado (Solo Lectura)",
     loginRequiredMsg: "Debes iniciar sesión para operar este control de misión.",
     todoReadOnlyWarn: "Inicia sesión para poder gestionar la lista de tareas de prevención.",
@@ -461,7 +461,7 @@ export const translations = {
   },
   en: {
     // Navigation / General
-    brandName: "NTE",
+    brandName: "Kawsay",
     projectName: "ACTIVE DEFENCE SYSTEM",
     brandSubtitle: "ACTIVE DEFENCE SYSTEM",
     menuHome: "Home",
@@ -470,9 +470,9 @@ export const translations = {
     menuColombia: "Explore",
     menuAncestral: "Knowledge",
     menuCommunity: "Community",
-    docTitle: "NTE · Active Defence System",
+    docTitle: "Kawsay · Active Defence System",
     docDescription: "Citizen wildfire observatory for Colombia: a ground sensor network, satellite layers and IDEAM's 2010–2025 historical archive of 14,985 hotspots. Open data, by Equipo Colombia.",
-    menuHomeDesc: "The project's front page: what NTE is and why it exists.",
+    menuHomeDesc: "The project's front page: what Kawsay is and why it exists.",
     menuMonitoringDesc: "The live sensor network on the ground: node status and active alerts.",
     menuObservatorioDesc: "How the country looks today: satellite layers, weather and the last 24 hours of hotspots.",
     menuColombiaDesc: "IDEAM's historical archive, 2010–2025: 14,985 hotspots with their ecosystem, climate and terrain.",
@@ -592,7 +592,7 @@ export const translations = {
     manifiestoTitle1: "Between 'nobody has noticed yet' and 'a satellite can see it' there is a window of roughly",
     manifiestoTitle2: "one to three hours.",
     manifiestoTitle3: "Our sensor nodes are designed to live inside it.",
-    manifiestoDesc: "Inside that window a wildfire is still a small, cheap, survivable event, and no existing instrument in Colombia watches it continuously in remote terrain: citizen reporting requires someone to already see smoke, satellite hotspots have a revisit cycle measured in hours and a minimum detectable size of hundreds of square metres, and lookout towers are scarce and blind at night and in fog. NTE places multi-sensor nodes inside the forest that transmit over LoRaWAN to a local server, without depending on internet, and dispatch the alarm automatically to the brigade.",
+    manifiestoDesc: "Inside that window a wildfire is still a small, cheap, survivable event, and no existing instrument in Colombia watches it continuously in remote terrain: citizen reporting requires someone to already see smoke, satellite hotspots have a revisit cycle measured in hours and a minimum detectable size of hundreds of square metres, and lookout towers are scarce and blind at night and in fog. Kawsay places multi-sensor nodes inside the forest that transmit over LoRaWAN to a local server, without depending on internet, and dispatch the alarm automatically to the brigade.",
 
     // Transition Banner
     bannerLabel: "Colombia · Tropical Dry Forest",
@@ -644,13 +644,13 @@ export const translations = {
     timeComp2: "Nobody has seen the smoke and the satellite cannot see it yet",
     timeVal3: "Minutes",
     timeSub3: "system target",
-    timeComp3: "NTE nodes with automatic dispatch to the brigade",
+    timeComp3: "Kawsay nodes with automatic dispatch to the brigade",
 
     // Bomberos Section
     bomberosLabel: "Brigades & Firefighters",
     bomberosTitle1: "The right information for",
     bomberosTitle2: "wildland firefighters.",
-    bomberosDesc: "Municipal brigades told us their limiting factor is not courage or equipment — it is time, because they learn about fires late. Volunteer fire departments and community brigades are the system's last mile, and NTE hands them precise coordinates and node telemetry before they leave for the field.",
+    bomberosDesc: "Municipal brigades told us their limiting factor is not courage or equipment — it is time, because they learn about fires late. Volunteer fire departments and community brigades are the system's last mile, and Kawsay hands them precise coordinates and node telemetry before they leave for the field.",
 
     // Architecture Section
     archLabel: "04 — Architecture",
@@ -760,7 +760,7 @@ export const translations = {
     stat2Val: "407",
     stat2Title: "Recurrent Points",
     stat2Desc: "Exact coordinates with repeat ignitions. The most persistent, in Soacha (Cundinamarca), records 133 ignitions across 8 separate years between 2010 and 2019.",
-    stat2Source: "IDEAM · processed by NTE",
+    stat2Source: "IDEAM · processed by Kawsay",
     stat3Val: "2,099",
     stat3Title: "Tolima, the most affected",
     stat3Desc: "Followed by Cundinamarca (1,592), Valle del Cauca (1,272), Meta (1,007) and Casanare (924). Location derived from the coordinate using DANE boundaries, not from the report's attribution.",
@@ -772,7 +772,7 @@ export const translations = {
     stat5Val: "1–3 h",
     stat5Title: "The Blind Window",
     stat5Desc: "Between nobody having seen the smoke and a satellite being able to see it. No instrument in Colombia watches that window continuously in remote terrain.",
-    stat5Source: "NASA FIRMS · NTE analysis",
+    stat5Source: "NASA FIRMS · Kawsay analysis",
     stat6Val: "8%",
     stat6Title: "Remaining Dry Forest",
     stat6Desc: "Remnant of Tropical Dry Forest in Colombia: the country's most transformed and threatened ecosystem.",
@@ -786,7 +786,7 @@ export const translations = {
     logoutButton: "Log Out",
     loginError: "Invalid PIN or Password",
     roleBrigadista: "Active Ranger",
-    roleCoordinator: "NTE Coordinator",
+    roleCoordinator: "Kawsay Coordinator",
     roleGuest: "Guest (Read Only)",
     loginRequiredMsg: "You must log in to operate this mission control.",
     todoReadOnlyWarn: "Log in to manage the prevention task checklist.",
