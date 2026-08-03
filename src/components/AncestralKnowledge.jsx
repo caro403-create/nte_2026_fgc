@@ -27,6 +27,50 @@ const FIRE_ROLE_ICONS = {
 };
 
 const T = {
+  // ---- El nombre del sistema ----
+  nameKicker: { es: 'EL NOMBRE DEL SISTEMA', en: 'THE NAME OF THE SYSTEM' },
+  nameTitle:  { es: 'Kawsay', en: 'Kawsay' },
+  nameTagline: {
+    es: 'No es una sigla: es una palabra quechua que quiere decir vida.',
+    en: 'Not an acronym: a Quechua word that means life.'
+  },
+  nameQ1: { es: 'Qué significa Kawsay', en: 'What Kawsay means' },
+  nameA1: {
+    es: 'Kawsay es una palabra que significa «vida», «existencia» o «forma de vivir». En la cosmovisión andina no se refiere únicamente a la vida de las personas, sino a la vida de todos los seres que conforman un ecosistema: plantas, animales, agua, suelo y comunidades. También está asociada al equilibrio y la armonía entre la naturaleza y el ser humano.',
+    en: 'Kawsay is a word meaning “life”, “existence” or “way of living”. In the Andean worldview it does not refer only to human life, but to the life of every being that makes up an ecosystem: plants, animals, water, soil and communities. It also carries the sense of balance and harmony between nature and people.'
+  },
+  nameQ2: { es: 'De dónde proviene el nombre', en: 'Where the name comes from' },
+  nameA2: {
+    es: 'El término proviene del quechua, una de las lenguas indígenas más importantes de la región andina, hablada por millones de personas en Perú, Bolivia, Ecuador y el sur de Colombia. Es un concepto central de la filosofía andina, sobre todo en la expresión Sumak Kawsay —«Buen Vivir»—, que promueve una relación equilibrada entre las comunidades y la naturaleza.',
+    en: 'The term comes from Quechua, one of the most significant Indigenous languages of the Andes, spoken by millions of people in Peru, Bolivia, Ecuador and southern Colombia. It is a central concept of Andean philosophy, above all in the expression Sumak Kawsay — “Good Living” — which calls for a balanced relationship between communities and nature.'
+  },
+  nameQ3: { es: 'Por qué se alinea con el proyecto', en: 'Why it fits this project' },
+  nameA3: {
+    es: 'Kawsay se alinea con el proyecto porque su propósito principal es proteger y preservar la vida de los ecosistemas forestales. La solución no solo detecta incendios: integra la detección temprana, el monitoreo, la prevención y la remediación, buscando conservar la biodiversidad y restaurar las zonas afectadas. Además incorpora conocimientos inspirados en los saberes ancestrales, reconociendo que las comunidades indígenas han desarrollado, durante generaciones, formas de comprender y cuidar el territorio.',
+    en: 'Kawsay fits this project because its central purpose is to protect and preserve the life of forest ecosystems. The solution does not only detect fires: it integrates early detection, monitoring, prevention and remediation, working to conserve biodiversity and restore affected areas. It also draws on ancestral knowledge, recognising that Indigenous communities have developed, over generations, their own ways of understanding and caring for the land.'
+  },
+  nameQ4: { es: 'A qué comunidad pertenece', en: 'Whose word it is' },
+  nameA4: {
+    es: 'El término pertenece a la cultura y la tradición de los pueblos quechuas, una de las civilizaciones indígenas más influyentes de los Andes, cuya visión del mundo se basa en el respeto por la naturaleza y la convivencia armónica con ella.',
+    en: 'The term belongs to the culture and tradition of the Quechua peoples, one of the most influential Indigenous civilisations of the Andes, whose worldview rests on respect for nature and on living in harmony with it.'
+  },
+  nameLogoAlt: { es: 'Logo de Kawsay', en: 'Kawsay logo' },
+  namePhotoAlt: {
+    es: 'Ilustración de una familia indígena: dos niños, una mujer joven y un hombre mayor, con tocados tejidos y pintura facial, entre vegetación',
+    en: 'Illustration of an Indigenous family: two children, a young woman and an elder, wearing woven headbands and face paint, among foliage'
+  },
+  // El pie describe lo que la ilustración muestra —una familia indígena, sin
+  // adscribirla a un pueblo concreto—, mientras el origen quechua del nombre
+  // queda explicado en el texto de al lado, que es donde corresponde.
+  namePhotoCaption: {
+    es: 'Los saberes que recoge esta sección pertenecen a las comunidades indígenas y campesinas que habitan el territorio. El nombre del sistema viene del quechua, la lengua andina de la que toma su idea de vida.',
+    en: 'The knowledge gathered in this section belongs to the Indigenous and campesino communities who live on this land. The name of the system comes from Quechua, the Andean language from which it takes its idea of life.'
+  },
+  slotPending: {
+    es: 'ESPACIO RESERVADO PARA LA IMAGEN',
+    en: 'SPACE RESERVED FOR THE IMAGE'
+  },
+
   kicker:      { es: 'SABERES ANCESTRALES DEL FUEGO', en: 'ANCESTRAL FIRE KNOWLEDGE' },
   title1:      { es: 'Lo que el territorio', en: 'What the land already' },
   titleEm:     { es: 'ya sabía', en: 'knew' },
@@ -73,6 +117,33 @@ const T = {
 };
 
 const t = (key, lang) => T[key][lang === 'en' ? 'en' : 'es'];
+
+/**
+ * Hueco de imagen que se llena solo.
+ *
+ * Mientras el archivo no exista en `public/kawsay/`, muestra un recuadro
+ * punteado con la leyenda; en cuanto se sube con el nombre esperado, aparece
+ * la imagen sin tocar el código. Mismo patrón que los QR de la portada.
+ */
+function ImageSlot({ src, alt, pendingLabel, className = '', imgClassName = '' }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div
+        className={`${className} border-2 border-dashed border-[#D8C3A5] bg-[#FBF7F2] flex items-center justify-center p-6`}
+      >
+        <span className="text-[10px] leading-relaxed text-center text-[#A08B70] font-mono uppercase tracking-wider">
+          {pendingLabel}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img src={src} alt={alt} className={`${className} ${imgClassName}`} onError={() => setFailed(true)} />
+  );
+}
 
 // Cada entrada existe en dos idiomas completos en la base (columnas `_en`).
 // Si faltara la traducción, se cae al original en vez de mostrar un hueco.
@@ -232,6 +303,77 @@ export default function AncestralKnowledge({ lang = 'es', onEnterTab }) {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ================= EL NOMBRE: KAWSAY ================= */}
+      {/* Va justo después de la portada y antes de los filtros: el visitante
+          debería saber de dónde viene el nombre antes de recorrer los saberes
+          que lo sustentan. */}
+      <section className="bg-[#FBF7F2] border-b border-[#EADFD1]">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+
+            {/* Logo */}
+            <div className="lg:col-span-4">
+              <div className="bg-white rounded-3xl border border-[#EADFD1] shadow-sm p-8 flex items-center justify-center">
+                <ImageSlot
+                  src="/kawsay/logo.png"
+                  alt={t('nameLogoAlt', lang)}
+                  pendingLabel={t('slotPending', lang)}
+                  className="w-full max-w-[260px] aspect-square rounded-2xl"
+                  imgClassName="object-contain"
+                />
+              </div>
+            </div>
+
+            {/* Texto */}
+            <div className="lg:col-span-8">
+              <span className="text-[10px] tracking-[0.25em] text-[#B45309] font-bold font-mono uppercase">
+                {t('nameKicker', lang)}
+              </span>
+              <h2 className="text-4xl md:text-5xl font-serif-editorial text-[#1B4332] mt-4 leading-tight">
+                {t('nameTitle', lang)}
+              </h2>
+              <p className="text-base md:text-lg text-[#7A5C3E] font-serif-editorial italic mt-2 mb-8">
+                {t('nameTagline', lang)}
+              </p>
+
+              <div className="flex flex-col gap-7">
+                {[['nameQ1', 'nameA1'], ['nameQ2', 'nameA2'], ['nameQ3', 'nameA3'], ['nameQ4', 'nameA4']]
+                  .map(([q, a]) => (
+                    <div key={q} className="border-l-2 border-[#E5D3BC] pl-5">
+                      <h3 className="text-sm font-bold text-[#1B4332] uppercase tracking-wide mb-2">
+                        {t(q, lang)}
+                      </h3>
+                      <p className="text-sm md:text-[15px] text-slate-700 leading-relaxed font-light">
+                        {t(a, lang)}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Foto de la comunidad */}
+          {/* La ilustración se muestra completa, no recortada: es una escena
+              con figuras y un `object-cover` apaisado les cortaría la cabeza. */}
+          <figure className="mt-14">
+            <div className="rounded-3xl overflow-hidden bg-[#F6EDE2] border border-[#EADFD1] flex items-center justify-center min-h-[220px]">
+              <ImageSlot
+                src="/kawsay/comunidad.jpg"
+                alt={t('namePhotoAlt', lang)}
+                pendingLabel={t('slotPending', lang)}
+                className="w-full"
+                imgClassName="object-contain max-h-[540px] mx-auto"
+              />
+            </div>
+            <figcaption className="text-xs text-[#8A7358] mt-3 leading-relaxed max-w-3xl">
+              {t('namePhotoCaption', lang)}
+            </figcaption>
+          </figure>
+
         </div>
       </section>
 
