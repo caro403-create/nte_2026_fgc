@@ -2004,7 +2004,7 @@ function Dashboard({ lang = 'es' }) {
             <AlertTriangle className="w-6 h-6 text-amber-600" />
             <h3 className="text-sm font-bold text-slate-800">{t('No hay registros con la combinación seleccionada')}</h3>
             <p className="text-xs text-slate-500 max-w-lg leading-relaxed">
-              No existen reportes en el archivo del IDEAM para esta combinación de filtros. Quita un filtro con su ✕ o restablece todo.
+              {t('No existen reportes en el archivo del IDEAM para esta combinación de filtros. Quita un filtro con su ✕ o restablece todo.')}
             </p>
             <button onClick={resetFilters} className="bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-md transition-colors cursor-pointer">
               {t('Restablecer filtros')}
@@ -2255,7 +2255,7 @@ function Dashboard({ lang = 'es' }) {
                         </span>
                       </div>
                       <div className="text-slate-500 mt-1 max-w-[180px] leading-tight">
-                        Cortes por cuantiles · gris = sin dato · clic en un departamento para filtrar
+                        {t('Cortes por cuantiles · gris = sin dato · clic en un departamento para filtrar')}
                       </div>
                     </>
                   ) : mapLayer === 'HEATMAP' ? (
@@ -2267,7 +2267,7 @@ function Dashboard({ lang = 'es' }) {
                         <span>{fmtNum(heatMax)} focos / celda</span>
                       </div>
                       <div className="text-slate-500 mt-1 max-w-[170px] leading-tight">
-                        Celda ≈ 0,05° (~5,5 km) · escala de raíz cuadrada
+                        {t('Celda ≈ 0,05° (~5,5 km) · escala de raíz cuadrada')}
                       </div>
                     </>
                   ) : mapLayer === 'SENSIBLES' ? (
@@ -2282,7 +2282,7 @@ function Dashboard({ lang = 'es' }) {
                         ))}
                       </div>
                       <div className="text-slate-500 mt-1.5 max-w-[180px] leading-tight">
-                        El clúster toma el color del tipo más sensible que contiene (no el más numeroso); el número es el conteo.
+                        {t('El clúster toma el color del tipo más sensible que contiene (no el más numeroso); el número es el conteo.')}
                       </div>
                     </>
                   ) : (

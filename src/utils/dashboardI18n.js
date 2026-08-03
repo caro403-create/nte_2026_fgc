@@ -484,6 +484,10 @@ export const METHOD_NOTES_EN = [
     body: 'Coordinates come rounded to ~0.005° (the satellite grid). Each point is a [[celda|cell of about 500 m]], not a property.'
   },
   {
+    title: 'Where each point actually is.',
+    body: "The department and municipality in this dashboard are **not** the ones in the IDEAM file: they are derived from the coordinate by intersecting it with DANE's official boundaries (National Geostatistical Framework 2018, 1,122 municipalities). We audited the file's own attribution and it matches the coordinate in only 4 % of records — the same 4 % in every year — with disagreements systematically between neighbouring municipalities (Yopal↔San Luis de Palenque, Ibagué↔Ortega): the signature of an administrative attribution of the report, not of a location. The coordinate, by contrast, is what was observed. Each point's popup shows both."
+  },
+  {
     title: 'Uneven temporal coverage.',
     body: '[[cobertura-temporal|Capture is not homogeneous]]: 2012–2017, 2019 and 2025 are dense years; 2010, 2018 and 2020–2024 have gaps, and 2011 has no records at all. Comparing years without accounting for this leads to false conclusions about trend.'
   },
