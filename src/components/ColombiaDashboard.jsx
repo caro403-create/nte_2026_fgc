@@ -955,6 +955,10 @@ const METHOD_NOTES = [
     body: 'Las coordenadas vienen redondeadas a ~0,005° (grilla satelital). Cada punto es una [[celda|celda de ~500 m]], no un predio.'
   },
   {
+    title: 'Dónde está cada punto.',
+    body: 'El departamento y el municipio de este tablero **no** son los del archivo del IDEAM: se derivan de la coordenada cruzándola con las fronteras oficiales del DANE (Marco Geoestadístico Nacional 2018, 1.122 municipios). Auditamos la atribución del archivo y solo coincide con la coordenada en el 4 % de los registros —el mismo 4 % en todos los años—, con desacuerdos sistemáticos entre municipios vecinos (Yopal↔San Luis de Palenque, Ibagué↔Ortega): el patrón de una atribución administrativa del reporte, no de una ubicación. La coordenada, en cambio, es el dato observado. El popup de cada punto muestra las dos.'
+  },
+  {
     title: 'Cobertura temporal desigual.',
     body: 'La [[cobertura-temporal|captura no es homogénea]]: 2012–2017, 2019 y 2025 son años densos; 2010, 2018 y 2020–2024 tienen vacíos, y 2011 no tiene ningún registro. Comparar años entre sí sin tener esto en cuenta lleva a conclusiones falsas sobre tendencia.'
   },
@@ -1680,6 +1684,19 @@ function Dashboard({ lang = 'es' }) {
           title.className = 'font-bold text-sm text-slate-900 border-b border-slate-200 pb-1 mb-2';
           title.textContent = `${munLabel(inc.mun)}, ${deptLabel(inc.dept)}`;
           popup.appendChild(title);
+
+          // La ubicación del título se deriva de la coordenada (fronteras del
+          // DANE). Cuando el archivo del IDEAM atribuye el reporte a otro
+          // municipio se dice explícitamente, en vez de escoger una y callar
+          // la otra: es el 96 % de los registros y esconderlo sería mentir.
+          if (inc.mun_src || inc.dept_src) {
+            const src = document.createElement('div');
+            src.className = 'text-[10px] text-slate-500 -mt-1 mb-2 leading-snug';
+            const where = [inc.mun_src ? titleCase(inc.mun_src) : munLabel(inc.mun),
+                           deptLabel(inc.dept_src || inc.dept)].join(', ');
+            src.textContent = `Reportado por el IDEAM como: ${where}`;
+            popup.appendChild(src);
+          }
 
           const body = document.createElement('div');
           body.className = 'space-y-1 text-[11px]';

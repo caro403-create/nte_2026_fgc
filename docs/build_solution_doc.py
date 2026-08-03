@@ -467,7 +467,7 @@ def build(lang):
     d.kpis([
         ("14.985" if es else "14,985", T("registros de incendios\nanalizados (IDEAM 2010–2025)",
                                           "wildfire records analysed\n(IDEAM 2010–2025)")),
-        ("406", T("puntos de ignición\nrecurrentes identificados",
+        ("407", T("puntos de ignición\nrecurrentes identificados",
                   "recurrent ignition points\nidentified nationwide")),
         ("0", T("conexión a internet\nrequerida en el nodo",
                 "internet connection required\nat the sensor node")),
@@ -652,14 +652,14 @@ def build(lang):
           "incendios que casi siempre se detectan demasiado tarde. Nuestro registro nacional —"
           "14.985 incidentes georreferenciados entre 2010 y 2025— muestra que los incendios no son "
           "aleatorios: se concentran en los mismos municipios, en las mismas dos temporadas secas, "
-          "y 406 coordenadas se han quemado repetidamente en varios años. La información para "
+          "y 407 coordenadas se han quemado repetidamente en varios años. La información para "
           "actuar temprano existe. Lo que no existe, en los lugares que se queman, es un "
           "instrumento que vigile el bosque de forma continua y le diga a un bombero, en minutos, "
           "que algo está empezando.",
           "Colombia loses tens of thousands of hectares of forest, páramo and wetland every year to "
           "wildfires that are almost always detected too late. Our national fire record — 14,985 "
           "georeferenced incidents between 2010 and 2025 — shows that the fires are not random: "
-          "they concentrate in the same municipalities, in the same two dry seasons, and 406 "
+          "they concentrate in the same municipalities, in the same two dry seasons, and 407 "
           "coordinates have burned repeatedly across multiple years. The information to act early "
           "exists. What does not exist, in the places that burn, is an instrument that senses the "
           "forest continuously and tells a firefighter, in minutes, that something is starting."))
@@ -680,23 +680,23 @@ def build(lang):
          T("Consecuencia de diseño", "Design consequence")],
         [
             [T("El fuego se concentra, no se dispersa", "Fire is concentrated, not scattered"),
-             T("Cundinamarca (2.904), Tolima (1.767), Huila (1.187), Valle del Cauca (1.077), "
-               "Boyacá (1.021) y Santander (981) reúnen la mayoría de los incidentes; domina la "
+             T("Tolima (2.099), Cundinamarca (1.592), Valle del Cauca (1.272), Meta (1.007), "
+               "Casanare (924) y Antioquia (847) reúnen la mayoría de los incidentes; domina la "
                "región andina.",
-               "Cundinamarca (2,904), Tolima (1,767), Huila (1,187), Valle del Cauca (1,077), "
-               "Boyacá (1,021) and Santander (981) account for the majority of incidents; the "
+               "Tolima (2,099), Cundinamarca (1,592), Valle del Cauca (1,272), Meta (1,007), "
+               "Casanare (924) and Antioquia (847) account for the majority of incidents; the "
                "Andean region dominates."),
              T("El despliegue de nodos se puede priorizar: pocos nodos en los municipios correctos "
                "cubren una porción desproporcionada del riesgo nacional.",
                "Node deployment can be prioritised: a small number of nodes in the right "
                "municipalities covers a disproportionate share of national risk.")],
             [T("El fuego se repite en los mismos lugares", "Fire repeats in the same places"),
-             T("406 coordenadas exactas registran igniciones repetidas; los puntos más persistentes "
-               "—en Venecia, Ricaurte, Tocaima y Nilo (Cundinamarca)— se quemaron hasta 8 veces en "
-               "hasta 5 años distintos.",
-               "406 exact coordinates register repeat ignition events; the most persistent points — "
-               "in Venecia, Ricaurte, Tocaima and Nilo (Cundinamarca) — burned up to 8 times across "
-               "as many as 5 separate years."),
+             T("407 coordenadas exactas registran igniciones repetidas; el punto más persistente "
+               "—en Soacha (Cundinamarca)— registra 133 igniciones en 8 años distintos entre "
+               "2010 y 2019.",
+               "407 exact coordinates register repeat ignition events; the most persistent point — "
+               "in Soacha (Cundinamarca) — records 133 ignitions across 8 separate years between "
+               "2010 and 2019."),
              T("La recurrencia histórica es una variable predictiva legítima: la mitad del «dónde» "
                "de nuestro modelo de riesgo.",
                "Historical recurrence is a legitimate predictive variable — the 'where' half of our "
@@ -717,6 +717,32 @@ def build(lang):
                   "2010–2025)."),
         widths=[3.4, 6.6, 6.6],
     )
+
+    d.callout(
+        T("UNA CORRECCIÓN QUE TUVIMOS QUE HACER AL DATO",
+          "A CORRECTION WE HAD TO MAKE TO THE DATA"),
+        T("Al cruzar cada coordenada del archivo contra las fronteras oficiales del DANE "
+          "encontramos que el municipio que declara el registro coincide con el municipio que "
+          "contiene a esa coordenada solo en el 4 % de los casos, y ese 4 % se mantiene igual en "
+          "todos los años. Los desacuerdos son sistemáticamente municipios vecinos del mismo "
+          "departamento —Yopal con San Luis de Palenque, Ibagué con Ortega, Puerto Carreño con "
+          "Cumaribo—: el patrón de una atribución administrativa del reporte, no de una ubicación. "
+          "La coordenada, en cambio, es el dato observado por el satélite. Por eso todas las "
+          "cifras territoriales de este documento y de la plataforma se calculan ubicando cada "
+          "foco por su coordenada sobre el Marco Geoestadístico Nacional del DANE (1.122 "
+          "municipios), y la atribución original se conserva y se muestra junto a la derivada. "
+          "Sin esta corrección, el ranking de departamentos cambia de puesto.",
+          "Cross-checking every coordinate in the file against the official DANE boundaries, we "
+          "found that the municipality a record declares matches the municipality that actually "
+          "contains that coordinate in only 4 % of cases — and that 4 % holds steady across every "
+          "year. The disagreements are systematically neighbouring municipalities within the same "
+          "department — Yopal with San Luis de Palenque, Ibagué with Ortega, Puerto Carreño with "
+          "Cumaribo — the signature of an administrative attribution of the report, not of a "
+          "location. The coordinate, by contrast, is what the satellite observed. Every "
+          "territorial figure in this document and in the platform is therefore computed by "
+          "locating each hotspot from its coordinate on DANE's National Geostatistical Framework "
+          "(1,122 municipalities), with the original attribution preserved and shown alongside the "
+          "derived one. Without this correction, the department ranking changes places."))
 
     d.h2(T("3.2 A quién afecta y por qué falla la práctica actual",
            "3.2 Who is affected and why current practice fails"))
@@ -2289,9 +2315,9 @@ GET   /api/plan?zona={id}         -> plan de recuperacion generado""",
                "bilingual ES/EN; responsive on mobile.")],
             [T("Conjunto de datos histórico", "Historical dataset"), T("**Completo**", "**Complete**"),
              T("14.985 incidentes del IDEAM (2010–2025) procesados, limpiados, georreferenciados, "
-               "enriquecidos e integrados; 406 puntos de ignición recurrentes calculados.",
+               "enriquecidos e integrados; 407 puntos de ignición recurrentes calculados.",
                "14,985 IDEAM incidents (2010–2025) parsed, cleaned, georeferenced, enriched and "
-               "integrated; 406 recurrent ignition points computed.")],
+               "integrated; 407 recurrent ignition points computed.")],
             [T("Integración de datos públicos", "Public data integration"),
              T("**Funcionando**", "**Working**"),
              T("Focos de NASA FIRMS, capas y consultas puntuales de Google Earth Engine, "
@@ -2437,7 +2463,7 @@ GET   /api/plan?zona={id}         -> plan de recuperacion generado""",
     d.p(T("La escalabilidad fue una restricción de diseño desde el principio y funciona en tres "
           "niveles. Dentro de un municipio, ampliar la cobertura significa agregar nodos a un "
           "gateway existente: el costo marginal del siguiente nodo es el nodo mismo. En el país, "
-          "las 406 coordenadas recurrentes que identificó nuestro conjunto de datos son una fila "
+          "las 407 coordenadas recurrentes que identificó nuestro conjunto de datos son una fila "
           "ordenada de despliegue: el sistema nos dice dónde instalarse a continuación. Entre "
           "países, todas las fuentes públicas de las que dependemos (FIRMS, GIBS, Open-Meteo, "
           "RainViewer, Copernicus, Sentinel-2) son globales y gratuitas, el modelo de riesgo solo "
@@ -2446,7 +2472,7 @@ GET   /api/plan?zona={id}         -> plan de recuperacion generado""",
           "páramo, al bosque seco tropical o a cualquier otro bioma.",
           "Scalability was a design constraint from the beginning, and it works at three levels. "
           "Within a municipality, adding coverage means adding nodes to an existing gateway — the "
-          "marginal cost of the next node is the node itself. Across the country, the 406 recurrent "
+          "marginal cost of the next node is the node itself. Across the country, the 407 recurrent "
           "coordinates our dataset identified are a ranked deployment queue: the system tells us "
           "where to install itself next. Across countries, every public data source we depend on "
           "(FIRMS, GIBS, Open-Meteo, RainViewer, Copernicus, Sentinel-2) is global and free, the "
