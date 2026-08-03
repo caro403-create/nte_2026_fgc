@@ -11,15 +11,17 @@ import PublicReportModal from './components/PublicReportModal';
 import NodesSummary from './components/NodesSummary';
 import TimeSeriesPanel from './components/TimeSeriesPanel';
 import NodeComparisonTable from './components/NodeComparisonTable';
+import AlertsPanel from './components/AlertsPanel';
 import CommunityForum from './components/CommunityForum';
 import ObservatorioPanel from './components/ObservatorioPanel';
 import ColombiaDashboard from './components/ColombiaDashboard';
+import AncestralKnowledge from './components/AncestralKnowledge';
 import { supabase } from './utils/supabase';
 import { translations } from './utils/translations';
 
-// Las cuatro secciones reales del tablero. Todo lo demás que llegue por hash,
+// Las cinco secciones reales del tablero. Todo lo demás que llegue por hash,
 // por la landing o por un enlace viejo se traduce a una de estas.
-const VALID_TABS = ['monitoreo', 'observatorio', 'colombia', 'comunidad'];
+const VALID_TABS = ['monitoreo', 'observatorio', 'colombia', 'saberes', 'comunidad'];
 
 // Alias heredados: la landing y el menú despachaban a destinos que nunca
 // existieron como ruta ('dashboard', 'mapa') y terminaban abriendo el foro.
@@ -143,12 +145,6 @@ export default function App() {
     { id: 4, id_nodo: 'BST-04', name: 'Hacienda El Medio', location: 'Zarzal, Valle del Cauca', sentidos: { olfato: { co_ppm: 45, voc_ppb: 290, pm25: 45.0, pm10: 60 }, tacto: { temp_aire: 25.1, humedad: 62, viento_vel: 19, viento_dir: 'WSW', viento_angle: 240, presion_atm: 1010, humedad_suelo: 52, temp_contacto: 28.5 }, intuicion: { ndvi: 0.81 }, oido: { nivel_db: 65 }, vista: { iluminacion_lux: 1.5 } }, fusion: { status: 'normal', riesgo: 0.15, nivel: 'verde' } }
   ]);
 
-  // Satellite hotspots (NASA FIRMS)
-  const [hotspots, setHotspots] = useState([
-    { id: 101, x: 490, y: 230 },
-    { id: 102, x: 445, y: 280 }
-  ]);
-
   // Alerts Timeline logs
   const [alerts, setAlerts] = useState([
     { id: 1, type: 'danger', source: 'NODO IoT 03', message: 'ANOMALÍA TÉRMICA CRÍTICA: Temperatura de 48.9°C y CO > 110 ppm. Alta probabilidad de ignición inmediata.', time: '13:02:15' },
@@ -247,7 +243,9 @@ export default function App() {
           const dryFactor = score * 15;
           const tempFactor = score * 8;
           const windFactor = score * 12;
-          n.sentidos.tacto.temp_aire = parseFloat((n.id === 1 ? 22.1 : n.id === 2 ? 23.5 : 21.8) + tempFactor).toFixed(1);
+          // .toFixed() devuelve string: si no se reconvierte a número, el VPD
+          // que se calcula con esta temperatura termina en NaN.
+          n.sentidos.tacto.temp_aire = parseFloat(((n.id === 1 ? 22.1 : n.id === 2 ? 23.5 : 21.8) + tempFactor).toFixed(1));
           n.sentidos.tacto.humedad = Math.max(10, Math.round((n.id === 1 ? 68 : n.id === 2 ? 64 : 72) - dryFactor));
           n.sentidos.tacto.viento_vel = Math.round((n.id === 1 ? 5 : n.id === 2 ? 6 : 4) + windFactor);
         }
@@ -255,25 +253,7 @@ export default function App() {
       });
     });
 
-    // 2. Adjust Hotspots
-    if (score < 0.3) {
-      setHotspots([]);
-    } else if (score < 0.6) {
-      setHotspots([{ id: 101, x: 490, y: 230 }]);
-    } else if (score < 0.8) {
-      setHotspots([
-        { id: 101, x: 490, y: 230 },
-        { id: 102, x: 445, y: 280 }
-      ]);
-    } else {
-      setHotspots([
-        { id: 101, x: 490, y: 230 },
-        { id: 102, x: 445, y: 280 },
-        { id: 103, x: 520, y: 260 }
-      ]);
-    }
-
-    // 3. Add a log indicating user score calibration
+    // 2. Add a log indicating user score calibration
     const time = new Date().toTimeString().split(' ')[0];
     setAlerts(prev => [
       {
@@ -320,30 +300,30 @@ export default function App() {
   const getRiskDetails = (val) => {
     if (val <= 0.4) {
       return {
-        label: 'Todo tranquilo',
+        label: t.riskCalmLabel,
         icon: '✅',
         textColor: 'text-[#2D6A4F]',
         borderColor: 'border-[#EEF5E9]',
         bgMuted: 'bg-[#EEF5E9]',
-        desc: 'Condiciones normales. Riesgo bajo de incendio.'
+        desc: t.riskCalmDesc
       };
     } else if (val <= 0.7) {
       return {
-        label: 'Revisar zonas secas',
+        label: t.riskWatchLabel,
         icon: '⚠️',
         textColor: 'text-[#F4A261]',
         borderColor: 'border-[#F4A261]/20',
         bgMuted: 'bg-[#F4A261]/10',
-        desc: 'Precaución: Condiciones propensas a ignición.'
+        desc: t.riskWatchDesc
       };
     } else {
       return {
-        label: '¡Atención inmediata requerida!',
+        label: t.riskAlarmLabel,
         icon: '🔴',
         textColor: 'text-[#E63946]',
         borderColor: 'border-[#E63946]/20',
         bgMuted: 'bg-[#E63946]/10',
-        desc: 'Alarma: Posible foco activo detectado.'
+        desc: t.riskAlarmDesc
       };
     }
   };
@@ -486,12 +466,9 @@ export default function App() {
                 {/* Map Section */}
                 <div className="flex-1 min-h-[380px]">
                   <MapSimulator
-                    score={score}
                     nodes={nodes}
                     selectedNodeId={selectedNodeId}
                     setSelectedNodeId={setSelectedNodeId}
-                    hotspots={hotspots}
-                    setHotspots={setHotspots}
                     lang={lang}
                   />
                 </div>
@@ -507,6 +484,16 @@ export default function App() {
             
             {/* New Real-time Monitoring Sections */}
             <div className="flex flex-col gap-6 shrink-0 w-full mt-2">
+              <AlertsPanel
+                lang={lang}
+                isLoggedIn={!!user}
+                isBrigadista={!!isBrigadista}
+                onOpenLogin={() => setView('login')}
+                onSelectNode={(code) => {
+                  const node = nodes.find(n => n.id_nodo === code);
+                  if (node) setSelectedNodeId(node.id);
+                }}
+              />
               <TimeSeriesPanel node={selectedNode} lang={lang} />
               <NodeComparisonTable nodes={nodes} lang={lang} />
             </div>
@@ -515,6 +502,15 @@ export default function App() {
       ) : activeTab === 'colombia' ? (
         <main className="flex-1" style={{ marginTop: 'var(--nte-header-h, 72px)' }}>
           <ColombiaDashboard lang={lang} />
+        </main>
+      ) : activeTab === 'saberes' ? (
+        // Sin overflow propio: quien desplaza es la ventana, y así la barra de
+        // filtros de Saberes puede quedarse pegada bajo el encabezado.
+        <main
+          className="flex-1"
+          style={{ marginTop: 'var(--nte-header-h, 72px)' }}
+        >
+          <AncestralKnowledge lang={lang} onEnterTab={enterDashboard} />
         </main>
       ) : (
         <main className="flex-1 overflow-y-auto pt-28">

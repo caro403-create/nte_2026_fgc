@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { translations } from '../utils/translations';
+import Logo from './Logo';
 
 export default function Header({ 
   onBackToLanding, 
@@ -75,17 +76,10 @@ export default function Header({
     return isLightTheme ? 'text-slate-500 hover:text-[#2D6A4F] hover:bg-[#EEF5E9]' : 'text-white/70 hover:text-white hover:bg-white/5';
   };
 
+  // Saberes dejó de ser un ancla al manifiesto de la portada: ahora es una
+  // sección propia del tablero con su contenido en la base de datos.
   const handleAncestralClick = () => {
-    if (isDashboard) {
-      onBackToLanding();
-      setTimeout(() => {
-        const el = document.getElementById('manifiesto');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
-    } else {
-      const el = document.getElementById('manifiesto');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
+    onEnterDashboard('saberes');
   };
 
   const handleCommunityClick = () => {
@@ -112,7 +106,7 @@ export default function Header({
       key: 'colombia', label: t.menuColombia, desc: t.menuColombiaDesc, tab: 'colombia',
       onClick: () => handleNavClick(null, 'colombia')
     },
-    { key: 'ancestral', label: t.menuAncestral, desc: t.menuAncestralDesc, tab: null, onClick: handleAncestralClick },
+    { key: 'ancestral', label: t.menuAncestral, desc: t.menuAncestralDesc, tab: 'saberes', onClick: handleAncestralClick },
     { key: 'comunidad', label: t.menuCommunity, desc: t.menuCommunityDesc, tab: 'comunidad', onClick: handleCommunityClick }
   ];
 
@@ -144,9 +138,7 @@ export default function Header({
                 : 'bg-brand-cream/10 border-white/20 text-brand-cream'
             }`}
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.97 0-9-4.03-9-9 0-2.12.74-4.07 1.97-5.61L12 2l7.03 4.39C20.26 7.93 21 9.88 21 12c0 4.97-4.03 9-9 9z" />
-            </svg>
+            <Logo className="w-[22px] h-[22px]" />
           </div>
           <div className="flex flex-col text-left">
             <span 

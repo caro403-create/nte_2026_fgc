@@ -27,6 +27,14 @@ const CITIES_BAR_DATA = [
   { name: 'Cúcuta', lat: 7.8939, lng: -72.5078, temp: 34, icon: '☀️' }
 ];
 
+// Base del backend propio (proxy de Earth Engine y FIRMS). En producción las
+// rutas /api viven en el mismo dominio (funciones serverless), así que la base
+// vacía es lo correcto; en desarrollo apuntan al Express de `server.js`.
+// VITE_API_URL permite forzar otro origen si algún día se separan.
+const API_URL = (
+  import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:3001' : '')
+).replace(/\/$/, '');
+
 const LAYER_METADATA = {
   geeBurned: {
     id: 'geeBurned',
@@ -414,7 +422,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
   const loadGeeLayer = async (layerName, type) => {
     try {
       console.log(`[GEE] Loading layer: ${layerName} (type: ${type})...`);
-      const response = await fetch(`http://localhost:3001/api/gee/layer/${type}`);
+      const response = await fetch(`${API_URL}/api/gee/layer/${type}`);
       if (!response.ok) {
         console.error(`[GEE] Server returned ${response.status} for ${type}`);
         return;
@@ -457,7 +465,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
 
     try {
       console.log('[FIRMS] Loading fire hotspots...');
-      const response = await fetch('http://localhost:3001/api/firms/hotspots');
+      const response = await fetch(`${API_URL}/api/firms/hotspots`);
       if (!response.ok) { fireHotspotsLoadedRef.current = false; return; }
       const data = await response.json();
       if (!data.hotspots || data.hotspots.length === 0) { fireHotspotsLoadedRef.current = false; return; }
@@ -683,7 +691,7 @@ export default function ObservatorioPanel({ lang, globalScore, nodes, selectedNo
           .openOn(map);
           
         try {
-          const res = await fetch(`http://localhost:3001/api/gee/point?lat=${lat}&lng=${lng}&layerType=${activeGeeLayer}`);
+          const res = await fetch(`${API_URL}/api/gee/point?lat=${lat}&lng=${lng}&layerType=${activeGeeLayer}`);
           const data = await res.json();
           
           if (data.value !== null && data.value !== undefined) {

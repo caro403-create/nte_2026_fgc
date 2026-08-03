@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Shield, ArrowRight, Menu, X } from 'lucide-react';
 import { translations } from '../utils/translations';
 import Header from './Header';
+import Logo from './Logo';
 
 // Import local images from assets
 import heroForest from '../assets/hero-forest.jpg';
@@ -12,6 +13,43 @@ import capSaberes from '../assets/cap-saberes.jpg';
 import capChatbot from '../assets/cap-chatbot.jpg';
 import fireNight from '../assets/colombia-fire-night.jpg';
 import colombiaBomberos from '../assets/colombia-bomberos.jpg';
+
+/**
+ * Espacio reservado para un código QR. Mientras el PNG no exista en /public/docs,
+ * muestra el recuadro punteado con la leyenda; en cuanto se suba el archivo con el
+ * nombre esperado, la imagen aparece sola sin tocar el código.
+ */
+function QrSlot({ src, alt, pendingLabel, size = 'lg' }) {
+  const [failed, setFailed] = useState(false);
+
+  // Grande a propósito: el QR tiene que ser escaneable desde el proyector o desde
+  // el celular de alguien que pasa frente al stand, no solo de cerca.
+  const dims = size === 'sm'
+    ? 'w-28 h-28 rounded-xl'
+    : 'w-48 h-48 md:w-56 md:h-56 rounded-2xl';
+  const box = `${dims} shrink-0 flex items-center justify-center`;
+
+  if (failed) {
+    return (
+      <div className={`${box} border-2 border-dashed border-brand-sage bg-white/60 ${size === 'sm' ? 'p-2' : 'p-5'}`}>
+        <span className={`${size === 'sm' ? 'text-[7px]' : 'text-[10px]'} leading-relaxed text-center text-brand-darkgreen/50 font-mono uppercase tracking-wider`}>
+          {pendingLabel}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${box} bg-white ${size === 'sm' ? 'p-2' : 'p-4'} shadow-xl border border-brand-darkgreen/10`}>
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-contain"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
 
 export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab, lang, setLang, user, onLogout, onOpenLogin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,42 +65,42 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
       title: t.stat1Title,
       desc: t.stat1Desc,
       source: t.stat1Source,
-      url: "https://www.humboldt.org.co/"
+      url: "https://www.ideam.gov.co/"
     },
     {
       val: t.stat2Val,
       title: t.stat2Title,
       desc: t.stat2Desc,
       source: t.stat2Source,
-      url: "http://www.ideam.gov.co/"
+      url: "https://www.ideam.gov.co/"
     },
     {
       val: t.stat3Val,
       title: t.stat3Title,
       desc: t.stat3Desc,
       source: t.stat3Source,
-      url: "https://portal.gestiondelriesgo.gov.co/"
+      url: "https://www.ideam.gov.co/"
     },
     {
       val: t.stat4Val,
       title: t.stat4Title,
       desc: t.stat4Desc,
       source: t.stat4Source,
-      url: "https://sensenet.ai/"
+      url: "https://www.ideam.gov.co/"
     },
     {
       val: t.stat5Val,
       title: t.stat5Title,
       desc: t.stat5Desc,
       source: t.stat5Source,
-      url: "https://asmedigitalcollection.asme.org/"
+      url: "https://firms.modaps.eosdis.nasa.gov/"
     },
     {
       val: t.stat6Val,
       title: t.stat6Title,
       desc: t.stat6Desc,
       source: t.stat6Source,
-      url: "https://www.wri.org/"
+      url: "https://www.humboldt.org.co/"
     }
   ];
 
@@ -132,9 +170,34 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
           <div className="absolute inset-0 bg-gradient-to-t from-brand-darkgreen via-brand-darkgreen/50 to-brand-darkgreen/80"></div>
         </div>
 
+        {/* QR de los documentos oficiales, dentro del hero: se ven sin hacer scroll */}
+        <div className="hidden lg:flex absolute z-20 right-12 top-40 flex-col gap-4 items-center">
+          <span className="text-[9px] tracking-[0.25em] text-brand-sage font-bold uppercase font-mono">
+            {t.docsScanHint}
+          </span>
+          <div className="flex gap-4">
+            {[
+              { code: 'ES', src: '/docs/qr-solucion-es.png', alt: t.docsEsTitle },
+              { code: 'EN', src: '/docs/qr-solution-en.png', alt: t.docsEnTitle },
+            ].map(({ code, src, alt }) => (
+              <button
+                key={code}
+                onClick={() => scrollToSection('documentos')}
+                className="flex flex-col items-center gap-2 group cursor-pointer"
+                title={alt}
+              >
+                <QrSlot src={src} alt={alt} pendingLabel={t.docsQrPending} size="sm" />
+                <span className="text-[9px] text-white/60 group-hover:text-brand-sage font-mono tracking-widest uppercase transition-colors">
+                  {code}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Content Container */}
         <div className="relative z-10 max-w-7xl mx-auto flex-1 flex flex-col justify-center text-left gap-6 mt-8">
-          
+
           {/* Subtitle */}
           <div className="flex items-center gap-3 animate-fade-in">
             <div className="w-8 h-px bg-brand-sage"></div>
@@ -163,7 +226,14 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               {t.btnEnterLive} 
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
-            <button 
+            <button
+              onClick={() => scrollToSection('documentos')}
+              className="border border-brand-sage/60 hover:border-brand-sage hover:bg-brand-sage/10 text-brand-sage transition-all duration-300 font-semibold px-8 py-4 rounded-full text-xs uppercase tracking-wider flex items-center justify-center gap-2 group"
+            >
+              {t.btnDocs}
+              <ArrowRight className="w-4 h-4 rotate-90 group-hover:translate-y-1 transition-transform duration-200" />
+            </button>
+            <button
               onClick={() => scrollToSection('manifiesto')}
               className="border border-white/20 hover:border-white/50 hover:bg-white/5 transition-all duration-300 font-semibold px-8 py-4 rounded-full text-xs uppercase tracking-wider flex items-center justify-center"
             >
@@ -205,6 +275,117 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
         </div>
 
       </section>
+
+      {/* 2.5. DOCUMENTACIÓN OFICIAL (QR ES / EN)
+          Va inmediatamente después del hero, a propósito: la estrategia es que quien
+          entra a la plataforma vea los dos QR de una y pueda escanearlos ahí mismo. */}
+      <section id="documentos" className="bg-brand-cream py-16 md:py-20 px-6 md:px-12 border-b border-brand-darkgreen/10">
+        <div className="max-w-7xl mx-auto flex flex-col gap-10">
+
+          {/* Section Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 text-left">
+            <div className="flex flex-col gap-4 max-w-2xl">
+              <span className="text-xs tracking-[0.2em] text-brand-sage font-bold uppercase font-mono">
+                {t.docsLabel}
+              </span>
+              <h3 className="text-3xl md:text-4xl font-serif-editorial text-brand-darkgreen leading-tight">
+                {t.docsTitle}
+              </h3>
+              <p className="text-sm text-slate-700 leading-relaxed font-light">
+                {t.docsDesc}
+              </p>
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest shrink-0">
+              {t.docsMeta}
+            </span>
+          </div>
+
+          {/* Two QR slots: ES / EN */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+
+            {/* Documento en español */}
+            <div className="bg-white border border-brand-darkgreen/10 rounded-2xl p-6 md:p-8 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start text-center sm:text-left">
+              <QrSlot
+                src="/docs/qr-solucion-es.png"
+                alt={t.docsEsTitle}
+                pendingLabel={t.docsQrPending}
+              />
+              <div className="flex flex-col gap-3 flex-1">
+                <span className="text-[10px] text-brand-sage font-mono tracking-[0.25em] uppercase font-bold">
+                  Español
+                </span>
+                <h4 className="text-2xl font-serif-editorial text-brand-darkgreen leading-tight">
+                  {t.docsEsTitle}
+                </h4>
+                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider leading-relaxed">
+                  {t.docsScanHint}
+                </p>
+                <a
+                  href="/docs/NTE_Solucion_Completa_ES.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
+                >
+                  {t.docsOpenPdf}
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </a>
+                <span className="text-[10px] text-slate-400 font-mono mt-1 break-all">
+                  {t.docsEsFile}
+                </span>
+              </div>
+            </div>
+
+            {/* Document in English */}
+            <div className="bg-white border border-brand-darkgreen/10 rounded-2xl p-6 md:p-8 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start text-center sm:text-left">
+              <QrSlot
+                src="/docs/qr-solution-en.png"
+                alt={t.docsEnTitle}
+                pendingLabel={t.docsQrPending}
+              />
+              <div className="flex flex-col gap-3 flex-1">
+                <span className="text-[10px] text-brand-sage font-mono tracking-[0.25em] uppercase font-bold">
+                  English
+                </span>
+                <h4 className="text-2xl font-serif-editorial text-brand-darkgreen leading-tight">
+                  {t.docsEnTitle}
+                </h4>
+                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider leading-relaxed">
+                  {t.docsScanHint}
+                </p>
+                <a
+                  href="/docs/NTE_Complete_Solution_EN.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
+                >
+                  {t.docsOpenPdf}
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </a>
+                <span className="text-[10px] text-slate-400 font-mono mt-1 break-all">
+                  {t.docsEnFile}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Honest status strip */}
+          <div className="flex flex-col gap-4 border-t border-brand-darkgreen/10 pt-8">
+            <span className="text-[10px] text-brand-sage font-mono tracking-[0.25em] uppercase font-bold">
+              {t.docsStatusLabel}
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[t.docsStatus1, t.docsStatus2, t.docsStatus3, t.docsStatus4].map((item, idx) => (
+                <span key={idx} className="text-xs text-slate-600 leading-relaxed font-light border-l-2 border-brand-sage/40 pl-4">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
 
       {/* 3. Section 01 — MANIFIESTO */}
       <section id="manifiesto" className="bg-brand-cream py-24 px-6 md:px-12 border-b border-brand-darkgreen/5">
@@ -358,12 +539,15 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               <div className="p-6 flex flex-col justify-between flex-grow">
                 <div>
                   <div className="flex justify-between items-center text-[10px] text-slate-400 font-mono tracking-widest uppercase mb-4">
-                    <span>{t.menuMonitoring}</span>
+                    <span>{t.mod1Label}</span>
                     <span>01</span>
                   </div>
                   <h4 className="text-2xl font-serif-editorial text-brand-darkgreen mb-3">
                     {t.mod1Title}
                   </h4>
+                  <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-amber-700 bg-amber-500/10 border border-amber-500/20 rounded-full px-2.5 py-1 mb-3">
+                    {t.statusInConstruction}
+                  </span>
                   <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-light">
                     {t.mod1Desc}
                   </p>
@@ -392,6 +576,9 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   <h4 className="text-2xl font-serif-editorial text-brand-darkgreen mb-3">
                     {t.cardDashboardTitle}
                   </h4>
+                  <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-brand-darkgreen bg-brand-sage/15 border border-brand-sage/30 rounded-full px-2.5 py-1 mb-3">
+                    {t.statusBuilt}
+                  </span>
                   <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-light">
                     {t.cardDashboardDesc}
                   </p>
@@ -420,6 +607,9 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   <h4 className="text-2xl font-serif-editorial text-brand-darkgreen mb-3">
                     {t.cardMapTitle}
                   </h4>
+                  <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-brand-darkgreen bg-brand-sage/15 border border-brand-sage/30 rounded-full px-2.5 py-1 mb-3">
+                    {t.statusBuilt}
+                  </span>
                   <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-light">
                     {t.cardMapDesc}
                   </p>
@@ -446,10 +636,13 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                     <span>04</span>
                   </div>
                   <h4 className="text-2xl font-serif-editorial text-brand-darkgreen mb-3">
-                    {t.mod3Title}
+                    {t.cardCommunityTitle}
                   </h4>
+                  <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-brand-darkgreen bg-brand-sage/15 border border-brand-sage/30 rounded-full px-2.5 py-1 mb-3">
+                    {t.statusBuilt}
+                  </span>
                   <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-light">
-                    {t.mod3Desc}
+                    {t.cardCommunityDesc}
                   </p>
                 </div>
                 <button 
@@ -474,10 +667,13 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                     <span>05</span>
                   </div>
                   <h4 className="text-2xl font-serif-editorial text-brand-darkgreen mb-3">
-                    {t.mod3Title} ({t.menuChatbot})
+                    {t.cardChatbotTitle}
                   </h4>
+                  <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-brand-darkgreen bg-brand-sage/15 border border-brand-sage/30 rounded-full px-2.5 py-1 mb-3">
+                    {t.statusBuilt}
+                  </span>
                   <p className="text-xs md:text-sm text-slate-600 leading-relaxed font-light">
-                    {t.mod3Desc}
+                    {t.cardChatbotDesc}
                   </p>
                 </div>
                 <button 
@@ -499,6 +695,9 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                 <h4 className="text-2xl font-serif-editorial text-brand-cream mt-6 mb-4">
                   {t.mod4Title}
                 </h4>
+                <span className="inline-block text-[9px] font-mono uppercase tracking-widest text-brand-sage bg-brand-sage/10 border border-brand-sage/30 rounded-full px-2.5 py-1 mb-4">
+                  {t.statusLab}
+                </span>
                 <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
                   {t.mod4Desc}
                 </p>
@@ -533,11 +732,11 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
           {/* Right Column (Metric Timeline Comparison) */}
           <div className="lg:col-span-7 flex flex-col gap-10 text-left relative z-10">
             
-            {/* Metric Comparison 1 */}
+            {/* Metric Comparison 1 — focos satelitales */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-end border-b border-white/10 pb-2">
-                <span className="font-serif-editorial text-4xl md:text-5xl text-white">100 min</span>
-                <span className="text-sm font-serif-editorial italic text-white/60">&asymp; 32 ha</span>
+                <span className="font-serif-editorial text-4xl md:text-5xl text-white">{t.timeVal1}</span>
+                <span className="text-sm font-serif-editorial italic text-white/60">{t.timeSub1}</span>
               </div>
               <div className="text-[10px] text-white/40 tracking-wider font-mono uppercase mt-1">
                 {t.timeComp1}
@@ -548,11 +747,11 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               </div>
             </div>
 
-            {/* Metric Comparison 2 */}
+            {/* Metric Comparison 2 — la ventana ciega */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-end border-b border-white/10 pb-2">
-                <span className="font-serif-editorial text-4xl md:text-5xl text-white">60 min</span>
-                <span className="text-sm font-serif-editorial italic text-white/60">&asymp; 8 ha</span>
+                <span className="font-serif-editorial text-4xl md:text-5xl text-white">{t.timeVal2}</span>
+                <span className="text-sm font-serif-editorial italic text-white/60">{t.timeSub2}</span>
               </div>
               <div className="text-[10px] text-white/40 tracking-wider font-mono uppercase mt-1">
                 {t.timeComp2}
@@ -563,18 +762,18 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               </div>
             </div>
 
-            {/* Metric Comparison 3 */}
+            {/* Metric Comparison 3 — nodos NTE */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-end border-b border-brand-sage/20 pb-2">
-                <span className="font-serif-editorial text-4xl md:text-5xl text-brand-cream">35 min</span>
-                <span className="text-sm font-serif-editorial italic text-brand-sage">&asymp; 1,5 ha</span>
+                <span className="font-serif-editorial text-4xl md:text-5xl text-brand-cream">{t.timeVal3}</span>
+                <span className="text-sm font-serif-editorial italic text-brand-sage">{t.timeSub3}</span>
               </div>
               <div className="text-[10px] text-brand-sage tracking-wider font-mono uppercase mt-1 font-semibold">
                 {t.timeComp3}
               </div>
               {/* Progress Line */}
               <div className="h-[2px] bg-white/10 w-full mt-2 overflow-hidden">
-                <div className="h-full bg-brand-sage w-[35%] rounded-full"></div>
+                <div className="h-full bg-brand-sage w-[20%] rounded-full"></div>
               </div>
             </div>
 
@@ -679,7 +878,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
             </div>
 
             {/* Axis IV */}
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center py-6 md:py-8 border-b border-brand-darkgreen/10 hover:bg-brand-darkgreen/[0.02] px-4 md:px-6 transition-all duration-300 group cursor-pointer text-left gap-4" onClick={() => onEnterDashboard('chatbot')}>
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center py-6 md:py-8 border-b border-brand-darkgreen/10 hover:bg-brand-darkgreen/[0.02] px-4 md:px-6 transition-all duration-300 group cursor-pointer text-left gap-4" onClick={() => onEnterDashboard('dashboard')}>
               <div className="md:col-span-1 font-serif-editorial text-brand-sage italic text-xl md:text-2xl">
                 IV
               </div>
@@ -688,6 +887,38 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
               </div>
               <div className="md:col-span-7 text-xs md:text-sm text-slate-600 leading-relaxed font-light">
                 {t.archAxis4Desc}
+              </div>
+              <div className="md:col-span-1 text-right flex justify-end">
+                <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-brand-sage group-hover:translate-x-1.5 transition-all duration-300" />
+              </div>
+            </div>
+
+            {/* Axis V */}
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center py-6 md:py-8 border-b border-brand-darkgreen/10 hover:bg-brand-darkgreen/[0.02] px-4 md:px-6 transition-all duration-300 group cursor-pointer text-left gap-4" onClick={() => onEnterDashboard('mapa')}>
+              <div className="md:col-span-1 font-serif-editorial text-brand-sage italic text-xl md:text-2xl">
+                V
+              </div>
+              <div className="md:col-span-3 font-serif-editorial text-brand-darkgreen text-2xl font-semibold">
+                {t.archAxis5Title}
+              </div>
+              <div className="md:col-span-7 text-xs md:text-sm text-slate-600 leading-relaxed font-light">
+                {t.archAxis5Desc}
+              </div>
+              <div className="md:col-span-1 text-right flex justify-end">
+                <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-brand-sage group-hover:translate-x-1.5 transition-all duration-300" />
+              </div>
+            </div>
+
+            {/* Axis VI */}
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center py-6 md:py-8 border-b border-brand-darkgreen/10 hover:bg-brand-darkgreen/[0.02] px-4 md:px-6 transition-all duration-300 group cursor-pointer text-left gap-4" onClick={() => scrollToSection('superficies')}>
+              <div className="md:col-span-1 font-serif-editorial text-brand-sage italic text-xl md:text-2xl">
+                VI
+              </div>
+              <div className="md:col-span-3 font-serif-editorial text-brand-darkgreen text-2xl font-semibold">
+                {t.archAxis6Title}
+              </div>
+              <div className="md:col-span-7 text-xs md:text-sm text-slate-600 leading-relaxed font-light">
+                {t.archAxis6Desc}
               </div>
               <div className="md:col-span-1 text-right flex justify-end">
                 <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-brand-sage group-hover:translate-x-1.5 transition-all duration-300" />
@@ -708,12 +939,13 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
             {/* Column 1: Brand Info */}
             <div className="md:col-span-5 flex flex-col gap-6 text-left">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-brand-cream/10 border border-white/20 flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-brand-cream fill-none stroke-current" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.97 0-9-4.03-9-9 0-2.12.74-4.07 1.97-5.61L12 2l7.03 4.39C20.26 7.93 21 9.88 21 12c0 4.97-4.03 9-9 9z" />
-                  </svg>
+                <div className="w-9 h-9 rounded-full bg-brand-cream/10 border border-white/20 flex items-center justify-center text-brand-cream">
+                  <Logo className="w-5 h-5" />
                 </div>
-                <span className="font-serif-editorial text-2xl font-bold tracking-wide text-white leading-none">{t.brandName}</span>
+                <div className="flex flex-col">
+                  <span className="font-serif-editorial text-2xl font-bold tracking-wide text-white leading-none">{t.brandName}</span>
+                  <span className="text-[9px] tracking-widest font-semibold font-mono uppercase text-brand-sage mt-1">{t.projectName}</span>
+                </div>
               </div>
               <p className="text-xs text-white/60 leading-relaxed max-w-sm font-light">
                 {t.footerText}
@@ -757,12 +989,18 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
             {/* Column 3: Pilot Info */}
             <div className="md:col-span-4 flex flex-col gap-4 text-left">
               <span className="text-[10px] text-brand-sage font-mono tracking-widest uppercase font-semibold">
-                {t.metricLocationVal}
+                {t.footerPilotLabel}
               </span>
               <p className="text-xs text-white/60 leading-relaxed font-light">
                 {t.footerPilot}<br />
-                {lang === 'es' ? 'Mayo 2026' : 'May 2026'}.
+                {t.footerStage}
               </p>
+              <button
+                onClick={() => scrollToSection('documentos')}
+                className="text-[10px] text-brand-sage hover:text-white font-mono uppercase tracking-widest font-bold self-start transition-colors"
+              >
+                {t.docsLabel}
+              </button>
             </div>
 
           </div>
@@ -770,7 +1008,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
           {/* Bottom Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-white/10 text-[10px] text-white/40 font-mono uppercase tracking-wider">
             <span>{t.footerCopyright}</span>
-            <span>V0.1 · Hero Release</span>
+            <span>{t.footerRelease}</span>
           </div>
 
         </div>

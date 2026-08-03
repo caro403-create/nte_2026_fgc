@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart, CartesianGrid } from 'recharts';
 import { TriangleAlert } from 'lucide-react';
+import { translations } from '../utils/translations';
 
 export default function TimeSeriesPanel({ node, lang }) {
   const isEn = lang === 'en';
+  const t = translations[lang || 'es'];
 
   const data = useMemo(() => {
     const points = [];
@@ -53,23 +55,17 @@ export default function TimeSeriesPanel({ node, lang }) {
   };
   const currentVpd = getVPD(currentTemp, currentHum);
 
-  const getVpdStatus = (v) => {
-    if (v > 2.0) return { label: 'EXTREMO', color: 'text-[#E63946]' };
-    if (v > 1.2) return { label: 'ALTO', color: 'text-[#F4A261]' };
-    return { label: 'ÓPTIMO', color: 'text-[#52B788]' };
+  // Los tres niveles comparten etiquetas: `level` es el valor estable con el que
+  // se compara, `label` el texto ya traducido que se pinta.
+  const LEVELS = {
+    extreme: { level: 'extreme', label: t.lvlExtreme, color: 'text-[#E63946]' },
+    high: { level: 'high', label: t.lvlHigh, color: 'text-[#F4A261]' },
+    optimal: { level: 'optimal', label: t.lvlOptimal, color: 'text-[#52B788]' },
   };
 
-  const getCo2Status = (co2) => {
-    if (co2 > 1000) return { label: 'EXTREMO', color: 'text-[#E63946]' };
-    if (co2 > 600) return { label: 'ALTO', color: 'text-[#F4A261]' };
-    return { label: 'ÓPTIMO', color: 'text-[#52B788]' };
-  };
-
-  const getPm25Status = (pm) => {
-    if (pm > 35) return { label: 'EXTREMO', color: 'text-[#E63946]' };
-    if (pm > 12) return { label: 'ALTO', color: 'text-[#F4A261]' };
-    return { label: 'ÓPTIMO', color: 'text-[#52B788]' };
-  };
+  const getVpdStatus = (v) => (v > 2.0 ? LEVELS.extreme : v > 1.2 ? LEVELS.high : LEVELS.optimal);
+  const getCo2Status = (co2) => (co2 > 1000 ? LEVELS.extreme : co2 > 600 ? LEVELS.high : LEVELS.optimal);
+  const getPm25Status = (pm) => (pm > 35 ? LEVELS.extreme : pm > 12 ? LEVELS.high : LEVELS.optimal);
 
   const vpdStatus = getVpdStatus(currentVpd);
   const co2 = parseFloat(node.sentidos?.olfato?.co_ppm || 400);
@@ -178,7 +174,7 @@ export default function TimeSeriesPanel({ node, lang }) {
               <span className={`text-[10px] font-extrabold tracking-wider ${co2Status.color}`}>{co2Status.label}</span>
             </div>
             <p className="text-[11px] text-[#636E72] pl-4">
-              {co2Status.label === 'EXTREMO' ? 'Niveles críticos de monóxido y gases.' : 'Dentro de rango normal.'}
+              {co2Status.level === 'extreme' ? t.gasCriticalMsg : t.gasNormalMsg}
             </p>
           </div>
 
@@ -192,7 +188,7 @@ export default function TimeSeriesPanel({ node, lang }) {
               <span className={`text-[10px] font-extrabold tracking-wider ${pm25Status.color}`}>{pm25Status.label}</span>
             </div>
             <p className="text-[11px] text-[#636E72] pl-4">
-              Detección de humo por láser HM3301.
+              {isEn ? 'Laser smoke detection (HM3301).' : 'Detección de humo por láser HM3301.'}
             </p>
           </div>
 
@@ -201,12 +197,14 @@ export default function TimeSeriesPanel({ node, lang }) {
             <div className="flex justify-between items-start mb-1">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[#52B788]"></div>
-                <span className="font-bold text-[#2D3436]">Humedad suelo {soil}%</span>
+                <span className="font-bold text-[#2D3436]">
+                  {isEn ? 'Soil moisture' : 'Humedad suelo'} {soil}%
+                </span>
               </div>
-              <span className="text-[10px] font-extrabold tracking-wider text-[#52B788]">ÓPTIMO</span>
+              <span className="text-[10px] font-extrabold tracking-wider text-[#52B788]">{t.lvlOptimal}</span>
             </div>
             <p className="text-[11px] text-[#636E72] pl-4">
-              Sequedad del terreno (HD38).
+              {isEn ? 'Ground dryness (HD38).' : 'Sequedad del terreno (HD38).'}
             </p>
           </div>
 
@@ -215,12 +213,14 @@ export default function TimeSeriesPanel({ node, lang }) {
             <div className="flex justify-between items-start mb-1">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[#52B788]"></div>
-                <span className="font-bold text-[#2D3436]">Temp. contacto {tempCont.toFixed(1)} °C</span>
+                <span className="font-bold text-[#2D3436]">
+                  {isEn ? 'Contact temp.' : 'Temp. contacto'} {tempCont.toFixed(1)} °C
+                </span>
               </div>
-              <span className="text-[10px] font-extrabold tracking-wider text-[#52B788]">ÓPTIMO</span>
+              <span className="text-[10px] font-extrabold tracking-wider text-[#52B788]">{t.lvlOptimal}</span>
             </div>
             <p className="text-[11px] text-[#636E72] pl-4">
-              Temperatura directa del combustible (DS18B20).
+              {isEn ? 'Direct fuel temperature (DS18B20).' : 'Temperatura directa del combustible (DS18B20).'}
             </p>
           </div>
         </div>

@@ -18,4 +18,10 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // El backend: funciones serverless de Vercel y el Express de desarrollo.
+    // Corren en Node, no en el navegador.
+    files: ['api/**/*.js', 'server.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

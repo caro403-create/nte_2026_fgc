@@ -28,15 +28,15 @@ export default function SensorPanel({ node, globalScore, lang }) {
   };
   const vpd = parseFloat(getVPD(temp, hum));
 
-  let vpdStatus = "ÓPTIMO";
-  let vpdColor = "text-[#2D6A4F]";
-  let vpdBg = "bg-[#52B788]";
-  if (vpd > 2.0) { vpdStatus = "EXTREMO"; vpdColor = "text-[#E63946]"; vpdBg = "bg-[#E63946]"; }
-  else if (vpd > 1.2) { vpdStatus = "ALTO"; vpdColor = "text-[#F4A261]"; vpdBg = "bg-[#F4A261]"; }
-
   const [acousticData, setAcousticData] = useState([30, 45, 60, 35, 70, 85, 40, 50, 65, 55]);
   const canvasRef = useRef(null);
   const t = translations[lang || 'es'];
+
+  let vpdStatus = t.lvlOptimal;
+  let vpdColor = "text-[#2D6A4F]";
+  let vpdBg = "bg-[#52B788]";
+  if (vpd > 2.0) { vpdStatus = t.lvlExtreme; vpdColor = "text-[#E63946]"; vpdBg = "bg-[#E63946]"; }
+  else if (vpd > 1.2) { vpdStatus = t.lvlHigh; vpdColor = "text-[#F4A261]"; vpdBg = "bg-[#F4A261]"; }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -235,12 +235,12 @@ export default function SensorPanel({ node, globalScore, lang }) {
           <div className="flex justify-between items-start mb-2">
             <div>
               <span className="text-sm font-bold text-[#636E72] flex items-center gap-2">
-                <Thermometer className="h-4 w-4 text-[#2D6A4F]" /> ÍNDICE VPD
+                <Thermometer className="h-4 w-4 text-[#2D6A4F]" /> {t.vpdIndexTitle}
               </span>
-              <span className="text-xs text-[#636E72] mt-1 block">Déficit de Presión de Vapor calculado</span>
+              <span className="text-xs text-[#636E72] mt-1 block">{t.vpdIndexSub}</span>
             </div>
             <span className={`text-[10px] font-bold px-2 py-1 rounded-md bg-white border border-[#EEF5E9] ${vpdColor}`}>
-              Estado: {vpdStatus}
+              {t.vpdStateLabel}: {vpdStatus}
             </span>
           </div>
           <div className="mt-2 flex items-baseline">
@@ -265,7 +265,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Temperatura */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Temperatura aire</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mAirTemp}</span>
               <Thermometer className={`h-4 w-4 ${getTempColor(temp)}`} />
             </div>
             <span className={`text-2xl font-extrabold ${getTempColor(temp)}`}>{temp} <span className="text-xs text-[#636E72]">°C</span></span>
@@ -275,7 +275,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Humedad */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Humedad aire</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mAirHum}</span>
               <Droplet className={`h-4 w-4 ${getHumColor(hum)}`} />
             </div>
             <span className={`text-2xl font-extrabold ${getHumColor(hum)}`}>{hum} <span className="text-xs text-[#636E72]">%</span></span>
@@ -285,7 +285,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Presión Atm */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Presión atm.</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mPressure}</span>
               <Cloud className="h-4 w-4 text-[#2D6A4F]" />
             </div>
             <span className="text-2xl font-extrabold text-[#2D3436]">{presionAtm} <span className="text-xs text-[#636E72]">hPa</span></span>
@@ -295,7 +295,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Iluminación */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Iluminación</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mLight}</span>
               <Eye className="h-4 w-4 text-[#2D6A4F]" />
             </div>
             <span className="text-2xl font-extrabold text-[#2D3436]">{iluminacion} <span className="text-xs text-[#636E72]">klux</span></span>
@@ -305,7 +305,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Humedad Suelo */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Humedad suelo</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mSoilHum}</span>
               <Droplet className={`h-4 w-4 ${humedadSuelo < 20 ? 'text-[#E63946]' : 'text-[#2D6A4F]'}`} />
             </div>
             <span className={`text-2xl font-extrabold ${humedadSuelo < 20 ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>{humedadSuelo} <span className="text-xs text-[#636E72]">%</span></span>
@@ -315,7 +315,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* Temp Contacto */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">Temp. contacto</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mContactTemp}</span>
               <Thermometer className={`h-4 w-4 ${tempContacto > 40 ? 'text-[#E63946]' : 'text-[#2D6A4F]'}`} />
             </div>
             <span className={`text-2xl font-extrabold ${tempContacto > 40 ? 'text-[#E63946]' : 'text-[#2D3436]'}`}>{tempContacto} <span className="text-xs text-[#636E72]">°C</span></span>
@@ -325,7 +325,7 @@ export default function SensorPanel({ node, globalScore, lang }) {
           {/* CO2 */}
           <div className="bg-[#F8FAF5] border border-[#EEF5E9] p-4 rounded-2xl flex flex-col justify-between">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-[#636E72]">CO₂ estimado</span>
+              <span className="text-xs font-bold text-[#636E72]">{t.mCo2}</span>
               <Cloud className={`h-4 w-4 ${getCoColor(co)}`} />
             </div>
             <span className={`text-2xl font-extrabold ${getCoColor(co)}`}>{co} <span className="text-xs text-[#636E72]">ppm</span></span>

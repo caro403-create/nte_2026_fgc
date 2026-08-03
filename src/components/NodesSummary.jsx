@@ -55,18 +55,18 @@ export default function NodesSummary({ nodes, lang }) {
           const hum = node.sentidos?.tacto?.humedad || 50;
           const vpd = getVPD(temp, hum);
           
-          let vpdStatus = "ÓPTIMO";
+          let vpdStatus = isEn ? "OPTIMAL" : "ÓPTIMO";
           let vpdColor = "text-[#2D6A4F]";
           let borderColor = "border-[#52B788]";
           let dotColor = "bg-[#52B788]";
 
-          if (vpd > 2.0) { 
-            vpdStatus = "EXTREMO"; 
+          if (vpd > 2.0) {
+            vpdStatus = isEn ? "EXTREME" : "EXTREMO";
             vpdColor = "text-[#E63946]"; 
             borderColor = "border-[#E63946]";
             dotColor = "bg-[#E63946]";
-          } else if (vpd > 1.2) { 
-            vpdStatus = "ALTO"; 
+          } else if (vpd > 1.2) {
+            vpdStatus = isEn ? "HIGH" : "ALTO";
             vpdColor = "text-[#F4A261]"; 
             borderColor = "border-[#F4A261]";
             dotColor = "bg-[#F4A261]";

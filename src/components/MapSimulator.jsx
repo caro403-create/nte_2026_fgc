@@ -11,29 +11,19 @@ const nodeCoords = {
   4: { lat: 4.395, lng: -76.069 }, // Hacienda El Medio (Zarzal)
 };
 
-const hotspotsCoords = {
-  101: { lat: 3.879, lng: -76.435 }, // Cerca de Chimbilaco
-  102: { lat: 3.872, lng: -76.442 }  // Cerca de Chimbilaco
-};
-
 export default function MapSimulator({
-  score,
   nodes,
   selectedNodeId,
   setSelectedNodeId,
-  hotspots,
-  setHotspots,
   lang
 }) {
   const [showNodes, setShowNodes] = useState(true);
-  const [showHotspots, setShowHotspots] = useState(true);
 
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   
   // Layer Groups
   const nodesGroupRef = useRef(null);
-  const hotspotsGroupRef = useRef(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -56,7 +46,6 @@ export default function MapSimulator({
 
     // Inicializar Layer Groups
     nodesGroupRef.current = L.layerGroup().addTo(map);
-    hotspotsGroupRef.current = L.layerGroup().addTo(map);
 
     // Limpieza
     return () => {
@@ -73,10 +62,7 @@ export default function MapSimulator({
     if (showNodes && !map.hasLayer(nodesGroupRef.current)) map.addLayer(nodesGroupRef.current);
     if (!showNodes && map.hasLayer(nodesGroupRef.current)) map.removeLayer(nodesGroupRef.current);
 
-    if (showHotspots && !map.hasLayer(hotspotsGroupRef.current)) map.addLayer(hotspotsGroupRef.current);
-    if (!showHotspots && map.hasLayer(hotspotsGroupRef.current)) map.removeLayer(hotspotsGroupRef.current);
-
-  }, [showNodes, showHotspots]);
+  }, [showNodes]);
 
   // Dibujar Nodos
   useEffect(() => {
@@ -106,7 +92,7 @@ export default function MapSimulator({
       </div>`;
 
       const labelHtml = `<div style="position:absolute; top:-24px; left:-30px; width:60px; height:18px; border-radius:6px; background-color:rgba(255,255,255,0.95); border:1.5px solid ${isSelected ? '#2D6A4F' : '#EEF5E9'}; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-        <span style="font-size:9px; font-weight:bold; font-family:sans-serif; color:${isSelected ? '#2D3436' : '#636E72'};">Nodo ${nId}</span>
+        <span style="font-size:9px; font-weight:bold; font-family:sans-serif; color:${isSelected ? '#2D3436' : '#636E72'};">${lang === 'en' ? 'Node' : 'Nodo'} ${nId}</span>
       </div>`;
 
       const customIcon = L.divIcon({
@@ -130,38 +116,6 @@ export default function MapSimulator({
     });
   }, [nodes, selectedNodeId]);
 
-  // Dibujar NASA FIRMS
-  useEffect(() => {
-    const group = hotspotsGroupRef.current;
-    if (!group) return;
-    group.clearLayers();
-
-    hotspots.forEach(spot => {
-      const coords = hotspotsCoords[spot.id];
-      if (!coords) return;
-
-      const html = `<div style="position:relative; width:32px; height:32px; display:flex; justify-content:center; align-items:center;">
-        <div style="position:absolute; width:100%; height:100%; border-radius:50%; background-color:#E63946; opacity:0.25;" class="animate-pulse"></div>
-        <svg viewBox="0 0 14 10" width="14" height="10" style="position:relative; z-index:10; fill:#E63946; stroke:#fff; stroke-width:1.5;">
-          <polygon points="7,0 14,10 0,10" />
-        </svg>
-        <div style="position:absolute; top:24px; background-color:rgba(255,255,255,0.9); border:1px solid #E63946; border-radius:4px; padding:2px 4px; white-space:nowrap;">
-          <span style="font-size:8px; font-weight:bold; color:#E63946;">NASA #${spot.id}</span>
-        </div>
-      </div>`;
-
-      const icon = L.divIcon({
-        html,
-        className: 'custom-hotspot-node',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-      });
-
-      const marker = L.marker([coords.lat, coords.lng], { icon });
-      group.addLayer(marker);
-    });
-  }, [hotspots]);
-
   return (
     <div className="bg-white border border-[#EEF5E9] rounded-2xl overflow-hidden flex flex-col h-full relative shadow-[0_2px_12px_rgba(0,0,0,0.07)] z-10">
       
@@ -181,17 +135,7 @@ export default function MapSimulator({
           />
           <span>{lang === 'en' ? 'IoT Nodes' : 'Nodos IoT'}</span>
         </label>
-        
-        {/* Hotspots Checkbox */}
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none font-medium hover:text-[#2D3436]">
-          <input
-            type="checkbox"
-            checked={showHotspots}
-            onChange={(e) => setShowHotspots(e.target.checked)}
-            className="rounded border-gray-300 text-[#E63946] focus:ring-[#E63946]/25 h-4 w-4 accent-[#E63946]"
-          />
-          <span>{lang === 'en' ? 'NASA FIRMS' : 'Capa NASA'}</span>
-        </label>
+
       </div>
 
       {/* Map Legend Overlay */}
