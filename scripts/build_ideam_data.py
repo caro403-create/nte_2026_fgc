@@ -227,6 +227,26 @@ def main():
         },
     }
 
+    # Los campos categóricos son la misma cadena repetida miles de veces: 291
+    # tipos de suelo para 15.000 registros, 5 grandes biomas, 18 climas. Se
+    # guardan como diccionario + índice, y el navegador los reconstruye al
+    # cargar. Eso reduce el JSON a menos de la mitad, y lo que se ahorra no es
+    # ancho de banda —el servidor ya lo comprime— sino el tiempo de
+    # `JSON.parse`, que es proporcional al texto y bloquea el hilo principal.
+    CODED = ['dept', 'mun', 'gran_bioma', 'bioma_iavh', 'ecos', 'clima',
+             'paisaje', 'relieve', 'suelos', 'dept_src', 'mun_src', 'geo_src']
+    dicts = {}
+    for field in CODED:
+        values = sorted({r[field] for r in data if field in r})
+        index = {v: i for i, v in enumerate(values)}
+        dicts[field] = values
+        for r in data:
+            if field in r:
+                r[field] = index[r[field]]
+
+    output['dicts'] = dicts
+    output['encoding'] = 'dict-v1'
+
     with open(OUT, 'w') as f:
         json.dump(output, f, separators=(',', ':'), ensure_ascii=False)
 

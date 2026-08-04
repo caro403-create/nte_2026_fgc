@@ -115,6 +115,32 @@ const DEPT_LABEL = {
   'VAUPES': 'Vaupés', 'VICHADA': 'Vichada'
 };
 const deptLabel = (d) => DEPT_LABEL[d] || d;
+
+/**
+ * Deshace la codificación por diccionario de `ideam_data.json`.
+ *
+ * El archivo guarda los campos categóricos como índices a una tabla de valores
+ * (`dicts`), porque son la misma cadena repetida miles de veces: 291 tipos de
+ * suelo para 15.000 registros. Así el JSON pasa de 6,6 a 3,5 MB, y lo que se
+ * gana no es red —el servidor ya comprime a ~350 KB— sino el tiempo de
+ * `JSON.parse`, que crece con el texto y bloquea el hilo principal.
+ *
+ * Reconstruirlo aquí cuesta una pasada sobre el arreglo, del orden de
+ * milisegundos, y deja los registros con la misma forma que esperaba el resto
+ * del tablero. Si el archivo llega sin codificar se devuelve tal cual, así que
+ * un JSON viejo en la caché del navegador sigue funcionando.
+ */
+function decodeIdeam(data) {
+  if (!data || data.encoding !== 'dict-v1' || !data.dicts) return data;
+  const fields = Object.keys(data.dicts);
+  for (const row of data.incidents) {
+    for (const f of fields) {
+      const i = row[f];
+      if (typeof i === 'number') row[f] = data.dicts[f][i];
+    }
+  }
+  return data;
+}
 // Municipalities have no accent gazetteer in the source, so we only restore
 // casing. Flagged in the methodological notes.
 const LOWER_WORDS = new Set(['de', 'del', 'la', 'las', 'los', 'y', 'e', 'en', 'el']);
@@ -1095,7 +1121,7 @@ function Dashboard({ lang = 'es' }) {
   useEffect(() => {
     fetch('/ideam_data.json')
       .then(res => res.json())
-      .then(data => { setIdeamData(data); setLoading(false); })
+      .then(data => { setIdeamData(decodeIdeam(data)); setLoading(false); })
       .catch(err => { console.error('Error fetching IDEAM data:', err); setLoading(false); });
   }, []);
 
@@ -1663,21 +1689,11 @@ function Dashboard({ lang = 'es' }) {
           }
         });
 
-        const markers = [];
-        filteredIncidents.forEach(inc => {
-          const sensType = sensitiveTypeOf(inc.ecos);
-          if (sensitiveMode && !sensType) return;
-
-          const marker = L.circleMarker([inc.lat, inc.lng], {
-            radius: 5,
-            fillColor: sensitiveMode ? SENSITIVE_COLOR[sensType] : sensType ? PURPLE : FIRE_RAMP[4],
-            color: '#ffffff',
-            weight: 0.8,
-            opacity: 0.9,
-            fillOpacity: 0.85,
-            sensType
-          });
-
+        // El contenido del popup se arma en el momento de abrirlo, no al crear
+        // la capa. Construirlo por adelantado costaba ~14 nodos del DOM por
+        // cada uno de los ~15.000 focos —unos 210.000 nodos— para enseñar como
+        // mucho dos o tres: era el grueso del tiempo de carga de la pestaña.
+        const buildPopup = (inc) => {
           const popup = document.createElement('div');
           popup.className = 'p-1 font-sans text-xs min-w-[210px] text-slate-800';
           const title = document.createElement('div');
@@ -1719,7 +1735,25 @@ function Dashboard({ lang = 'es' }) {
           btn.addEventListener('click', () => { toggleDept(inc.dept); map.closePopup(); });
           popup.appendChild(btn);
 
-          marker.bindPopup(popup);
+          return popup;
+        };
+
+        const markers = [];
+        filteredIncidents.forEach(inc => {
+          const sensType = sensitiveTypeOf(inc.ecos);
+          if (sensitiveMode && !sensType) return;
+
+          const marker = L.circleMarker([inc.lat, inc.lng], {
+            radius: 5,
+            fillColor: sensitiveMode ? SENSITIVE_COLOR[sensType] : sensType ? PURPLE : FIRE_RAMP[4],
+            color: '#ffffff',
+            weight: 0.8,
+            opacity: 0.9,
+            fillOpacity: 0.85,
+            sensType
+          });
+
+          marker.bindPopup(() => buildPopup(inc));
           markers.push(marker);
         });
 
