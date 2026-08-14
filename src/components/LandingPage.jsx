@@ -177,20 +177,22 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
           </span>
           <div className="flex gap-4">
             {[
-              { code: 'ES', src: '/docs/qr-solucion-es.png', alt: t.docsEsTitle },
-              { code: 'EN', src: '/docs/qr-solution-en.png', alt: t.docsEnTitle },
-            ].map(({ code, src, alt }) => (
-              <button
+              { code: 'ES', src: '/docs/qr-solucion-es.png', alt: t.docsEsTitle, href: 'https://docs.google.com/document/d/1TF5Sv_TVS5oVtAvcV8bx9o-5r4IylP3Dz-fi82U4Jh8/edit?tab=t.0' },
+              { code: 'EN', src: '/docs/qr-solution-en.png', alt: t.docsEnTitle, href: 'https://docs.google.com/document/d/1XRp-6zd5zsq3hFyQFqVE40FH38QB6DqtDU8Urwg8TUA/edit?tab=t.0' },
+            ].map(({ code, src, alt, href }) => (
+              <a
                 key={code}
-                onClick={() => scrollToSection('documentos')}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex flex-col items-center gap-2 group cursor-pointer"
-                title={alt}
+                title={`${alt} - ${t.docsOpenPdf}`}
               >
                 <QrSlot src={src} alt={alt} pendingLabel={t.docsQrPending} size="sm" />
                 <span className="text-[9px] text-white/60 group-hover:text-brand-sage font-mono tracking-widest uppercase transition-colors">
                   {code}
                 </span>
-              </button>
+              </a>
             ))}
           </div>
         </div>
@@ -305,11 +307,19 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
 
             {/* Documento en español */}
             <div className="bg-white border border-brand-darkgreen/10 rounded-2xl p-6 md:p-8 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start text-center sm:text-left">
-              <QrSlot
-                src="/docs/qr-solucion-es.png"
-                alt={t.docsEsTitle}
-                pendingLabel={t.docsQrPending}
-              />
+              <a
+                href="https://docs.google.com/document/d/1TF5Sv_TVS5oVtAvcV8bx9o-5r4IylP3Dz-fi82U4Jh8/edit?tab=t.0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block shrink-0 transition-transform hover:scale-105"
+                title={t.docsEsTitle}
+              >
+                <QrSlot
+                  src="/docs/qr-solucion-es.png"
+                  alt={t.docsEsTitle}
+                  pendingLabel={t.docsQrPending}
+                />
+              </a>
               <div className="flex flex-col gap-3 flex-1">
                 <span className="text-[10px] text-brand-sage font-mono tracking-[0.25em] uppercase font-bold">
                   Español
@@ -321,7 +331,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   {t.docsScanHint}
                 </p>
                 <a
-                  href="https://qr.link/RMdsVw"
+                  href="https://docs.google.com/document/d/1TF5Sv_TVS5oVtAvcV8bx9o-5r4IylP3Dz-fi82U4Jh8/edit?tab=t.0"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
@@ -337,11 +347,19 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
 
             {/* Document in English */}
             <div className="bg-white border border-brand-darkgreen/10 rounded-2xl p-6 md:p-8 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row gap-6 md:gap-8 items-center sm:items-start text-center sm:text-left">
-              <QrSlot
-                src="/docs/qr-solution-en.png"
-                alt={t.docsEnTitle}
-                pendingLabel={t.docsQrPending}
-              />
+              <a
+                href="https://docs.google.com/document/d/1XRp-6zd5zsq3hFyQFqVE40FH38QB6DqtDU8Urwg8TUA/edit?tab=t.0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block shrink-0 transition-transform hover:scale-105"
+                title={t.docsEnTitle}
+              >
+                <QrSlot
+                  src="/docs/qr-solution-en.png"
+                  alt={t.docsEnTitle}
+                  pendingLabel={t.docsQrPending}
+                />
+              </a>
               <div className="flex flex-col gap-3 flex-1">
                 <span className="text-[10px] text-brand-sage font-mono tracking-[0.25em] uppercase font-bold">
                   English
@@ -353,7 +371,7 @@ export default function LandingPage({ onEnterDashboard, activeTab, setActiveTab,
                   {t.docsScanHint}
                 </p>
                 <a
-                  href="https://qr.link/TYc2Uy"
+                  href="https://docs.google.com/document/d/1XRp-6zd5zsq3hFyQFqVE40FH38QB6DqtDU8Urwg8TUA/edit?tab=t.0"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 text-brand-sage hover:text-brand-darkgreen font-mono text-[10px] tracking-wider uppercase font-bold flex items-center gap-1.5 group self-center sm:self-start transition-colors duration-200"
