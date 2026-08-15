@@ -15,9 +15,12 @@ import 'dotenv/config';
 import { buildLayerUrl, samplePoint } from './api/_lib/gee.js';
 import { getHotspots } from './api/_lib/firms.js';
 import keepalive from './api/keepalive.js';
+import telegramHandler from './api/telegram.js';
+import lecturasHandler from './api/lecturas.js';
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.use((req, _res, next) => {
   console.log(`[HTTP] ${req.method} ${req.url}`);
@@ -63,6 +66,10 @@ app.get('/api/firms/hotspots', async (_req, res) => {
 
 // El mismo ping de Supabase que en producción dispara el cron de Vercel.
 app.get('/api/keepalive', keepalive);
+
+// Endpoints del Bot de Telegram y Telemetría IoT
+app.all('/api/telegram', telegramHandler);
+app.all('/api/lecturas', lecturasHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
